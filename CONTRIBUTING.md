@@ -1,4 +1,12 @@
-#### **💼 CONTRIBUTING GUIDELINES**
+Dưới đây là bản CONTRIBUTING đã được format lại cho đẹp hơn và thay icon cho các tiêu đề để nhìn chuyên nghiệp giống README của project lớn:
+
+
+
+---
+
+
+
+\# 💼 CONTRIBUTING GUIDELINES
 
 
 
@@ -12,18 +20,33 @@ Cảm ơn bạn đã tham gia đóng góp vào dự án.
 
 
 
-##### **🌿 1. Branch Rules**
+---
 
 
 
-* Không commit trực tiếp lên `main`
-* Mỗi chức năng phải tạo branch riêng theo cấu trúc:
+\## 🌿 1. Branch Rules
 
 
+
+\* Không commit trực tiếp lên `main`
+
+\* Mỗi chức năng phải tạo branch riêng theo cấu trúc:
+
+
+
+```
 
 feature/tên-chức-năng
 
+```
+
+
+
 Ví dụ:
+
+
+
+```
 
 feature/product-card-ui  
 
@@ -31,9 +54,15 @@ feature/cart-context
 
 feature/checkout-page
 
+```
 
 
-##### **📝 2. Commit Convention**
+
+---
+
+
+
+\## 📝 2. Commit Convention
 
 
 
@@ -57,6 +86,10 @@ Sử dụng prefix rõ ràng khi commit:
 
 Ví dụ:
 
+
+
+```
+
 feat: add product grid component  
 
 fix: resolve cart total bug  
@@ -67,7 +100,11 @@ style: update button hover effect
 
 
 
-##### **🔁 3. Pull Request Rules**
+---
+
+
+
+\## 🔁 3. Pull Request Rules
 
 
 
@@ -87,7 +124,11 @@ Trước khi merge vào `develop`, đảm bảo:
 
 
 
-##### 🎨 **4. Code Style**
+---
+
+
+
+\## 🎨 4. Code Style
 
 
 
@@ -103,9 +144,11 @@ Trước khi merge vào `develop`, đảm bảo:
 
 
 
+---
 
 
-##### **📁 5. Folder Structure**
+
+\## 📁 5. Folder Structure
 
 
 
@@ -121,9 +164,13 @@ Phải đặt đúng thư mục quy định:
 
 \* Pages → `pages/...`
 
-##### 
 
-##### **👥 6. Team Workflow**
+
+---
+
+
+
+\## 👥 6. Team Workflow
 
 
 
@@ -141,9 +188,11 @@ Phải đặt đúng thư mục quy định:
 
 
 
+---
 
 
-##### ⚠️ **7. Important Rules**
+
+\## ⚠️ 7. Important Rules
 
 
 
@@ -159,9 +208,9 @@ Phải đặt đúng thư mục quy định:
 
 
 
-\*\***Leader:**\*\* Hồ Thị Kim Xuyến
+\*\*Leader:\*\* Hồ Thị Kim Xuyến
 
-**\*\*Mens Fashion Store Team\*\* 💼**
+\*\*Mens Fashion Store Team\*\* 💼
 
 
 
