@@ -1,10 +1,6 @@
-#### **💼 CONTRIBUTING GUIDELINES**
-
-
+#### 💼 CONTRIBUTING GUIDELINES
 
 \*\*Mens Fashion Store – React Project\*\*
-
-
 
 Cảm ơn bạn đã tham gia đóng góp vào dự án.
 
@@ -12,14 +8,10 @@ Cảm ơn bạn đã tham gia đóng góp vào dự án.
 
 
 
-##### **🌿 1. Branch Rules**
-
-
+##### 🌿 1. Branch Rules
 
 * Không commit trực tiếp lên `main`
 * Mỗi chức năng phải tạo branch riêng theo cấu trúc:
-
-
 
 feature/tên-chức-năng
 
@@ -35,11 +27,7 @@ feature/checkout-page
 
 ##### **📝 2. Commit Convention**
 
-
-
 Sử dụng prefix rõ ràng khi commit:
-
-
 
 \* feat: Thêm chức năng mới
 
@@ -53,8 +41,6 @@ Sử dụng prefix rõ ràng khi commit:
 
 \* chore: Cấu hình, package, setup hệ thống
 
-
-
 Ví dụ:
 
 feat: add product grid component  
@@ -67,13 +53,9 @@ style: update button hover effect
 
 
 
-##### **🔁 3. Pull Request Rules**
-
-
+##### 🔁 3. Pull Request Rules
 
 Trước khi merge vào `develop`, đảm bảo:
-
-
 
 ✔ Code chạy không lỗi
 
@@ -88,8 +70,6 @@ Trước khi merge vào `develop`, đảm bảo:
 
 
 ##### 🎨 **4. Code Style**
-
-
 
 \* Dùng Function Component
 
@@ -107,11 +87,7 @@ Trước khi merge vào `develop`, đảm bảo:
 
 ##### **📁 5. Folder Structure**
 
-
-
 Phải đặt đúng thư mục quy định:
-
-
 
 \* UI dùng chung → `components/common`
 
@@ -121,11 +97,8 @@ Phải đặt đúng thư mục quy định:
 
 \* Pages → `pages/...`
 
-##### 
 
 ##### **👥 6. Team Workflow**
-
-
 
 1\. Pull code mới nhất từ `develop`
 
@@ -140,12 +113,7 @@ Phải đặt đúng thư mục quy định:
 6\. Leader review → merge
 
 
-
-
-
 ##### ⚠️ **7. Important Rules**
-
-
 
 ⛔ Không tự ý sửa code của người khác
 
@@ -153,15 +121,12 @@ Phải đặt đúng thư mục quy định:
 
 ⛔ Không push trực tiếp vào develop khi chưa được review
 
-
-
----
-
-
+---------------------------------------------------------------
 
 \*\***Leader:**\*\* Hồ Thị Kim Xuyến
 
 **\*\*Mens Fashion Store Team\*\* 💼**
+
 
 
 
