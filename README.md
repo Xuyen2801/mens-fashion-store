@@ -21,11 +21,11 @@ Dự án môn **Phát Triển Giao Diện Web**
 
 | Họ tên           | Vai trò                           |
 | ---------------- | --------------------------------- |
-| Hồ Thị Kim Xuyến | Leader – Frontend chính, Checkout |
-| Trần Thị Hải Yến | UI Homepage                       |
-| Phạm Khả Vy      | Product Listing                   |
-| Đào Thế Vinh     | Product Detail                    |
-| Nguyễn Văn Vinh  | Cart & Routing                    |
+| Hồ Thị Kim Xuyến | Leader                            |
+| Trần Thị Hải Yến | Member                            |
+| Phạm Khả Vy      | Member                            |
+| Đào Thế Vinh     | Member                            |
+| Nguyễn Văn Vinh  | Member                            |
 
 ---
 
