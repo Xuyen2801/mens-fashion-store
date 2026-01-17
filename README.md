@@ -157,7 +157,7 @@ Password: 123456
 * Thêm quản lý đơn hàng
 * Responsive mobile hoàn chỉnh
 
----
 
-README này đúng chuẩn đồ án React điểm cao luôn 😎🔥
-Nếu bạn muốn mình viết tiếp phần mô tả riêng cho trang Checkout (flow từng bước) mình làm thêm cho bạn nha.
+**Leader:** Hồ Thị Kim Xuyến  
+**Mens Fashion Store Team** 💼
+**Thông tin liên hệ**: hoxuyen280105@gmail.com
