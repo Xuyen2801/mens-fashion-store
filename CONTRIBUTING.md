@@ -1,18 +1,8 @@
-Dưới đây là bản CONTRIBUTING đã được format lại cho đẹp hơn và thay icon cho các tiêu đề để nhìn chuyên nghiệp giống README của project lớn:
 
-
-
----
-
-
-
-\# 💼 CONTRIBUTING GUIDELINES
-
-
+#### 💼 CONTRIBUTING GUIDELINES
+>>>>>>> c21e3c3d004896362e4823d5c86d43334c7a7fe6
 
 \*\*Mens Fashion Store – React Project\*\*
-
-
 
 Cảm ơn bạn đã tham gia đóng góp vào dự án.
 
@@ -20,22 +10,13 @@ Cảm ơn bạn đã tham gia đóng góp vào dự án.
 
 
 
----
-
-
+##### 🌿 1. Branch Rules
+>>>>>>> c21e3c3d004896362e4823d5c86d43334c7a7fe6
 
 \## 🌿 1. Branch Rules
 
 
-
-\* Không commit trực tiếp lên `main`
-
-\* Mỗi chức năng phải tạo branch riêng theo cấu trúc:
-
-
-
-```
-
+>>>>>>> c21e3c3d004896362e4823d5c86d43334c7a7fe6
 feature/tên-chức-năng
 
 ```
@@ -64,11 +45,7 @@ feature/checkout-page
 
 \## 📝 2. Commit Convention
 
-
-
 Sử dụng prefix rõ ràng khi commit:
-
-
 
 \* feat: Thêm chức năng mới
 
@@ -81,8 +58,6 @@ Sử dụng prefix rõ ràng khi commit:
 \* docs: README hoặc tài liệu
 
 \* chore: Cấu hình, package, setup hệ thống
-
-
 
 Ví dụ:
 
@@ -100,17 +75,11 @@ style: update button hover effect
 
 
 
----
 
-
-
-\## 🔁 3. Pull Request Rules
-
-
+##### 🔁 3. Pull Request Rules
+>>>>>>> c21e3c3d004896362e4823d5c86d43334c7a7fe6
 
 Trước khi merge vào `develop`, đảm bảo:
-
-
 
 ✔ Code chạy không lỗi
 
@@ -130,8 +99,6 @@ Trước khi merge vào `develop`, đảm bảo:
 
 \## 🎨 4. Code Style
 
-
-
 \* Dùng Function Component
 
 \* Dùng Arrow Function
@@ -150,11 +117,7 @@ Trước khi merge vào `develop`, đảm bảo:
 
 \## 📁 5. Folder Structure
 
-
-
 Phải đặt đúng thư mục quy định:
-
-
 
 \* UI dùng chung → `components/common`
 
@@ -172,8 +135,6 @@ Phải đặt đúng thư mục quy định:
 
 \## 👥 6. Team Workflow
 
-
-
 1\. Pull code mới nhất từ `develop`
 
 2\. Tạo branch feature
@@ -187,14 +148,8 @@ Phải đặt đúng thư mục quy định:
 6\. Leader review → merge
 
 
-
----
-
-
-
-\## ⚠️ 7. Important Rules
-
-
+##### ⚠️ **7. Important Rules**
+>>>>>>> c21e3c3d004896362e4823d5c86d43334c7a7fe6
 
 ⛔ Không tự ý sửa code của người khác
 
@@ -202,15 +157,12 @@ Phải đặt đúng thư mục quy định:
 
 ⛔ Không push trực tiếp vào develop khi chưa được review
 
-
-
----
-
-
+---------------------------------------------------------------
 
 \*\*Leader:\*\* Hồ Thị Kim Xuyến
 
 \*\*Mens Fashion Store Team\*\* 💼
+
 
 
 
