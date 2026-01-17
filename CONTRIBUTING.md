@@ -1,92 +1,65 @@
-## **# CONTRIBUTING GUIDELELINES**
+#### **💼 CONTRIBUTING GUIDELINES**
 
 
 
-Mens Fashion Store – React Project
+\*\*Mens Fashion Store – React Project\*\*
 
 
 
-Cảm ơn bạn đã tham gia đóng góp vào dự án. Để đảm bảo code đồng nhất và dễ quản lý, vui lòng tuân thủ các quy định sau.
+Cảm ơn bạn đã tham gia đóng góp vào dự án.
+
+Để đảm bảo code đồng nhất, dễ review và tránh xung đột trong nhóm, vui lòng tuân thủ các quy định sau.
 
 
 
----
+##### **🌿 1. Branch Rules**
 
 
 
-##### **## 1. Branch Rules**
+* Không commit trực tiếp lên `main`
+* Mỗi chức năng phải tạo branch riêng theo cấu trúc:
 
 
-
-\* Không commit trực tiếp lên `main`
-
-\* Mỗi chức năng phải tạo branch riêng:
-
-
-
-```
 
 feature/tên-chức-năng
 
-```
-
-
-
 Ví dụ:
 
+feature/product-card-ui  
 
-
-```
-
-feature/product-card-ui
-
-feature/cart-context
+feature/cart-context  
 
 feature/checkout-page
 
-```
+
+
+##### **📝 2. Commit Convention**
 
 
 
----
+Sử dụng prefix rõ ràng khi commit:
 
 
 
-##### **## 2. Commit Convention**
+\* feat: Thêm chức năng mới
 
+\* fix: Sửa lỗi
 
+\* style: Thay đổi giao diện hoặc CSS
 
-Bắt buộc ghi rõ loại commit:
+\* refactor: Tối ưu hoặc chỉnh sửa lại code
 
+\* docs: README hoặc tài liệu
 
-
-| Prefix    | Ý nghĩa            |
-
-| --------- | ------------------ |
-
-| feat:     | Thêm chức năng mới |
-
-| fix:      | Sửa lỗi            |
-
-| style:    | CSS / UI           |
-
-| refactor: | Tối ưu code        |
-
-| docs:     | README / tài liệu  |
-
-| chore:    | Cấu hình, package  |
+\* chore: Cấu hình, package, setup hệ thống
 
 
 
 Ví dụ:
 
+feat: add product grid component  
 
-
-```
-
-feat: add product grid component
-
-fix: resolve cart total bug
+fix: resolve cart total bug  
 
 style: update button hover effect
 
@@ -94,63 +67,53 @@ style: update button hover effect
 
 
 
----
-
-##### 
-
-##### **## 3. Pull Request Rules**
+##### **🔁 3. Pull Request Rules**
 
 
 
-Trước khi merge vào `develop`:
+Trước khi merge vào `develop`, đảm bảo:
 
 
 
-✔ Code không lỗi
+✔ Code chạy không lỗi
 
-✔ Không console log thừa
+✔ Không để console log thừa
 
-✔ Đã test UI
+✔ Đã test giao diện
 
 ✔ Đặt tên PR rõ ràng
 
-✔ Mô tả chức năng đã làm
+✔ Có mô tả nội dung đã thực hiện
 
 
 
----
-
-##### 
-
-##### **## 4. Code Style**
+##### 🎨 **4. Code Style**
 
 
 
-\* Dùng function component
+\* Dùng Function Component
 
-\* Dùng arrow function
+\* Dùng Arrow Function
 
-\* Tên component viết hoa
+\* Tên component viết hoa (PascalCase)
 
-\* Mỗi component 1 folder
+\* Mỗi component nằm trong 1 folder riêng
 
-\* CSS module riêng cho từng component
-
-
-
----
+\* CSS Module riêng cho từng component
 
 
 
-##### **## 5. Folder Structure**
+
+
+##### **📁 5. Folder Structure**
 
 
 
-Phải đặt đúng thư mục:
+Phải đặt đúng thư mục quy định:
 
 
 
-\* UI chung → `components/common`
+\* UI dùng chung → `components/common`
 
 \* Product → `components/product`
 
@@ -158,23 +121,19 @@ Phải đặt đúng thư mục:
 
 \* Pages → `pages/...`
 
+##### 
 
-
----
-
-
-
-##### **## 6. Team Workflow**
+##### **👥 6. Team Workflow**
 
 
 
-1\. Pull code mới nhất từ develop
+1\. Pull code mới nhất từ `develop`
 
 2\. Tạo branch feature
 
 3\. Code + commit đúng chuẩn
 
-4\. Push branch
+4\. Push branch lên GitHub
 
 5\. Tạo Pull Request
 
@@ -182,19 +141,17 @@ Phải đặt đúng thư mục:
 
 
 
----
 
-##### 
 
-##### **## 7. Important**
+##### ⚠️ **7. Important Rules**
 
 
 
 ⛔ Không tự ý sửa code của người khác
 
-⛔ Không đổi cấu trúc folder
+⛔ Không thay đổi cấu trúc folder
 
-⛔ Không push trực tiếp vào develop nếu chưa review
+⛔ Không push trực tiếp vào develop khi chưa được review
 
 
 
@@ -202,7 +159,9 @@ Phải đặt đúng thư mục:
 
 
 
-\*\*Leader:\*\* Hồ Thị Kim Xuyến
+\*\***Leader:**\*\* Hồ Thị Kim Xuyến
 
-Mens Fashion Store Team 💼
+**\*\*Mens Fashion Store Team\*\* 💼**
+
+
 
