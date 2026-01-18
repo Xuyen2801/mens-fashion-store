@@ -1,4 +1,4 @@
-# 💼 HƯỚNG DẪN ĐÓNG GÓP (CONTRIBUTING GUIDELINES)
+# 💼 CONTRIBUTING GUIDELINES
 
 **Mens Fashion Store – React Project**
 
