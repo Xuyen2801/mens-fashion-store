@@ -23,8 +23,6 @@ fix: resolve cart total bug
 style: update button hover effect
 ```
 
----
-
 ## 🔁 2. Pull Request Rules
 Trước khi merge đảm bảo:
 
@@ -69,7 +67,7 @@ Phải đặt đúng thư mục quy định:
 - ⛔ Không thay đổi cấu trúc folder
 - ⛔ Không push trực tiếp vào `develop` khi chưa được review
 
----
+-----------------------------------------------------------------------
 
 **Leader:** Hồ Thị Kim Xuyến  
 **Mens Fashion Store Team** 💼
