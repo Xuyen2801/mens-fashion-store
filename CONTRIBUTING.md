@@ -5,19 +5,8 @@
 Cảm ơn bạn đã tham gia đóng góp vào dự án.  
 Để đảm bảo code đồng nhất, dễ review và tránh xung đột trong nhóm, vui lòng tuân thủ các quy định sau.
 
-## 🌿 1. Branch Rules
-- Sử dụng định dạng: `feature/tên-chức-năng`
 
-**Ví dụ:**
-```
-feature/product-card-ui
-feature/cart-context
-feature/checkout-page
-```
-
----
-
-## 📝 2. Commit Convention
+## 📝 1. Commit Convention
 Sử dụng prefix rõ ràng khi commit:
 
 - `feat:` Thêm chức năng mới
@@ -36,8 +25,8 @@ style: update button hover effect
 
 ---
 
-## 🔁 3. Pull Request Rules
-Trước khi merge vào `develop`, đảm bảo:
+## 🔁 2. Pull Request Rules
+Trước khi merge đảm bảo:
 
 - ✔ Code chạy không lỗi
 - ✔ Không để console log thừa
@@ -47,7 +36,7 @@ Trước khi merge vào `develop`, đảm bảo:
 
 ---
 
-## 🎨 4. Code Style
+## 🎨 3. Code Style
 - Dùng Function Component
 - Dùng Arrow Function
 - Tên component viết hoa (PascalCase)
@@ -56,7 +45,7 @@ Trước khi merge vào `develop`, đảm bảo:
 
 ---
 
-## 📁 5. Folder Structure
+## 📁 4. Folder Structure
 Phải đặt đúng thư mục quy định:
 - UI dùng chung → `components/common`
 - Product → `components/product`
@@ -65,8 +54,8 @@ Phải đặt đúng thư mục quy định:
 
 ---
 
-## 👥 6. Team Workflow
-1. Pull code mới nhất từ `develop`
+## 👥 5. Team Workflow
+1. Pull code mới nhất từ branch khác thì nên hỏi trước
 2. Tạo branch feature
 3. Code + commit đúng chuẩn
 4. Push branch lên GitHub
@@ -75,7 +64,7 @@ Phải đặt đúng thư mục quy định:
 
 ---
 
-## ⚠️ 7. Important Rules
+## ⚠️ 6. Important Rules
 - ⛔ Không tự ý sửa code của người khác
 - ⛔ Không thay đổi cấu trúc folder
 - ⛔ Không push trực tiếp vào `develop` khi chưa được review
