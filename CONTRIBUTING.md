@@ -9,8 +9,8 @@ Cảm ơn bạn đã tham gia đóng góp vào dự án.
 ## 📝 1. Commit Convention
 Sử dụng prefix rõ ràng khi commit:
 
-- `feat:` Thêm chức năng mới
-- `fix:` Sửa lỗi
+- `feat:` Thêm chứ năng mới
+- `fix:` Sửa lỗic
 - `style:` Thay đổi giao diện hoặc CSS
 - `refactor:` Tối ưu hoặc chỉnh sửa lại code
 - `docs:` README hoặc tài liệu
