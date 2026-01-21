@@ -1,36 +1,163 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# 🧥 MEN'S FASHION STORE
 
-First, run the development server:
+### Web bán quần áo nam xây dựng bằng ReactJS
+
+Dự án môn **Phát Triển Giao Diện Web**
+
+---
+
+## 📚 Thông tin học phần
+
+* Môn học: Phát triển giao diện Web
+* Công nghệ sử dụng: ReactJS
+* Đề tài: Website bán quần áo nam
+* Hình thức: Làm việc nhóm
+* Sinh viên thực hiện: Nhóm Mens Fashion
+
+---
+
+## 👥 Thành viên nhóm
+
+| Họ tên           | Vai trò                           |
+| ---------------- | --------------------------------- |
+| Hồ Thị Kim Xuyến | Leader                            |
+| Trần Thị Hải Yến | Member                            |
+| Phạm Khả Vy      | Member                            |
+| Đào Thế Vinh     | Member                            |
+| Nguyễn Văn Vinh  | Member                            |
+
+---
+
+## 🛠️ Công nghệ sử dụng
+
+| Công nghệ        | Phiên bản | Mục đích               |
+| ---------------- | --------- | ---------------------- |
+| React            | 18        | Xây dựng giao diện SPA |
+| Vite             | Latest    | Bundler & Dev server   |
+| React Router DOM | 6+        | Điều hướng trang       |
+| Context API      | Built-in  | Quản lý state toàn cục |
+| CSS Modules      | -         | Scoped styling         |
+| Mock Data        | JSON      | Dữ liệu sản phẩm       |
+
+---
+
+## 🎯 Chức năng chính
+
+* Trang chủ giới thiệu sản phẩm nổi bật
+* Danh sách sản phẩm theo danh mục
+* Trang chi tiết sản phẩm
+* Thêm sản phẩm vào giỏ hàng
+* Cập nhật số lượng / xóa sản phẩm trong cart
+* Thanh toán (Checkout)
+* Điều hướng SPA mượt mà không reload
+
+---
+
+## 📁 Cấu trúc thư mục
+
+```
+src/
+├── components/      # Components tái sử dụng
+├── pages/           # Các trang chính
+├── context/         # Cart & Global State
+├── data/            # Mock products
+├── utils/           # Hàm xử lý logic
+├── assets/          # Hình ảnh
+└── App.jsx          # Root Router
+```
+
+---
+
+## 🚀 Hướng dẫn cài đặt & chạy project
+
+### Yêu cầu hệ thống
+
+* NodeJS >= 18
+* npm >= 9
+
+### Cài đặt
+
+```bash
+git clone https://github.com/your-username/icondenim-clone.git
+cd icondenim-clone
+npm install
+```
+
+### Chạy môi trường dev
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sau khi chạy, truy cập:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:5173
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🌿 Chiến lược branch
 
-To learn more about Next.js, take a look at the following resources:
+| Branch    | Mục đích             |
+| --------- | -------------------- |
+| main      | Code hoàn chỉnh      |
+| develop   | Code đang phát triển |
+| feature/* | Từng chức năng riêng |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Quy ước commit
 
-## Deploy on Vercel
+| Loại      | Ý nghĩa        |
+| --------- | -------------- |
+| feat:     | Thêm chức năng |
+| fix:      | Sửa lỗi        |
+| style:    | Chỉnh CSS/UI   |
+| refactor: | Tối ưu code    |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📋 Tiến độ thực hiện
+
+| Tuần   | Nội dung                  |
+| ------ | ------------------------- |
+| Tuần 1 | Setup project + chia task |
+| Tuần 2 | Homepage + Routing        |
+| Tuần 3 | Product & Detail          |
+| Tuần 4 | Cart + Checkout           |
+| Tuần 5 | Test & Hoàn thiện         |
+
+---
+
+## 🧪 Tài khoản test (nếu cần)
+
+```
+User: test@gmail.com
+Password: 123456
+```
+
+*(Dùng để demo luồng checkout nếu nhóm có làm login giả)*
+
+---
+
+## ⚠️ Lưu ý
+
+* Dữ liệu đang dùng mock JSON
+* Không kết nối backend thật
+* Checkout chỉ mô phỏng quy trình mua hàng
+
+---
+
+## 💡 Định hướng phát triển thêm
+
+* Kết nối API thật
+* Thêm thanh toán online
+* Thêm quản lý đơn hàng
+* Responsive mobile hoàn chỉnh
+
+
+**Leader:** Hồ Thị Kim Xuyến  
+**Mens Fashion Store Team** 💼
+**Thông tin liên hệ**: hoxuyen280105@gmail.com
