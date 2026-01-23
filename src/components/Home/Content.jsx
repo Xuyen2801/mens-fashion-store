@@ -1,5 +1,5 @@
 'use client'
-
+import { IoCartOutline } from "react-icons/io5";
 export default function Content() {
   return (
     <section style={{ padding: '60px 80px', maxWidth: 1200, margin: '0 auto' }}>
@@ -13,9 +13,9 @@ export default function Content() {
         Chúng tôi tập trung vào chất lượng, sự thoải mái và trải nghiệm mua sắm
         thân thiện cho khách hàng.
       </p>
-
-      
+    <IoCartOutline size={24} />
     </section>
+
   )
 }
 
