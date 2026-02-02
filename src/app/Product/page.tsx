@@ -15,14 +15,14 @@ const initialProducts: Product[] = [
     id: 1,
     name: "Áo Polo Đen",
     price: 299000,
-    image: "/public/images/products/polo1.jpg",
+    image: "/images/products/polo1.jpg",
     quantity: 1,
   },
   {
     id: 2,
     name: "Áo Polo Trắng",
     price: 279000,
-    image: "../../public/images/products/polo1.jpg",
+    image: "/images/products/polo1.jpg",
     quantity: 1,
   },
 ];
