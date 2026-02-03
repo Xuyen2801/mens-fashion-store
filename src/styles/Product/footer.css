@@ -1,17 +1,17 @@
 .footer {
-    background: linear-gradient(180deg, #001b4d 0%, #002766 100%);
+    background: #001f5d;
     color: #ffffff;
-    padding: 60px 80px 20px;
-    font-size: 14px;
+    padding: 56px 0 16px;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
 }
 
 .footer-container {
     max-width: 1280px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 2.2fr 1fr 1.3fr 1fr;
-    gap: 40px;
+    grid-template-columns: 2.3fr 1.2fr 1.6fr 1fr;
+    column-gap: 64px;
 }
 
 
@@ -20,13 +20,14 @@
 .footer-col h4 {
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     text-transform: uppercase;
 }
 
 .footer-col p {
-    margin: 6px 0;
+    margin: 4px 0;
     line-height: 1.6;
+    font-size: 14px;
     opacity: 0.95;
 }
 
@@ -34,36 +35,41 @@
 /* ===== LOGO ===== */
 
 .footer-logo {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 
-/* ===== NEWSLETTER ===== */
+/* ===== ĐĂNG KÝ NHẬN TIN ===== */
 
-.newsletter p {
-    margin: 16px 0 8px;
+.newsletter-title {
+    margin-top: 18px;
+    margin-bottom: 6px;
     font-weight: 700;
+    font-size: 13px;
 }
 
 .newsletter-box {
     display: flex;
     gap: 8px;
+    margin-top: 6px;
 }
 
 .newsletter-box input {
-    flex: 1;
-    padding: 8px 10px;
+    width: 200px;
+    height: 36px;
+    padding: 0 10px;
     border-radius: 4px;
     border: none;
-    outline: none;
     font-size: 13px;
 }
 
 .newsletter-box button {
+    height: 36px;
+    padding: 0 14px;
     background: #000;
     color: #fff;
     border: none;
-    padding: 8px 14px;
+    border-radius: 4px;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
@@ -74,67 +80,65 @@
 
 .socials {
     display: flex;
-    gap: 12px;
-    margin-top: 14px;
+    gap: 10px;
+    margin-top: 16px;
 }
 
-.socials svg {
-    width: 34px;
-    height: 34px;
-    padding: 8px;
+.socials img {
+    width: 28px;
+    height: 28px;
     background: rgba(255, 255, 255, 0.15);
+    padding: 6px;
     border-radius: 50%;
     cursor: pointer;
-    transition: 0.25s ease;
-}
-
-.socials svg:hover {
-    background: #ffffff;
-    color: #001b4d;
 }
 
 
-/* ===== PAYMENT ===== */
+/* ===== HỆ THỐNG CỬA HÀNG ===== */
+
+.footer-col strong {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.view-all {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+/* ===== THANH TOÁN ===== */
 
 .payments {
     display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
 .payments span {
     background: #ffffff;
-    color: #000000;
+    color: #000;
     padding: 4px 10px;
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
 }
 
-
-/* ===== CERT ===== */
-
 .certs {
     display: flex;
-    gap: 14px;
-    margin-top: 10px;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
 }
 
 .certs img {
-    height: 42px;
+    height: 40px;
     width: auto;
-}
-
-
-/* ===== LINK ===== */
-
-.view-all {
-    display: inline-block;
-    margin-top: 10px;
-    font-weight: 600;
-    color: #ffffff;
-    text-decoration: underline;
-    cursor: pointer;
 }
 
 
@@ -143,8 +147,8 @@
 .footer-bottom {
     margin-top: 40px;
     padding-top: 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
     text-align: center;
     font-size: 13px;
-    font-weight: 600;
+    opacity: 0.9;
 }
