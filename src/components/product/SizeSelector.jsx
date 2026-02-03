@@ -15,7 +15,7 @@ export default function SizeSelector({ sizes, selectedSize, onSelectSize, outOfS
               } ${selectedSize === size ? 'border-black bg-black text-white' : 'border-gray-200 text-gray-600'}`}
             >
               {size}
-              {isOutOfStock && <div className="absolute inset-0 flex items-center justify-center"><div className="w-full h-[1px] bg-gray-300 rotate-45"></div></div>}
+              {isOutOfStock && <div className="absolute inset-0 flex items-center justify-center"><div className="w-full bg-gray-300 rotate-45"></div></div>}
             </button>
           );
         })}

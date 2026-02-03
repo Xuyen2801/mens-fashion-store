@@ -12,12 +12,12 @@ export default function ProductGallery({ images = [] }) {
   };
 
   if (!images || images.length === 0) {
-    return <div className="w-full aspect-[3/4] bg-gray-100 animate-pulse rounded-xl"></div>;
+    return <div className="w-full bg-gray-100 animate-pulse rounded-xl"></div>;
   }
 
   return (
     <div className="w-full relative group">
-      <div className="relative aspect-[3/4] bg-white border border-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
+      <div className="relative bg-white border border-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
         <img 
           src={images[active]} 
           className="max-h-full w-auto object-contain transition-all duration-500" 

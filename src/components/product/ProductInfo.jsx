@@ -57,7 +57,7 @@ export default function ProductInfo({ product, //truyền tên hàm của sự k
                   ${selectedSize === size ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]' : 'bg-white text-gray-600 border-gray-200'}`}
               >
                 {size}
-                {isOut && <div className="absolute inset-0 border-t border-gray-200 rotate-[35deg] top-1/2"></div>}
+                {isOut && <div className="absolute inset-0 border-t border-gray-200 top-1/2"></div>}
               </button>
             );
           })}
