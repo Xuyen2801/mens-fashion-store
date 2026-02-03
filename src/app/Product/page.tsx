@@ -1,7 +1,10 @@
 import React from "react";
 import content from "../../data/Product/contentSeeMore.json";
 import SeeMore from "../../components/Product/SeeMore";
+import FAQAccordion from "../../components/Product/FAQAccordion";
+import FadData from "../../data/Product/fadData.json";
 import "../../styles/Product/SeeMore.css"
+import "../../styles/Product/Fad.css"
 const getYoutubeEmbed = (url: string) => {
   if (!url) return "";
 
@@ -60,7 +63,8 @@ const renderMedia = (media: { type: string; src: string; } | undefined, alt = ""
 
 export default function ProductContent() {
   return (
-    <SeeMore maxHeight={700}>
+    <div className="body">
+       <SeeMore maxHeight={700}>
       {content.sections.map((section, index) => {
         switch (section.type) {
           case "hero":
@@ -157,5 +161,10 @@ export default function ProductContent() {
         }
       })}
     </SeeMore>
+    <section className="faq-section">
+      <h2 className="faq-title">FAQ – Áo thun ICONDENIM</h2>
+      <FAQAccordion />
+    </section>
+    </div>
   );
 }
