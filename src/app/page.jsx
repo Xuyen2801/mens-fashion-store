@@ -7,20 +7,6 @@ import ProductFilter from "../components/Collection/ProductFilter";
 import ProductCard from "../components/product/ProductCard";
 import { products } from "../data/products";
 
-// Giữ nguyên hàm tạo data
-const generateProducts = (count) => {
-  return Array.from({ length: count }, (_, index) => ({
-    id: index + 1,
-    name: index % 2 === 0 ? "Áo Thun Nam Cotton L" : "Áo Thun Nam In Find New",
-    price: "329,000đ",
-    salePrice: index % 3 === 0 ? "299,000đ" : null,
-    image: "https://placehold.co/334x425",
-    status: index < 5 ? "HÀNG MỚI" : null,
-  }));
-};
-
-const mockProducts = generateProducts(30);
-
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
