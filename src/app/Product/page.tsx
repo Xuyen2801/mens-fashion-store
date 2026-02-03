@@ -1,68 +1,161 @@
-"use client";
-import React, { useState } from "react";
-import ProductCard from "../../components/product/ProductCard";
+import React from "react";
+import content from "../../data/Product/contentSeeMore.json";
+import SeeMore from "../../components/Product/SeeMore";
+import "../../styles/Product/SeeMore.css"
+const getYoutubeEmbed = (url: string) => {
+  if (!url) return "";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+  // youtu.be/VIDEO_ID
+  if (url.includes("youtu.be")) {
+    return `https://www.youtube.com/embed/${url.split("youtu.be/")[1]}`;
+  }
 
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: "Áo Polo Đen",
-    price: 299000,
-    image: "/images/products/polo1.jpg",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Áo Polo Trắng",
-    price: 279000,
-    image: "/images/products/polo1.jpg",
-    quantity: 1,
-  },
-];
+  // youtube.com/watch?v=VIDEO_ID
+  if (url.includes("watch?v=")) {
+    return `https://www.youtube.com/embed/${url.split("v=")[1].split("&")[0]}`;
+  }
 
-export default function ProductList() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  // đã là embed
+  if (url.includes("youtube.com/embed")) {
+    return url;
+  }
 
-  // Tăng số lượng
-  const handleIncrease = (id: number) => {
-    setProducts((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
+  return url;
+};
 
-  // Giảm số lượng
-  const handleDecrease = (id: number) => {
-    setProducts((prev) =>
-      prev.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  };
+const renderMedia = (media: { type: string; src: string; } | undefined, alt = "") => {
+  if (!media) return null;
 
-  return (
-    <div className="product-list-container">
-      <h1>Danh Sách Sản Phẩm</h1>
-      <div className="product-list">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onIncrease={handleIncrease}
-            onDecrease={handleDecrease}
+  if (media.type === "image") {
+    return <img src={media.src} alt={alt} />;
+  }
+
+  if (media.type === "video") {
+    const isYoutube =
+      media.src.includes("youtube.com") ||
+      media.src.includes("youtu.be");
+
+    if (isYoutube) {
+      return (
+        <div className="yt-wrapper">
+          <iframe
+            src={getYoutubeEmbed(media.src)}
+            title={alt || "YouTube video"}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
           />
-        ))}
-      </div>
-    </div>
+        </div>
+      );
+    }
+
+    // fallback cho video mp4
+    return <video controls src={media.src} />;
+  }
+
+  return null;
+};
+
+
+export default function ProductContent() {
+  return (
+    <SeeMore maxHeight={700}>
+      {content.sections.map((section, index) => {
+        switch (section.type) {
+          case "hero":
+            return (
+              <section key={index}>
+                <h1>{section.title}</h1>
+                <p>{section.description}</p>
+              </section>
+            );
+
+          case "intro":
+            return (
+              <section key={index}>
+                <h2>{section.title}</h2>
+                {section.content?.map((text, i) => (
+                  <p key={i}>{text}</p>
+                ))}
+              </section>
+            );
+
+          case "product_list":
+            return (
+              <section key={index}>
+                <h2>{section.title}</h2>
+                <ul>
+                  {section.items?.map((item, i) => (
+                    <li key={i}>
+                      <h3>{item.name}</h3>
+                      <p>{item.description}</p>
+
+                      {renderMedia(item.media, item.name)}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+
+          case "guide":
+            return (
+              <section key={index}>
+                <h2>{section.title}</h2>
+                <ul>
+                  {section.steps?.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ul>
+
+                {renderMedia(section.media, section.title)}
+              </section>
+            );
+
+          case "style_guide":
+            return (
+              <section key={index}>
+                <h2>{section.title}</h2>
+
+                {section.groups?.map((group, i) => (
+                  <div key={i}>
+                    <h3>{group.title}</h3>
+                    <ul>
+                      {group.items.map((item, j) => (
+                        <li key={j}>{item}</li>
+                      ))}
+                    </ul>
+
+                    {renderMedia(group.media, group.title)}
+                  </div>
+                ))}
+              </section>
+            );
+
+          case "service":
+            return (
+              <section key={index}>
+                <h2>{section.title}</h2>
+                {section.content?.map((text, i) => (
+                  <p key={i}>{text}</p>
+                ))}
+
+                {renderMedia(section.media, section.title)}
+              </section>
+            );
+
+          case "cta":
+            return (
+              <section key={index}>
+                <h2>{section.title}</h2>
+                <p>{section.description}</p>
+              </section>
+            );
+
+          default:
+            return null;
+        }
+      })}
+    </SeeMore>
   );
 }
