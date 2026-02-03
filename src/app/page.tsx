@@ -17,7 +17,7 @@ import { products } from '../data/products';
 import ProductCardModal from '../components/modal/ProductCardModal';
 
 export default function HomePage() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   return (
     <div style={{ padding: '40px', fontFamily: '"Times New Roman", Times, serif' }}>
