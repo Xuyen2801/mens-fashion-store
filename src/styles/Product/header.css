@@ -1,475 +1,348 @@
 /* ===== TOP BAR ===== */
-
 .topbar {
-    background: #001f5d;
-    color: #fff;
-    font-size: 13px;
-    height: 36px;
-    display: flex;
-    align-items: center;
+  background: #001f5d;
+  color: #fff;
+  font-size: 13px;
+  height: 36px;
+  display: flex;
+  align-items: center;
 }
 
 .topbar-container {
-    max-width: 1920px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: flex;
-    gap: 28px;
-    white-space: nowrap;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  gap: 28px;
+  white-space: nowrap;
 }
 
-
 /* ===== HEADER ===== */
-
 .header {
-    background: #ffffff;
-    border-bottom: 1px solid #eee;
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+  /* Nếu header sticky thì thêm: position: sticky; top: 0; z-index: 1000; */
 }
 
 .header-container {
-    max-width: 1920px;
-    height: 87px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: grid;
-    grid-template-columns: 180px 1fr 180px;
-    align-items: center;
+  max-width: 1920px;
+  height: 87px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+  align-items: center;
 }
-
 
 /* ===== LOGO ===== */
-
 .header-logo img {
-    height: auto;
+  height: auto;
+  max-height: 32px;
 }
 
-
-/* ===== MENU (ĐÃ CHỈNH ĐỀU) ===== */
-
+/* ===== MENU CẤP 1 ===== */
 .header-menu {
-    display: flex;
-    justify-content: center;
-    gap: 28px;
-    font-size: 15px;
-    font-weight: 600;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  font-size: 15px;
+  font-weight: 600;
 }
 
-.header-menu a {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 40px;
-    color: #111;
-    text-decoration: none;
-    font-weight: 600;
+.header-menu > a,
+.header-menu .menu-item > a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  color: #111;
+  text-decoration: none;
+  font-weight: 600;
 }
 
-
-/* Gạch chân CHỈ menu cấp 1 */
-
-.header-menu>a::after,
-.header-menu>.menu-item>a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 4px;
-    width: 0;
-    height: 2px;
-    background: #111;
-    transition: width 0.25s ease;
+/* Gạch chân hover */
+.header-menu > a::after,
+.header-menu .menu-item > a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  width: 0;
+  height: 2px;
+  background: #111;
+  transition: width 0.3s ease;
 }
 
-
-/* Hover mới hiện gạch chân */
-
-.header-menu>a:hover::after,
-.header-menu>.menu-item>a:hover::after {
-    width: 100%;
+.header-menu > a:hover::after,
+.header-menu .menu-item > a:hover::after {
+  width: 100%;
 }
 
-
-/* NEW badge */
-
-.header-menu a.new span {
-    position: absolute;
-    top: -8px;
-    right: -20px;
-    font-size: 10px;
-    color: #c30000;
-    font-weight: 700;
+/* Badge NEW & SALE */
+.header-menu a.new span,
+.header-menu a.sale span {
+  position: absolute;
+  top: -10px;
+  right: -22px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #c30000;
 }
-
-
-/* SALE item */
 
 .header-menu a.sale {
-    color: #c30000;
-    font-weight: 700;
+  color: #c30000;
+  font-weight: 700;
 }
-
-
-/* SALE badge */
-
-.header-menu a.sale span {
-    position: absolute;
-    top: -10px;
-    right: -22px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #c30000;
-}
-
 
 /* ===== ICONS ===== */
-
 .header-icons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-    font-size: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  font-size: 20px;
 }
 
 .header-icons svg {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .cart {
-    position: relative;
+  position: relative;
 }
 
 .badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    background: red;
-    color: #fff;
-    font-size: 10px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: red;
+  color: #fff;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-
-/* ===== DROPDOWN ===== */
-
+/* ===== DROPDOWN CHUNG (cho "Sản phẩm" - theo cha) ===== */
 .menu-item {
-    position: relative;
-}
-
-.has-dropdown:hover .dropdown {
-    display: block;
+  position: relative;
 }
 
 .dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1200px;
-    background: #fff;
-    padding: 32px 40px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    z-index: 999;
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 32px 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  min-width: max-content;
+  border-radius: 0 0 8px 8px;
+}
+
+.menu-item.has-dropdown:hover .dropdown {
+  display: block;
 }
 
 .dropdown-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  width: 1000px;
+  
+  
+}
+.drop_pro{
+min-width: max-content;
+transform: translateX(-20%);
 }
 
 .dropdown-col h4 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    color: #111;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #111;
 }
 
 .dropdown-col a {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 10px;
-    color: #333;
-    text-decoration: none;
+  display: block;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #333;
+  text-decoration: none;
 }
 
 .dropdown-col a:hover {
-    color: #c30000;
+  color: #c30000;
 }
 
+/* ===== DROPDOWN LỚN - CĂN GIỮA VIEWPORT (fixed) ===== */
+.menu-item.has-dropdown:hover .denim-dropdown,
+.menu-item.has-dropdown:hover .collection-dropdown {
+  display: flex;
+  position: fixed;
+  top: 100px;                    
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: #fff;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+  border-radius: 0 0 12px 12px;
+  max-width: 90vw;
+  padding: 32px 40px;
+  box-sizing: border-box;
+}
 
-/* ===== DENIM DROPDOWN ===== */
-
+/* DENIM cụ thể */
 .denim-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1400px;
-    padding: 32px 40px;
-    background: #fff;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    z-index: 999;
+  gap: 60px;
+  width: auto;
+  max-width: 1240px;
+  flex-direction: row;
 }
-
-.has-dropdown:hover .denim-dropdown {
-    display: flex;
-    gap: 40px;
-}
-
-
-/* CỘT TRÁI (CHỮ) */
 
 .denim-left {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  min-width: 620px;
+  flex: 1;
 }
 
-
-/* CỘT PHẢI (ẢNH) */
-
 .denim-right {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    width: 560px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  width: 560px;
+  flex-shrink: 0;
 }
 
 .denim-card {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.28s ease;
 }
-
-.denim-card img {
-    border-radius: 10px;
-}
-
-.denim-card span {
-    position: absolute;
-    bottom: 10px;
-    left: 12px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-}
-
-
-/* ===== DENIM DROPDOWN RIÊNG ===== */
-
-.denim-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1400px;
-    background: #fff;
-    padding: 32px 40px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    z-index: 999;
-}
-
-
-/* hover hiện dropdown */
-
-.menu-item.has-dropdown:hover .denim-dropdown {
-    display: flex;
-    gap: 40px;
-}
-
-
-/* ===== BÊN TRÁI (TEXT) ===== */
-
-.denim-left {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    flex: 1;
-}
-
-.denim-left .dropdown-col h4 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    color: #111;
-}
-
-.denim-left .dropdown-col a {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 10px;
-    color: #333;
-    text-decoration: none;
-}
-
-.denim-left .dropdown-col a:hover {
-    color: #c30000;
-}
-
-
-/* ===== BÊN PHẢI (ẢNH) ===== */
-
-.denim-right {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    width: 560px;
-}
-
-
-/* CARD ẢNH */
-
-.denim-card {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.denim-card img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-
-/* TEXT ĐÈ LÊN ẢNH */
-
-.denim-card span {
-    position: absolute;
-    left: 12px;
-    bottom: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #fff;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-
-/* hover nhẹ cho ảnh */
 
 .denim-card:hover {
-    transform: translateY(-2px);
-    transition: 0.25s ease;
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 
+.denim-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-/* ===== COLLECTION DROPDOWN ===== */
+.denim-card span {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
 
+/* COLLECTION cụ thể */
 .collection-dropdown {
-    width: 1200px;
-    padding: 32px;
+  width: auto;
+  max-width: 1140px;
+  flex-direction: column;
 }
 
 .collection-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  width: 100%;
 }
 
 .collection-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    cursor: pointer;
-}
-
-.collection-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
-
-.collection-card h4 {
-    margin-top: 12px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #111;
-}
-
-.collection-card span {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 14px;
-    color: #0066ff;
-    text-decoration: underline;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.28s ease;
+  cursor: pointer;
 }
 
 .collection-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-}
-
-
-/* ===== COLLECTION DROPDOWN ===== */
-
-.collection-dropdown {
-    width: 1200px;
-    padding: 24px 32px;
-}
-
-.collection-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-}
-
-.collection-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
 }
 
 .collection-card img {
-    border-radius: 10px;
-    object-fit: cover;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .collection-card h4 {
-    margin: 12px 0 4px;
-    font-size: 15px;
-    font-weight: 700;
+  margin: 12px 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
 }
 
 .view-link {
-    font-size: 14px;
-    color: #0052cc;
-    text-decoration: underline;
-    cursor: pointer;
+  font-size: 14px;
+  color: #0052cc;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .collection-footer {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  margin-top: 32px;
+  text-align: center;
 }
 
 .view-all-btn {
-    padding: 8px 18px;
-    border: 1px solid #111;
-    background: #fff;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 6px;
-    justify-content: center;
+  padding: 10px 24px;
+  border: 1px solid #111;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.25s ease;
 }
 
 .view-all-btn:hover {
-    background: #111;
-    color: #fff;
+  background: #111;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 1300px) {
+  .denim-dropdown,
+  .collection-dropdown {
+    max-width: 95vw;
+    padding: 24px 20px;
+  }
+
+  .denim-left {
+    grid-template-columns: repeat(2, 1fr);
+    min-width: auto;
+  }
+
+  .collection-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Ẩn dropdown lớn trên mobile - nên chuyển sang menu hamburger */
+  .menu-item.has-dropdown:hover .denim-dropdown,
+  .menu-item.has-dropdown:hover .collection-dropdown {
+    display: none;
+  }
 }
