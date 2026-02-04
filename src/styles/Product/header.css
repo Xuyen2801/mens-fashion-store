@@ -1,0 +1,475 @@
+/* ===== TOP BAR ===== */
+
+.topbar {
+    background: #001f5d;
+    color: #fff;
+    font-size: 13px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.topbar-container {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    gap: 28px;
+    white-space: nowrap;
+}
+
+
+/* ===== HEADER ===== */
+
+.header {
+    background: #ffffff;
+    border-bottom: 1px solid #eee;
+}
+
+.header-container {
+    max-width: 1920px;
+    height: 87px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 180px 1fr 180px;
+    align-items: center;
+}
+
+
+/* ===== LOGO ===== */
+
+.header-logo img {
+    height: auto;
+}
+
+
+/* ===== MENU (ĐÃ CHỈNH ĐỀU) ===== */
+
+.header-menu {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.header-menu a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    color: #111;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+
+/* Gạch chân CHỈ menu cấp 1 */
+
+.header-menu>a::after,
+.header-menu>.menu-item>a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 4px;
+    width: 0;
+    height: 2px;
+    background: #111;
+    transition: width 0.25s ease;
+}
+
+
+/* Hover mới hiện gạch chân */
+
+.header-menu>a:hover::after,
+.header-menu>.menu-item>a:hover::after {
+    width: 100%;
+}
+
+
+/* NEW badge */
+
+.header-menu a.new span {
+    position: absolute;
+    top: -8px;
+    right: -20px;
+    font-size: 10px;
+    color: #c30000;
+    font-weight: 700;
+}
+
+
+/* SALE item */
+
+.header-menu a.sale {
+    color: #c30000;
+    font-weight: 700;
+}
+
+
+/* SALE badge */
+
+.header-menu a.sale span {
+    position: absolute;
+    top: -10px;
+    right: -22px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #c30000;
+}
+
+
+/* ===== ICONS ===== */
+
+.header-icons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    font-size: 20px;
+}
+
+.header-icons svg {
+    cursor: pointer;
+}
+
+.cart {
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: red;
+    color: #fff;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ===== DROPDOWN ===== */
+
+.menu-item {
+    position: relative;
+}
+
+.has-dropdown:hover .dropdown {
+    display: block;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1200px;
+    background: #fff;
+    padding: 32px 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    z-index: 999;
+}
+
+.dropdown-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+}
+
+.dropdown-col h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #111;
+}
+
+.dropdown-col a {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-col a:hover {
+    color: #c30000;
+}
+
+
+/* ===== DENIM DROPDOWN ===== */
+
+.denim-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1400px;
+    padding: 32px 40px;
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    z-index: 999;
+}
+
+.has-dropdown:hover .denim-dropdown {
+    display: flex;
+    gap: 40px;
+}
+
+
+/* CỘT TRÁI (CHỮ) */
+
+.denim-left {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    flex: 1;
+}
+
+
+/* CỘT PHẢI (ẢNH) */
+
+.denim-right {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 560px;
+}
+
+.denim-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.denim-card img {
+    border-radius: 10px;
+}
+
+.denim-card span {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ===== DENIM DROPDOWN RIÊNG ===== */
+
+.denim-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1400px;
+    background: #fff;
+    padding: 32px 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    z-index: 999;
+}
+
+
+/* hover hiện dropdown */
+
+.menu-item.has-dropdown:hover .denim-dropdown {
+    display: flex;
+    gap: 40px;
+}
+
+
+/* ===== BÊN TRÁI (TEXT) ===== */
+
+.denim-left {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    flex: 1;
+}
+
+.denim-left .dropdown-col h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #111;
+}
+
+.denim-left .dropdown-col a {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.denim-left .dropdown-col a:hover {
+    color: #c30000;
+}
+
+
+/* ===== BÊN PHẢI (ẢNH) ===== */
+
+.denim-right {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 560px;
+}
+
+
+/* CARD ẢNH */
+
+.denim-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.denim-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* TEXT ĐÈ LÊN ẢNH */
+
+.denim-card span {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+
+/* hover nhẹ cho ảnh */
+
+.denim-card:hover {
+    transform: translateY(-2px);
+    transition: 0.25s ease;
+}
+
+
+/* ===== COLLECTION DROPDOWN ===== */
+
+.collection-dropdown {
+    width: 1200px;
+    padding: 32px;
+}
+
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.collection-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.collection-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.collection-card h4 {
+    margin-top: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+}
+
+.collection-card span {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: #0066ff;
+    text-decoration: underline;
+}
+
+.collection-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ===== COLLECTION DROPDOWN ===== */
+
+.collection-dropdown {
+    width: 1200px;
+    padding: 24px 32px;
+}
+
+.collection-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.collection-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.collection-card img {
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.collection-card h4 {
+    margin: 12px 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.view-link {
+    font-size: 14px;
+    color: #0052cc;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.collection-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.view-all-btn {
+    padding: 8px 18px;
+    border: 1px solid #111;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    justify-content: center;
+}
+
+.view-all-btn:hover {
+    background: #111;
+    color: #fff;
+}
