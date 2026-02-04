@@ -1,9 +1,7 @@
 /* =================================================
    SEE MORE WRAPPER
 ================================================= */
-.body{
-    padding: 0 50px;
-}
+
 .see-more-wrapper {
   position: relative;
   width: 100%;
@@ -121,7 +119,7 @@
 ================================================= */
 .see-more-content img,
 .see-more-content video {
-  max-width: 100%;
+  max-width:100%;
   display: block;
   margin: 16px auto;
   border-radius: 12px;
@@ -173,4 +171,27 @@
   .see-more-content h3 {
     font-size: 16px;
   }
+}
+/* Giới hạn kích thước video trong SeeMore */
+.video-wrapper {
+  margin: 1.5rem auto;
+}
+
+.video-wrapper iframe,
+.video-wrapper video {
+  max-height: 100%;
+  border-radius: 12px;
+}
+
+/* Responsive: trên mobile giảm chiều cao */
+@media (max-width: 768px) {
+  .video-wrapper iframe,
+  .video-wrapper video {
+    max-height: 250px !important;
+  }
+}
+
+/* Đảm bảo aspect-ratio cho YouTube */
+.aspect-video {
+  aspect-ratio: 16 / 9;
 }
