@@ -12,7 +12,7 @@ const FAQAccordion = () => {
   };
 
   return (
-    <div class="body">
+    <div className="body">
     <div className="faq-accordion">
     
       {faqData.map((item, index) => (

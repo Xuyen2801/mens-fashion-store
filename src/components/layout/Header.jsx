@@ -9,16 +9,21 @@ export default function Header() {
   const { topbar, logo, mainMenu, icons } = headerData;
 
   return (
-    <>
+    <div className="site-header">
       {/* TOP BAR */}
-      <div className="topbar">
-        <div className="topbar-container">
+    <div className="topbar">
+      <div className="topbar-track">
+        <div className="topbar-content">
           {topbar.promotions.map((text, idx) => (
             <span key={idx}>{text}</span>
           ))}
+          {/* nhân đôi để chạy vô hạn */}
+          {topbar.promotions.map((text, idx) => (
+            <span key={`clone-${idx}`}>{text}</span>
+          ))}
         </div>
       </div>
-
+    </div>
       {/* HEADER */}
       <header className="header">
         <div className="header-container">
@@ -158,6 +163,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-    </>
+    </div>
   );
 }

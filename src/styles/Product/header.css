@@ -23,6 +23,46 @@
   border-bottom: 1px solid #eee;
   /* Nếu header sticky thì thêm: position: sticky; top: 0; z-index: 1000; */
 }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.topbar {
+  height: 40px;
+  background: #b91c1c; /* đỏ sale */
+  color: #fff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-track {
+  width: 100%;
+  overflow: hidden;
+}
+
+.topbar-content {
+  display: flex;
+  gap: 60px;
+  white-space: nowrap;
+  animation: marquee 18s linear infinite;
+}
+
+.topbar-content span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* animation chạy ngang */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 
 .header-container {
   max-width: 1920px;

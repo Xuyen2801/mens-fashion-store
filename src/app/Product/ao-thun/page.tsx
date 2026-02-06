@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import CollectionBanner from "../../components/Collection/CollectionBanner";
-import ProductFilter from "../../components/Collection/ProductFilter";
-import ProductCard from "../../components/Product/ProductCard";
-import ProductCardModal from "../../components/modal/ProductCardModal";
-import SeeMore from "../../components/Product/SeeMore";
-import FAQAccordion from "../../components/Product/FAQAccordion";
+import CollectionBanner from "../../../components/Collection/CollectionBanner";
+import ProductFilter from "../../../components/Collection/ProductFilter";
+import ProductCard from "../../../components/Product/ProductCard";
+import ProductCardModal from "../../../components/modal/ProductCardModal";
+import SeeMore from "../../../components/Product/SeeMore";
+import FAQAccordion from "../../../components/Product/FAQAccordion";
+import Breadcrumb from "../../../components/layout/Breadcrumb";
 
-import { products } from "../../data/products";
-import content from "../../data/Product/contentSeeMore.json";
+import { products } from "../../../data/Product/products";
+import content from "../../../data/Product/contentSeeMore.json";
 
-import "../../styles/Product/SeeMore.css";
-import "../../styles/Product/Fad.css";
+import "../../../styles/Product/SeeMore.css";
+import "../../../styles/Product/Fad.css";
 
 /* ===== YouTube embed helper ===== */
 const getYoutubeEmbed = (url: string) => {
@@ -86,8 +87,18 @@ export default function Home() {
     useState<(typeof products)[0] | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-gray-50">
+    <div className="min-h-screen flex flex-col font-sans bg-gray-50 ">
       <main className="flex-grow">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          className="ml-5"
+          items={[
+            { label: "Trang chủ", href: "/" },
+            { label: "Danh mục", href: "/collections" },
+            { label: "Áo thun nam" }
+          ]}
+        />
+
         {/* Banner */}
         <div className="w-full overflow-hidden shadow-lg">
           <CollectionBanner backgroundImage="/images/banners/banner_nhom_sp_ao_thunjpg.jpg" />
@@ -108,7 +119,7 @@ export default function Home() {
               <div
                 key={product.id}
                 className="cursor-pointer transition-transform duration-200 hover:scale-105"
-                onClick={() => setSelectedProduct(product)} 
+                onClick={() => setSelectedProduct(product)}
               >
                 <ProductCard
                   image={product.image}
@@ -209,35 +220,12 @@ export default function Home() {
 
         {/* ===== MODAL ===== */}
         {selectedProduct && (
-          <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/10 backdrop-blur-sm"
-            onMouseMove={(e) => {
-              if (e.target === e.currentTarget) {
-                setSelectedProduct(null); 
-              }
-            }}
-          >
 
-            <div
-              className="relative bg-white rounded-2xl max-w-4xl w-[90%] max-h-[90vh]
-             overflow-y-auto shadow-2xl"
-              onMouseMove={(e) => e.stopPropagation()}
-            >
-
-              <button
-                className="absolute top-4 right-4 z-10 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-700"
-                onClick={() => setSelectedProduct(null)}
-              >
-                ×
-              </button>
-
-              <ProductCardModal
-                isOpen={true}
-                onClose={() => setSelectedProduct(null)}
-                product={selectedProduct}
-              />
-            </div>
-          </div>
+          <ProductCardModal
+            isOpen={true}
+            onClose={() => setSelectedProduct(null)}
+            product={selectedProduct}
+          />
         )}
       </main>
     </div>

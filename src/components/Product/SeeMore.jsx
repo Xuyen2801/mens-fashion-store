@@ -19,7 +19,7 @@ export default function SeeMore({
         {children}
         {!expanded && <div className="see-more-overlay" />}
       </div>
-     <div class = "seeMore_btn">
+     <div className = "seeMore_btn">
       <button
         className="see-more-btn"
         onClick={() => setExpanded(!expanded)}
