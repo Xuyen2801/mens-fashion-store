@@ -5,6 +5,7 @@
 Cảm ơn bạn đã tham gia đóng góp vào dự án.  
 Để đảm bảo code đồng nhất, dễ review và tránh xung đột trong nhóm, vui lòng tuân thủ các quy định sau.
 
+
 ## 📝 1. Commit Convention
 Sử dụng prefix rõ ràng khi commit:
 

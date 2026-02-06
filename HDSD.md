@@ -14,9 +14,7 @@ src/app/page.tsx trang gốc mặc định khi chạy http://localhost:3000
 Để chạy các trang khác sửa đường dần thành http://localhost:3000/[tên trang]
     vd http://localhost:3000/Home
 
-
 CSS trong src/style tạo folder=[tên trang] chứa các file .css
-
 
 Thư viện icon: https://ionic.io/ionicons
 cách dùng 

@@ -1,0 +1,197 @@
+/* =================================================
+   SEE MORE WRAPPER
+================================================= */
+
+.see-more-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.see-more-content {
+  position: relative;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+/* Khi mở full nội dung */
+.see-more-content.expanded {
+  max-height: none !important;
+}
+
+/* =================================================
+   CONTAINER CHUNG – CANH LỀ TRÁI PHẢI
+================================================= */
+.see-more-content section {
+  max-width: 1200px;
+  box-sizing: border-box;
+}
+
+/* =================================================
+   OVERLAY MỜ PHÍA DƯỚI
+================================================= */
+.see-more-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    #ffffff 90%
+  );
+  pointer-events: none;
+}
+
+/* =================================================
+   BUTTON SEE MORE
+================================================= */
+.seeMore_btn {
+  text-align: center;
+}
+
+.see-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px auto 0;
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.see-more-btn:hover {
+  background: #111;
+  color: #fff;
+}
+
+/* =================================================
+   HEADING STYLE
+================================================= */
+.see-more-content h1 {
+  font-size: 28px;
+  line-height: 1.4;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.see-more-content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 32px 0 16px;
+}
+
+.see-more-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+}
+
+/* =================================================
+   TEXT & LIST
+================================================= */
+.see-more-content p {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.see-more-content ul {
+  padding-left: 18px;
+  margin-bottom: 16px;
+  list-style: revert;
+}
+
+.see-more-content li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* =================================================
+   IMAGE / VIDEO
+================================================= */
+.see-more-content img,
+.see-more-content video {
+  max-width:100%;
+  display: block;
+  margin: 16px auto;
+  border-radius: 12px;
+}
+
+/* =================================================
+   YOUTUBE / VIDEO RESPONSIVE (16:9)
+================================================= */
+.yt-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  margin: 16px 0;
+}
+
+.yt-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+/* =================================================
+   MOBILE
+================================================= */
+@media (max-width: 768px) {
+  .see-more-content section {
+    padding: 0 16px;
+    margin-bottom: 32px;
+  }
+
+  .see-more-overlay {
+    height: 200px;
+  }
+
+  .see-more-btn {
+    width: 100%;
+  }
+
+  .see-more-content h1 {
+    font-size: 22px;
+  }
+
+  .see-more-content h2 {
+    font-size: 18px;
+  }
+
+  .see-more-content h3 {
+    font-size: 16px;
+  }
+}
+/* Giới hạn kích thước video trong SeeMore */
+.video-wrapper {
+  margin: 1.5rem auto;
+}
+
+.video-wrapper iframe,
+.video-wrapper video {
+  max-height: 100%;
+  border-radius: 12px;
+}
+
+/* Responsive: trên mobile giảm chiều cao */
+@media (max-width: 768px) {
+  .video-wrapper iframe,
+  .video-wrapper video {
+    max-height: 250px !important;
+  }
+}
+
+/* Đảm bảo aspect-ratio cho YouTube */
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
