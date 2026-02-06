@@ -1,4 +1,4 @@
-[
+const aothunFAQ =[
   {
     "title": "Tôi nên chọn form áo thun nào cho dáng người bình thường, muốn mặc gọn nhưng không bó?",
     "content": "Với dáng người trung bình và muốn mặc gọn vừa mà vẫn thoải mái, bạn nên chọn form Regular. Form này giúp vai, tay và thân rơi tự nhiên, không ôm sát bụng, dễ mặc đi làm lẫn đi chơi. Nếu thích rộng rãi hơn, bạn có thể cân nhắc form Relaxed hoặc Oversize."
@@ -40,3 +40,4 @@
     "content": "Không. Đơn online và tại cửa hàng đều áp dụng chung chính sách. Bạn chỉ cần cung cấp mã đơn hoặc hóa đơn để shop hỗ trợ đổi size, đổi mẫu hoặc xử lý các trường hợp lỗi."
   }
 ]
+export default aothunFAQ;

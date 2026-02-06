@@ -1,6 +1,6 @@
 // src/data/products.js
 
-export const products = [
+export const productsAoThun = [
   {
     id: 1,
     name: "Quần Jeans Nam Paints Form Straight",
@@ -191,4 +191,5 @@ export const products = [
 
 
 
-];
+]
+export default productsAoThun
