@@ -22,6 +22,47 @@ export default function Home() {
   console.log("Content data:", content);
   console.log("Sections:", content?.sections);
   console.log("Is array?", Array.isArray(content?.sections));
+  const FILTER_OPTIONS = [
+    { label: "Sản phẩm nổi bật", value: "default" },
+    { label: "Giá thấp đến cao", value: "price_asc" },
+    { label: "Giá cao đến thấp", value: "price_desc" },
+    { label: "Mới nhất", value: "newest" },
+    { label: "Đang giảm giá", value: "sale" },
+    { label: "Hàng HOT", value: "hot" },
+  ];
+  const [filter, setFilter] = useState("default");
+  const filteredProducts = React.useMemo(() => {
+    let result = [...products];
+
+    switch (filter) {
+      case "price_asc":
+        result.sort((a, b) => a.salePrice - b.salePrice);
+        break;
+
+      case "price_desc":
+        result.sort((a, b) => b.salePrice - a.salePrice);
+        break;
+
+      case "newest":
+        // id lớn hơn = sản phẩm mới hơn
+        result.sort((a, b) => b.id - a.id);
+        break;
+
+      case "sale":
+        result = result.filter(p => p.salePrice < p.price);
+        break;
+
+      case "hot":
+        result = result.filter(p => p.status === "HOT");
+        break;
+
+      default:
+        break;
+    }
+
+    return result;
+  }, [filter]);
+
 
   const [selectedProduct, setSelectedProduct] = useState<(typeof products)[0] | null>(null);
 
@@ -119,15 +160,16 @@ export default function Home() {
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Filter */}
-          <div className="my-8 md:my-10 lg:my-12">
+          <div className="my-6 flex justify-end">
             <ProductFilter
-              conditions={["Giá thấp đến cao", "Giá cao đến thấp", "Mới nhất"]}
+            conditions={FILTER_OPTIONS}
+            value={filter}
+            onChange={setFilter}
             />
           </div>
-
           {/* Product grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 pb-10 lg:pb-16">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="cursor-pointer transition-transform duration-200 hover:scale-105"
@@ -145,7 +187,6 @@ export default function Home() {
           </div>
 
 
-          {/* See more */}
           {/* See more */}
           <div className="body py-10 border-t border-gray-200">
             <SeeMore maxHeight={700}>
@@ -306,7 +347,6 @@ export default function Home() {
             </section>
           </div>
         </div>
-
         {/* ===== MODAL ===== */}
         {selectedProduct && (
 
