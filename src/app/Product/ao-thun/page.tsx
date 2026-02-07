@@ -9,82 +9,135 @@ import SeeMore from "../../../components/Product/SeeMore";
 import FAQAccordion from "../../../components/Product/FAQAccordion";
 import Breadcrumb from "../../../components/layout/Breadcrumb";
 
-import { products } from "../../../data/Product/products";
-import content from "../../../data/Product/contentSeeMore.json";
+import { IoCaretDownOutline } from "react-icons/io5";
 
+import content from "../../../data/Product/contentSeeMoreAoThun";
+import faqaothun from "../../../data/Product/aothunFAQ";
+import products from "../../../data/Product/productsAoThun";
 import "../../../styles/Product/SeeMore.css";
 import "../../../styles/Product/Fad.css";
 
-/* ===== YouTube embed helper ===== */
-const getYoutubeEmbed = (url: string) => {
-  if (!url) return "";
-  if (url.includes("youtu.be"))
-    return `https://www.youtube.com/embed/${url.split("youtu.be/")[1]}`;
-  if (url.includes("watch?v="))
-    return `https://www.youtube.com/embed/${url
-      .split("v=")[1]
-      .split("&")[0]}`;
-  if (url.includes("youtube.com/embed")) return url;
-  return url;
-};
+export default function Home() {
 
-/* ===== Media renderer ===== */
-const renderMedia = (
-  media: { type: string; src: string } | undefined,
-  alt = ""
-) => {
-  if (!media) return null;
+  console.log("Content data:", content);
+  console.log("Sections:", content?.sections);
+  console.log("Is array?", Array.isArray(content?.sections));
+  const FILTER_OPTIONS = [
+    { label: "Sản phẩm nổi bật", value: "default" },
+    { label: "Giá thấp đến cao", value: "price_asc" },
+    { label: "Giá cao đến thấp", value: "price_desc" },
+    { label: "Mới nhất", value: "newest" },
+    { label: "Đang giảm giá", value: "sale" },
+    { label: "Hàng HOT", value: "hot" },
+  ];
+  const [filter, setFilter] = useState("default");
+  const filteredProducts = React.useMemo(() => {
+    let result = [...products];
 
-  if (media.type === "image") {
-    return (
-      <img
-        src={media.src}
-        alt={alt}
-        className="w-full h-auto rounded-lg"
-      />
-    );
-  }
+    switch (filter) {
+      case "price_asc":
+        result.sort((a, b) => a.salePrice - b.salePrice);
+        break;
 
-  if (media.type === "video") {
-    const isYoutube =
-      media.src.includes("youtube.com") ||
-      media.src.includes("youtu.be");
+      case "price_desc":
+        result.sort((a, b) => b.salePrice - a.salePrice);
+        break;
 
-    if (isYoutube) {
+      case "newest":
+        // id lớn hơn = sản phẩm mới hơn
+        result.sort((a, b) => b.id - a.id);
+        break;
+
+      case "sale":
+        result = result.filter(p => p.salePrice < p.price);
+        break;
+
+      case "hot":
+        result = result.filter(p => p.status === "HOT");
+        break;
+
+      default:
+        break;
+    }
+
+    return result;
+  }, [filter]);
+
+
+  const [selectedProduct, setSelectedProduct] = useState<(typeof products)[0] | null>(null);
+
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleAccordion = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  /* ===== YouTube embed helper ===== */
+  const getYoutubeEmbed = (url: string) => {
+    if (!url) return "";
+    if (url.includes("youtu.be"))
+      return `https://www.youtube.com/embed/${url.split("youtu.be/")[1]}`;
+    if (url.includes("watch?v="))
+      return `https://www.youtube.com/embed/${url
+        .split("v=")[1]
+        .split("&")[0]}`;
+    if (url.includes("youtube.com/embed")) return url;
+    return url;
+  };
+
+  /* ===== Media renderer ===== */
+  const renderMedia = (
+    media: { type: string; src: string } | undefined,
+    alt = ""
+  ) => {
+    if (!media) return null;
+
+    if (media.type === "image") {
+      return (
+        <img
+          src={media.src}
+          alt={alt}
+          className="w-full h-auto rounded-lg"
+        />
+      );
+    }
+
+    if (media.type === "video") {
+      const isYoutube =
+        media.src.includes("youtube.com") ||
+        media.src.includes("youtu.be");
+
+      if (isYoutube) {
+        return (
+          <div className="relative w-full max-w-[800px] mx-auto rounded-lg overflow-hidden shadow-md">
+            <div className="aspect-video relative">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src={getYoutubeEmbed(media.src)}
+                title={alt || "YouTube video"}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="relative w-full max-w-[800px] mx-auto rounded-lg overflow-hidden shadow-md">
-          <div className="aspect-video relative">
-            <iframe
-              className="absolute inset-0 w-full h-full"
-              src={getYoutubeEmbed(media.src)}
-              title={alt || "YouTube video"}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
+          <video
+            controls
+            src={media.src}
+            className="w-full max-h-[300px] object-contain bg-black rounded-lg"
+          />
         </div>
       );
     }
 
-    return (
-      <div className="relative w-full max-w-[800px] mx-auto rounded-lg overflow-hidden shadow-md">
-        <video
-          controls
-          src={media.src}
-          className="w-full max-h-[300px] object-contain bg-black rounded-lg"
-        />
-      </div>
-    );
-  }
-
-  return null;
-};
-
-export default function Home() {
-  const [selectedProduct, setSelectedProduct] =
-    useState<(typeof products)[0] | null>(null);
+    return null;
+  };
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-gray-50 ">
@@ -107,15 +160,16 @@ export default function Home() {
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Filter */}
-          <div className="my-8 md:my-10 lg:my-12">
+          <div className="my-6 flex justify-end">
             <ProductFilter
-              conditions={["Giá thấp đến cao", "Giá cao đến thấp", "Mới nhất"]}
+            conditions={FILTER_OPTIONS}
+            value={filter}
+            onChange={setFilter}
             />
           </div>
-
           {/* Product grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 pb-10 lg:pb-16">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="cursor-pointer transition-transform duration-200 hover:scale-105"
@@ -136,88 +190,163 @@ export default function Home() {
           {/* See more */}
           <div className="body py-10 border-t border-gray-200">
             <SeeMore maxHeight={700}>
-              {content.sections.map((section, index) => {
-                switch (section.type) {
-                  case "hero":
-                    return (
-                      <section key={index} className="mb-10">
-                        <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                          {section.title}
-                        </h1>
-                        <p className="text-lg text-gray-700">
-                          {section.description}
-                        </p>
-                      </section>
-                    );
-
-                  case "intro":
-                    return (
-                      <section key={index} className="mb-10">
-                        <h2 className="text-2xl font-semibold mb-4">
-                          {section.title}
-                        </h2>
-                        {section.content?.map((text, i) => (
-                          <p key={i} className="text-gray-600 mb-3">
-                            {text}
+              {Array.isArray(content?.sections) &&
+                content.sections.map((section, index) => {
+                  switch (section.type) {
+                    case "hero":
+                      return (
+                        <section key={index} className="mb-10">
+                          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                            {section.title}
+                          </h1>
+                          <p className="text-lg text-gray-700">
+                            {section.description}
                           </p>
-                        ))}
-                      </section>
-                    );
+                        </section>
+                      );
 
-                  default:
-                    return (
-                      <section key={index} className="mb-12">
-                        <h2 className="text-2xl font-semibold mb-6">
-                          {section.title}
-                        </h2>
-
-                        {section.items?.map((item: any, i: number) => (
-                          <div key={i} className="mb-8">
-                            <h3 className="text-xl font-medium mb-2">
-                              {item.name || item.step}
-                            </h3>
-                            <p className="text-gray-600 mb-4">
-                              {item.description}
+                    case "intro":
+                      return (
+                        <section key={index} className="mb-10">
+                          <h2 className="text-2xl font-semibold mb-4">
+                            {section.title}
+                          </h2>
+                          {section.content?.map((text: string, i: number) => (
+                            <p key={i} className="text-gray-600 mb-3">
+                              {text}
                             </p>
-                            {renderMedia(
-                              item.media,
-                              item.name || section.title
-                            )}
-                          </div>
-                        ))}
+                          ))}
+                        </section>
+                      );
 
-                        {section.groups?.map((group: any, i: number) => (
-                          <div key={i} className="mb-8">
-                            <h3 className="text-xl font-medium mb-4">
-                              {group.title}
-                            </h3>
-                            <ul className="list-disc pl-6 space-y-2">
-                              {group.items.map(
-                                (item: string, j: number) => (
+                    case "guide":
+                      return (
+                        <section key={index} className="mb-12">
+                          <h2 className="text-2xl font-semibold mb-6">
+                            {section.title}
+                          </h2>
+                          <ol className="list-decimal pl-6 space-y-3 mb-6">
+                            {section.steps?.map((step: string, i: number) => (
+                              <li key={i} className="text-gray-600">
+                                {step}
+                              </li>
+                            ))}
+                          </ol>
+                          {renderMedia(section.media, section.title)}
+                        </section>
+                      );
+
+                    case "service":
+                      return (
+                        <section key={index} className="mb-12">
+                          <h2 className="text-2xl font-semibold mb-6">
+                            {section.title}
+                          </h2>
+                          <ul className="list-disc pl-6 space-y-3 mb-6">
+                            {section.content?.map((item: string, i: number) => (
+                              <li key={i} className="text-gray-600">
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                          {renderMedia(section.media, section.title)}
+                        </section>
+                      );
+
+                    case "cta":
+                      return (
+                        <section key={index} className="mb-10 text-center bg-gray-100 p-8 rounded-lg">
+                          <h2 className="text-2xl font-semibold mb-4">
+                            {section.title}
+                          </h2>
+                          <p className="text-gray-600 text-lg">
+                            {section.description}
+                          </p>
+                        </section>
+                      );
+
+                    case "product_list":
+                      return (
+                        <section key={index} className="mb-12">
+                          <h2 className="text-2xl font-semibold mb-6">
+                            {section.title}
+                          </h2>
+                          {section.items?.map((item: any, i: number) => (
+                            <div key={i} className="mb-8">
+                              <h3 className="text-xl font-medium mb-2">
+                                {item.name}
+                              </h3>
+                              <p className="text-gray-600 mb-4">
+                                {item.description}
+                              </p>
+                              {renderMedia(item.media, item.name)}
+                            </div>
+                          ))}
+                        </section>
+                      );
+
+                    case "style_guide":
+                      return (
+                        <section key={index} className="mb-12">
+                          <h2 className="text-2xl font-semibold mb-6">
+                            {section.title}
+                          </h2>
+                          {section.groups?.map((group: any, i: number) => (
+                            <div key={i} className="mb-8">
+                              <h3 className="text-xl font-medium mb-4">
+                                {group.title}
+                              </h3>
+                              <ul className="list-disc pl-6 space-y-2 mb-4">
+                                {group.items?.map((item: string, j: number) => (
                                   <li key={j} className="text-gray-600">
                                     {item}
                                   </li>
-                                )
-                              )}
-                            </ul>
-                            {renderMedia(group.media, group.title)}
-                          </div>
-                        ))}
-                      </section>
-                    );
-                }
-              })}
+                                ))}
+                              </ul>
+                              {renderMedia(group.media, group.title)}
+                            </div>
+                          ))}
+                        </section>
+                      );
+
+                    default:
+                      return null;
+                  }
+                })}
             </SeeMore>
 
             <section className="faq-section mt-16">
               <h2 className="text-3xl font-bold text-center mb-10">
                 FAQ – Áo thun ICONDENIM
               </h2>
-              <FAQAccordion />
+              <div className="body">
+                <div className="faq-accordion">
+                  {faqaothun.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`faq-item ${openIndex === index ? "active" : ""}`}
+                    >
+                      <button
+                        className="faq-question"
+                        onClick={() => toggleAccordion(index)}
+                        aria-expanded={openIndex === index}
+                      >
+                        {item.title}
+                        <span className="faq-icon">
+                          <IoCaretDownOutline />
+                        </span>
+                      </button>
+
+                      <div className="faq-answer">
+                        <p>{item.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </section>
           </div>
         </div>
-
         {/* ===== MODAL ===== */}
         {selectedProduct && (
 

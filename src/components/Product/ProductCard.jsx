@@ -9,6 +9,10 @@ const ProductCard = ({ image, name, price, salePrice, status }) => {
     // Sau này bạn Logic có thể thêm code gọi API, cập nhật Redux/Context ở đây
     alert(`Đã thêm ${name} vào giỏ hàng!`);
   };
+  const formatPrice = (price) => {
+    return Number(price).toLocaleString("vi-VN") + "đ";
+  };
+
 
   return (
     <div
@@ -42,13 +46,15 @@ const ProductCard = ({ image, name, price, salePrice, status }) => {
         <div className="flex items-end justify-between mb-1">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="text-[clamp(13px,1vw,15px)] font-bold text-[#1F2937]">
-                {salePrice || price}
+              <span className="text-[clamp(13px,1vw,10px)] font-bold text-[#1F2937]">
+                {formatPrice(salePrice || price)}
               </span>
+
               {salePrice && (
                 <span className="text-gray-400 text-[10px] line-through">
-                  {price}
+                  {formatPrice(price)}
                 </span>
+
               )}
             </div>
             <div className="flex gap-1 mt-1">
