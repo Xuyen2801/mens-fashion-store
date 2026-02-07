@@ -11,9 +11,9 @@ import Breadcrumb from "../../../components/layout/Breadcrumb";
 
 import { IoCaretDownOutline } from "react-icons/io5";
 
-import content from "../../../data/Product/contentSeeMoreAoThun";
-import faqaothun from "../../../data/Product/aothunFAQ";
-import products from "../../../data/Product/productsAoThun";
+import content from "../../../data/Product/Ao-thun/contentSeeMoreAoThun";
+import faqaothun from "../../../data/Product/Ao-thun/aothunFAQ";
+import products from "../../../data/Product/Ao-thun/productsAoThun";
 import "../../../styles/Product/SeeMore.css";
 import "../../../styles/Product/Fad.css";
 

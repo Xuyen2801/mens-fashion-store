@@ -1,21 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import CollectionBanner from "../../../components/Collection/CollectionBanner";
-import ProductFilter from "../../../components/Collection/ProductFilter";
-import ProductCard from "../../../components/Product/ProductCard";
-import ProductCardModal from "../../../components/modal/ProductCardModal";
-import SeeMore from "../../../components/Product/SeeMore";
-import FAQAccordion from "../../../components/Product/FAQAccordion";
-import Breadcrumb from "../../../components/layout/Breadcrumb";
+import CollectionBanner from "../../components/Collection/CollectionBanner";
+import ProductFilter from "../../components/Collection/ProductFilter";
+import ProductCard from "../../components/Product/ProductCard";
+import ProductCardModal from "../../components/modal/ProductCardModal";
+import SeeMore from "../../components/Product/SeeMore";
+import FAQAccordion from "../../components/Product/FAQAccordion";
+import Breadcrumb from "../../components/layout/Breadcrumb";
 
 import { IoCaretDownOutline } from "react-icons/io5";
 
-import content from "../../../data/Product/Ao-khoac/contentSeeMoreAoKhoac";
-import faqaothun from "../../../data/Product/Ao-khoac/aoKhoacFAQ";
-import products from "../../../data/Product/Ao-khoac/productsAoKhoac";
-import "../../../styles/Product/SeeMore.css";
-import "../../../styles/Product/Fad.css";
+import content from "../../data/Product/Tat-ca-san-pham/contentSeeMoreAll";
+import products from "../../data/Product/Tat-ca-san-pham/productsAll"
+import "../../styles/Product/SeeMore.css";
+import "../../styles/Product/Fad.css";
 
 export default function Home() {
 
@@ -147,13 +146,13 @@ export default function Home() {
                     items={[
                         { label: "Trang chủ", href: "/" },
                         { label: "Danh mục", href: "/collections" },
-                        { label: "Áo khoác nam" }
+                        { label: "Tất cả sản phẩm" }
                     ]}
                 />
 
                 {/* Banner */}
                 <div className="w-full overflow-hidden shadow-lg">
-                    <CollectionBanner backgroundImage="/images/banners/2000x900_-_banner_nhom_sp_-_ao_khoac.jpg" />
+                    <CollectionBanner backgroundImage="/images/banners/2000x900_-_banner_nhom_sp_-_tat_ca_san_pham.jpg" />
                 </div>
 
                 {/* Content */}
@@ -314,36 +313,6 @@ export default function Home() {
                                     }
                                 })}
                         </SeeMore>
-                        <section className="faq-section mt-16">
-                            <h2 className="text-3xl font-bold text-center mb-10">
-                                FAQ – Áo thun ICONDENIM
-                            </h2>
-                            <div className="body">
-                                <div className="faq-accordion">
-                                    {faqaothun.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className={`faq-item ${openIndex === index ? "active" : ""}`}
-                                        >
-                                            <button
-                                                className="faq-question"
-                                                onClick={() => toggleAccordion(index)}
-                                                aria-expanded={openIndex === index}
-                                            >
-                                                {item.title}
-                                                <span className="faq-icon">
-                                                    <IoCaretDownOutline />
-                                                </span>
-                                            </button>
-
-                                            <div className="faq-answer">
-                                                <p>{item.content}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
                     </div>
                 </div>
                 {/* ===== MODAL ===== */}
