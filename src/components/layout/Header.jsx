@@ -3,7 +3,7 @@
 import "../../styles/Product/header.css";
 import Image from "next/image";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
-import headerData from "../../data/Product/headerData.json"; // điều chỉnh đường dẫn nếu cần
+import headerData from "../../data/Product/headerData.js"; // điều chỉnh đường dẫn nếu cần
 
 export default function Header() {
   const { topbar, logo, mainMenu, icons } = headerData;
