@@ -2,12 +2,12 @@
 
 import "../../styles/Product/footer.css";
 import Image from "next/image";
+import Link from "next/link"; // Thêm dòng này
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-
         {/* CỘT 1 */}
         <div className="footer-col col-1">
           <Image
@@ -18,7 +18,9 @@ export default function Footer() {
             className="footer-logo"
           />
 
-          <p>Tổng đài CSKH: <strong>02873066660</strong></p>
+          <p>
+            Tổng đài CSKH: <strong>02873066660</strong>
+          </p>
           <p>Email: cskh@icondenim.com</p>
 
           <div className="newsletter">
@@ -34,11 +36,36 @@ export default function Footer() {
           </div>
 
           <div className="socials">
-            <Image src="/images/footer/icon-facebook.png" alt="" width={28} height={28} />
-            <Image src="/images/footer/icon-zalo.png" alt="" width={28} height={28} />
-            <Image src="/images/footer/icon-instagram.png" alt="" width={28} height={28} />
-            <Image src="/images/footer/icon-youtube.png" alt="" width={28} height={28} />
-            <Image src="/images/footer/icon-tiktok.png" alt="" width={28} height={28} />
+            <Image
+              src="/images/footer/icon-facebook.png"
+              alt=""
+              width={28}
+              height={28}
+            />
+            <Image
+              src="/images/footer/icon-zalo.png"
+              alt=""
+              width={28}
+              height={28}
+            />
+            <Image
+              src="/images/footer/icon-instagram.png"
+              alt=""
+              width={28}
+              height={28}
+            />
+            <Image
+              src="/images/footer/icon-youtube.png"
+              alt=""
+              width={28}
+              height={28}
+            />
+            <Image
+              src="/images/footer/icon-tiktok.png"
+              alt=""
+              width={28}
+              height={28}
+            />
           </div>
         </div>
 
@@ -54,24 +81,41 @@ export default function Footer() {
 
         {/* CỘT 3 */}
         <div className="footer-col">
-          <h4>HỆ THỐNG CỬA HÀNG (15 CH)</h4>
+          {/* Bọc Link quanh thẻ h4 để click được */}
+          <Link
+            href="/he-thong-cua-hang"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <h4 className="cursor-pointer hover:text-blue-600 transition-colors">
+              HỆ THỐNG CỬA HÀNG (15 CH)
+            </h4>
+          </Link>
 
           <p>
-            <strong>HỒ CHÍ MINH (13 CH)</strong><br />
+            <strong>HỒ CHÍ MINH (13 CH)</strong>
+            <br />
             Tầng 2 Aeon Mall Bình Tân, Đường số 17A, P. Bình Trị Đông, Bình Tân
           </p>
 
           <p>
-            <strong>HÀ NỘI</strong><br />
+            <strong>HÀ NỘI</strong>
+            <br />
             Tầng 2 Aeon Mall Hà Đông, Dương Nội, Hà Đông
           </p>
 
           <p>
-            <strong>ĐỒNG NAI</strong><br />
+            <strong>ĐỒNG NAI</strong>
+            <br />
             1357 Phạm Văn Thuận, Phường Biên Hòa
           </p>
 
-          <a className="view-all">XEM TẤT CẢ CỬA HÀNG</a>
+          {/* Thay thẻ <a> cũ bằng thẻ <Link> */}
+          <Link
+            href="/he-thong-cua-hang"
+            className="view-all block mt-4 cursor-pointer hover:text-blue-600"
+          >
+            XEM TẤT CẢ CỬA HÀNG
+          </Link>
         </div>
 
         {/* CỘT 4 */}
@@ -84,11 +128,20 @@ export default function Footer() {
           </div>
 
           <div className="certs">
-            <Image src="/images/footer/bocongthuong.png" alt="" width={140} height={52} />
-            <Image src="/images/footer/dmca.png" alt="" width={140} height={52} />
+            <Image
+              src="/images/footer/bocongthuong.png"
+              alt=""
+              width={140}
+              height={52}
+            />
+            <Image
+              src="/images/footer/dmca.png"
+              alt=""
+              width={140}
+              height={52}
+            />
           </div>
         </div>
-
       </div>
 
       <div className="footer-bottom">

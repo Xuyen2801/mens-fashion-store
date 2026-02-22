@@ -2,6 +2,7 @@
 
 import "../../styles/Product/header.css";
 import Image from "next/image";
+import Link from "next/link";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import headerData from "../../data/Product/headerData.js"; // điều chỉnh đường dẫn nếu cần
 
@@ -11,23 +12,22 @@ export default function Header() {
   return (
     <div className="site-header">
       {/* TOP BAR */}
-    <div className="topbar">
-      <div className="topbar-track">
-        <div className="topbar-content">
-          {topbar.promotions.map((text, idx) => (
-            <span key={idx}>{text}</span>
-          ))}
-          {/* nhân đôi để chạy vô hạn */}
-          {topbar.promotions.map((text, idx) => (
-            <span key={`clone-${idx}`}>{text}</span>
-          ))}
+      <div className="topbar">
+        <div className="topbar-track">
+          <div className="topbar-content">
+            {topbar.promotions.map((text, idx) => (
+              <span key={idx}>{text}</span>
+            ))}
+            {/* nhân đôi để chạy vô hạn */}
+            {topbar.promotions.map((text, idx) => (
+              <span key={`clone-${idx}`}>{text}</span>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
       {/* HEADER */}
       <header className="header">
         <div className="header-container">
-
           {/* LOGO */}
           <div className="header-logo">
             <Image
@@ -47,7 +47,11 @@ export default function Header() {
                   <a
                     key={index}
                     href="#"
-                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                    className={
+                      item.highlight
+                        ? item.label.toLowerCase().replace(" ", "-")
+                        : ""
+                    }
                   >
                     {item.label}
                     {item.highlight && <span>{item.highlight}</span>}
@@ -151,7 +155,17 @@ export default function Header() {
           {/* ICONS */}
           <div className="header-icons">
             {icons.search && <FiSearch />}
-            {icons.user && <FiUser />}
+
+            {/* ĐÃ SỬA: Bọc Link quanh FiUser để chuyển sang trang đăng nhập */}
+            {icons.user && (
+              <Link
+                href="/login"
+                className="cursor-pointer hover:text-blue-600 transition-colors"
+              >
+                <FiUser />
+              </Link>
+            )}
+
             {icons.cart && (
               <div className="cart">
                 <FiShoppingCart />
