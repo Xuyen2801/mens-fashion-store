@@ -1,17 +1,21 @@
-// src/contexts/CartContext.jsx
 "use client";
 import { createContext, useContext, useReducer, useEffect, useState } from "react";
 
 const CartContext = createContext(null);
 
-const DEFAULT_STATE = { items: [], orders: [] };
+const DEFAULT_STATE = {
+  items: [],
+  orders: [],
+};
 
 function cartReducer(state, action) {
   switch (action.type) {
     case "ADD_ITEM": {
       const { product, selectedSize, selectedColor, quantity = 1 } = action.payload;
       const key = `${product.id}_${selectedSize}_${selectedColor}`;
+
       const existing = state.items.find((i) => i.key === key);
+
       if (existing) {
         return {
           ...state,
@@ -20,40 +24,61 @@ function cartReducer(state, action) {
           ),
         };
       }
+
       return {
         ...state,
         items: [...state.items, { key, product, selectedSize, selectedColor, quantity }],
       };
     }
+
     case "REMOVE_ITEM":
-      return { ...state, items: state.items.filter((i) => i.key !== action.payload) };
+      return {
+        ...state,
+        items: state.items.filter((i) => i.key !== action.payload),
+      };
+
     case "UPDATE_QUANTITY": {
       const { key, quantity } = action.payload;
-      if (quantity <= 0)
-        return { ...state, items: state.items.filter((i) => i.key !== key) };
+
+      if (quantity <= 0) {
+        return {
+          ...state,
+          items: state.items.filter((i) => i.key !== key),
+        };
+      }
+
       return {
         ...state,
-        items: state.items.map((i) => (i.key === key ? { ...i, quantity } : i)),
+        items: state.items.map((i) =>
+          i.key === key ? { ...i, quantity } : i
+        ),
       };
     }
+
     case "CLEAR_CART":
       return { ...state, items: [] };
-    case "PLACE_ORDER": {
+
+    case "PLACE_ORDER":
       return {
         ...state,
-        orders: [action.payload, ...(state.orders ?? [])],
+        orders: [action.payload, ...state.orders],
         items: [],
       };
-    }
+
     case "UPDATE_ORDER_STATUS":
       return {
         ...state,
-        orders: (state.orders ?? []).map((o) =>
+        orders: state.orders.map((o) =>
           o.id === action.payload.orderId
-            ? { ...o, status: action.payload.status, updatedAt: new Date().toISOString() }
+            ? {
+                ...o,
+                status: action.payload.status,
+                updatedAt: new Date().toISOString(),
+              }
             : o
         ),
       };
+
     default:
       return state;
   }
@@ -62,13 +87,15 @@ function cartReducer(state, action) {
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, DEFAULT_STATE, (init) => {
     if (typeof window === "undefined") return init;
+
     try {
       const saved = localStorage.getItem("dusk_cart_v2");
       if (!saved) return init;
+
       const parsed = JSON.parse(saved);
-      // Normalize: đảm bảo mọi field luôn tồn tại dù localStorage cũ thiếu field
+
       return {
-        items:  Array.isArray(parsed.items)  ? parsed.items  : [],
+        items: Array.isArray(parsed.items) ? parsed.items : [],
         orders: Array.isArray(parsed.orders) ? parsed.orders : [],
       };
     } catch {
@@ -83,19 +110,31 @@ export function CartProvider({ children }) {
   }, [state]);
 
   const totalItems = state.items.reduce((s, i) => s + i.quantity, 0);
+
   const subtotal = state.items.reduce(
     (s, i) => s + (i.product.salePrice ?? i.product.price) * i.quantity,
     0
   );
 
   const addToCart = (product, selectedSize, selectedColor, quantity = 1) => {
-    dispatch({ type: "ADD_ITEM", payload: { product, selectedSize, selectedColor, quantity } });
+    dispatch({
+      type: "ADD_ITEM",
+      payload: { product, selectedSize, selectedColor, quantity },
+    });
     setIsCartOpen(true);
   };
 
   return (
     <CartContext.Provider
-      value={{ state, dispatch, totalItems, subtotal, isCartOpen, setIsCartOpen, addToCart }}
+      value={{
+        state,
+        dispatch,
+        totalItems,
+        subtotal,
+        isCartOpen,
+        setIsCartOpen,
+        addToCart,
+      }}
     >
       {children}
     </CartContext.Provider>
@@ -104,6 +143,6 @@ export function CartProvider({ children }) {
 
 export function useCart() {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be inside <CartProvider>");
+  if (!ctx) throw new Error("useCart must be inside CartProvider");
   return ctx;
 }

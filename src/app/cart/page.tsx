@@ -12,12 +12,13 @@ import OrderTracker from "../../components/Cart/Ordertracker";
 type View = "cart" | "checkout" | "success" | "orders";
 
 function CartApp() {
-  const { state, totalItems } = useCart();
+  const { state, totalItems } = useCart() as any;
   const [view, setView] = useState<View>("cart");
   const [placedOrder, setPlacedOrder] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"cart" | "orders">("cart");
 
   const ordersCount = state.orders?.length ?? 0;
+  const OrderSuccessAny = OrderSuccess as any;
 
   const handleOrderSuccess = (order: any) => {
     setPlacedOrder(order);
@@ -72,8 +73,8 @@ function CartApp() {
               view === "checkout"
                 ? "bc-active"
                 : view === "success"
-                ? "bc-done"
-                : "bc-pending"
+                  ? "bc-done"
+                  : "bc-pending"
             }
           >
             Thanh toán
@@ -113,7 +114,7 @@ function CartApp() {
                 </div>
               ) : (
                 <div className="cart-items-list">
-                  {state.items.map((item) => (
+                  {state.items.map((item: any) => (
                     <CartItem key={item.key} item={item} />
                   ))}
                 </div>
@@ -136,7 +137,7 @@ function CartApp() {
 
         {/* SUCCESS */}
         {view === "success" && placedOrder && (
-          <OrderSuccess
+          <OrderSuccessAny
             order={placedOrder}
             onGoShopping={goToCart}
             onViewOrders={goToOrders}
