@@ -1,29 +1,33 @@
+// src/components/Header/Header.jsx  (or .tsx)
 "use client";
 
 import "../../styles/Product/header.css";
 import Image from "next/image";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
-import headerData from "../../data/Product/headerData.js"; // điều chỉnh đường dẫn nếu cần
+import headerData from "../../data/Product/headerData.js";
+import { useCart } from "../../components/Cart/CartContext";
 
 export default function Header() {
   const { topbar, logo, mainMenu, icons } = headerData;
+  // ─── Cart state from context ───────────────────────────────────────────────
+  const { totalItems, setIsCartOpen } = useCart();
 
   return (
     <div className="site-header">
       {/* TOP BAR */}
-    <div className="topbar">
-      <div className="topbar-track">
-        <div className="topbar-content">
-          {topbar.promotions.map((text, idx) => (
-            <span key={idx}>{text}</span>
-          ))}
-          {/* nhân đôi để chạy vô hạn */}
-          {topbar.promotions.map((text, idx) => (
-            <span key={`clone-${idx}`}>{text}</span>
-          ))}
+      <div className="topbar">
+        <div className="topbar-track">
+          <div className="topbar-content">
+            {topbar.promotions.map((text, idx) => (
+              <span key={idx}>{text}</span>
+            ))}
+            {topbar.promotions.map((text, idx) => (
+              <span key={`clone-${idx}`}>{text}</span>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
       {/* HEADER */}
       <header className="header">
         <div className="header-container">
@@ -98,12 +102,7 @@ export default function Header() {
                         <div className="denim-right">
                           {item.denim.rightCards.map((card, cardIdx) => (
                             <div key={cardIdx} className="denim-card">
-                              <Image
-                                src={card.src}
-                                alt={card.text}
-                                width={260}
-                                height={160}
-                              />
+                              <Image src={card.src} alt={card.text} width={260} height={160} />
                               <span>{card.text}</span>
                             </div>
                           ))}
@@ -123,17 +122,12 @@ export default function Header() {
                         <div className="collection-grid">
                           {item.collections.map((col, colIdx) => (
                             <div key={colIdx} className="collection-card">
-                              <Image
-                                src={col.img}
-                                alt={col.title}
-                                width={360}
-                                height={220}
-                              />
+                              <Image src={col.img} alt={col.title} width={360} height={220} />
                               <h4>{col.title}</h4>
                               <a className="view-link">Xem ngay</a>
                             </div>
                           ))}
-                          <div></div>
+                          <div />
                           <div className="collection-footer">
                             <button className="view-all-btn">Xem tất cả</button>
                           </div>
@@ -143,7 +137,6 @@ export default function Header() {
                   );
                 }
               }
-
               return null;
             })}
           </nav>
@@ -152,13 +145,19 @@ export default function Header() {
           <div className="header-icons">
             {icons.search && <FiSearch />}
             {icons.user && <FiUser />}
+
+            {/* ── CART ICON — wired to drawer ── */}
             {icons.cart && (
-              <div className="cart">
+              <button
+                className="cart-icon-btn"
+                onClick={() => setIsCartOpen(true)}
+                aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
+              >
                 <FiShoppingCart />
-                {icons.cart.showBadge && (
-                  <span className="badge">{icons.cart.initialCount}</span>
+                {totalItems > 0 && (
+                  <span className="badge cart-badge-live">{totalItems > 99 ? "99+" : totalItems}</span>
                 )}
-              </div>
+              </button>
             )}
           </div>
         </div>

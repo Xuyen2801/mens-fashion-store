@@ -386,3 +386,59 @@ transform: translateX(-20%);
     display: none;
   }
 }
+/* ── Append these rules to your existing header.css ──────────────────────── */
+
+/*
+  The cart icon is now a <button> instead of a plain div,
+  so we reset button defaults and keep the same look as the other icons.
+*/
+.cart-icon-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: inherit;          /* inherits header icon color */
+  font-size: inherit;      /* inherits icon size */
+  line-height: 1;
+  transition: opacity 0.15s;
+}
+.cart-icon-btn:hover {
+  opacity: 0.75;
+}
+.cart-icon-btn:focus-visible {
+  outline: 2px solid #0044BB;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Live badge — replaces the static .badge when using CartContext */
+.cart-badge-live {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+  background: #E53E3E;       /* red — stands out on white header */
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+  pointer-events: none;
+  animation: badge-pop 0.2s ease-out;
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(0.4); }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
