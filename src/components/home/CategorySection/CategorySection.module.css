@@ -1,0 +1,90 @@
+
+.section {
+  position: relative;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+.banner {
+  width: 100%;
+  height: 500px;
+  min-height: 450px;
+  object-fit: cover;
+  display: block;
+}
+
+.filterBar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 5px; 
+  z-index: 10;
+  width: 100%; 
+  pointer-events: none; 
+}
+
+.filterButton {
+  pointer-events: auto; 
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+
+  white-space: nowrap; 
+  width: max-content; 
+  min-width: 140px;
+  
+  padding: 12px 35px;
+  background: transparent;
+  color: #2f4ed8;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+
+.filterButton::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.95);
+  
+  /* Tạo hình thang */
+  transform: perspective(60px) rotateX(10deg);
+  transform-origin: bottom;
+  
+  /* Bo góc ở đầu nhỏ (cạnh trên) */
+  border-radius: 10px 10px 0 0; 
+  
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Khi Active */
+.active {
+  color: #ffffff !important;
+}
+
+.active::before {
+  background: #2f4ed8;
+  transform: perspective(60px) rotateX(10deg) scaleY(1.1);
+}
+
+.banner {
+  width: 100%;
+  display: block;
+  cursor: pointer; /* cho người dùng biết là click được */
+}
