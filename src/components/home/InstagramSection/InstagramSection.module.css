@@ -1,0 +1,94 @@
+.container {
+  width: 100%;
+  padding: 40px 0;
+  background-color: #fff;
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.handle {
+  color: #000;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.imageWrapper {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center; 
+  align-items: center;    
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.iconCircle {
+  width: 60px;        
+  height: 60px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.instaIcon {
+  width: 30px !important;  
+  height: 30px !important;
+  object-fit: contain;
+  display: block;
+}
+
+
+.imageWrapper:hover .overlay {
+  opacity: 1;
+}
+
+.imageWrapper:hover .image {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .iconCircle {
+    width: 45px;
+    height: 45px;
+  }
+  .instaIcon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+}
