@@ -1,6 +1,10 @@
+/* InstagramSection.module.css */
+
 .container {
   width: 100%;
-  padding: 40px 0;
+  max-width: 1440px; /* Độ rộng tối đa bằng với NewsSection */
+  margin: 0 auto;    /* Căn giữa toàn bộ phần này */
+  padding: 60px 20px; /* Padding đồng bộ với NewsSection */
   background-color: #fff;
 }
 
@@ -8,23 +12,26 @@
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
 }
 
 .handle {
   color: #000;
+  text-decoration: none;
 }
 
+/* Hệ thống lưới chia 5 cột đều nhau */
 .grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  padding: 0 10px;
+  grid-template-columns: repeat(5, 1fr); /* 5 ảnh chia đều chiều ngang 1440px */
+  gap: 15px; /* Khoảng cách giữa các ảnh */
+  width: 100%;
 }
 
 .imageWrapper {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; /* Ảnh Instagram bắt buộc nên để hình vuông */
   overflow: hidden;
   cursor: pointer;
 }
@@ -37,13 +44,14 @@
   transition: transform 0.4s ease;
 }
 
+/* Hiệu ứng Overlay khi Hover */
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center; 
   align-items: center;    
@@ -59,36 +67,40 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-
 
 .instaIcon {
   width: 30px !important;  
   height: 30px !important;
-  object-fit: contain;
-  display: block;
+  color: #000;
 }
-
 
 .imageWrapper:hover .overlay {
   opacity: 1;
 }
 
 .imageWrapper:hover .image {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
-@media (max-width: 768px) {
+/* RESPONSIVE: Đồng bộ với NewsSection */
+@media (max-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* Tablet hiện 3 ảnh */
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* Mobile hiện 2 ảnh */
+    gap: 10px;
+  }
+  .container {
+    padding: 40px 15px;
   }
   .iconCircle {
     width: 45px;
     height: 45px;
-  }
-  .instaIcon {
-    width: 22px !important;
-    height: 22px !important;
   }
 }
