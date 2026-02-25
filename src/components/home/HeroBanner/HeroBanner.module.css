@@ -1,0 +1,51 @@
+.hero{
+    width: 100%;
+}
+
+.hero img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: opacity 0.5s ease;
+}
+.hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Nút chung */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: 22px;
+  transition: all 0.3s ease;
+}
+
+/* Hover giống web thật */
+.navBtn:hover {
+  background: white;
+}
+
+/* Nút trái */
+.prev {
+  left: 20px;
+}
+
+/* Nút phải */
+.next {
+  right: 20px;
+}
