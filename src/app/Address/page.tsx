@@ -10,6 +10,9 @@ import CollectionSection from "../../components/Home/CollectionSection/Collectio
 import collections from "../../data/collection";
 import MixMatchSection from "../../components/Home/MixMatchSection/MixMatchSection";
 import mixmatchData from "../../data/mixmatch";
+import InstagramSection from "../../components/home/InstagramSection/InstagramSection";
+import NewsSection from "../../components/home/NewsSection/NewsSection";
+
 
 export default function HomePage() {
 
@@ -54,6 +57,8 @@ export default function HomePage() {
       />
       <CollectionSection collections={collections} />
       <MixMatchSection items={mixmatchData} />
+      <InstagramSection />
+      <NewsSection />
     </div>
   );
 }
