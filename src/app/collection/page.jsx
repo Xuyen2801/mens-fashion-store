@@ -15,7 +15,7 @@ const CollectionPage = () => {
             <span className={styles.slash}>/</span>
             <Link href="/category" className={styles.blueLink}>Danh mục</Link>
             <span className={styles.slash}>/</span>
-            <span className={styles.currentPath}>Bộ Sưu Tập Của ICONDENIM</span>
+            <span className={styles.currentPath}><p>Bộ Sưu Tập Của ICONDENIM</p></span>
           </nav>
         </div>
       </div>

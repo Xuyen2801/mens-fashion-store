@@ -1,5 +1,6 @@
 import collections from "../../../data/Gallery/collections";
 import CollectionDetail from "../../../components/Gallery/component-detail";
+import Gallery from "../../../components/Gallery/gallery-details";
 
 export default async function Page({
   params,
@@ -16,5 +17,11 @@ export default async function Page({
     return <div>Không tìm thấy bộ sưu tập</div>;
   }
 
-  return <CollectionDetail data={collection} />;
+  return (
+    <div>
+      <Gallery images={collection.gallery}/>
+
+      <CollectionDetail data={collection} />
+    </div>
+  );
 }

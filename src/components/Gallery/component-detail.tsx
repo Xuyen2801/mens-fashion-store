@@ -3,11 +3,16 @@ import "../../styles/retroSports.css";
 import { useState } from "react";
 
 export default function CollectionDetail({ data }: { data: any }) {
+    if (!data.productShowcase || !data.styles || !data.products || !data.looks) {
+        return null;
+    }
     const [activeLook, setActiveLook] = useState(0);
     const [activeStyle, setActiveStyle] = useState(0);
 
     const [activeProduct, setActiveProduct] = useState(
-        data.productShowcase.colors[data.productShowcase.defaultColor].image
+        data.productShowcase?.colors?.[
+            data.productShowcase?.defaultColor
+        ]?.image || ""
     );
 
     const colors = Object.entries(data.productShowcase.colors);
