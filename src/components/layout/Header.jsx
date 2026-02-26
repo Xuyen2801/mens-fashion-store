@@ -1,6 +1,7 @@
 // src/components/Header/Header.jsx  (or .tsx)
 "use client";
-
+import { useRouter } from "next/navigation"; 
+import Link from "next/link";
 import "../../styles/Product/header.css";
 import Image from "next/image";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
@@ -8,6 +9,7 @@ import headerData from "../../data/Product/headerData.js";
 import { useCart } from "../../components/Cart/CartContext";
 
 export default function Header() {
+  const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
   // ─── Cart state from context ───────────────────────────────────────────────
   const { totalItems, setIsCartOpen } = useCart();
@@ -127,9 +129,26 @@ export default function Header() {
                               <a className="view-link">Xem ngay</a>
                             </div>
                           ))}
+{/* <<<<<<< HEAD
                           <div />
                           <div className="collection-footer">
+======= */}
+                          <div></div>
+                          {/* <div className="collection-footer">
+>>>>>>> ed11391ca9d75a56de265711ca52bd0519eb8480
                             <button className="view-all-btn">Xem tất cả</button>
+                          </div> */}
+                          <div className="collection-footer">
+                            <button 
+                              type="button"
+                              className="view-all-btn" 
+                              onClick={(e) => {
+                                e.preventDefault(); 
+                                router.push("/collection");
+                              }}
+                            >
+                              Xem tất cả
+                            </button>
                           </div>
                         </div>
                       </div>
