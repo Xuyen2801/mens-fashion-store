@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./CollectionPage.module.css";
-import collections from "@/src/data/collection/collection.js"; 
+import collections from "../../data/Gallery/collections";
 
 const CollectionPage = () => {
   return (
@@ -29,11 +29,16 @@ const CollectionPage = () => {
 
         <div className={styles.collectionsGrid}>
           {collections.map((item) => (
-            <Link href={`/collection/${item.id}`} key={item.id} className={styles.collectionItem}>
+            
+              <Link
+                href={`/collection/${item.slug}`}
+                key={item.id}
+                className={styles.collectionItem}
+              >
               <div className={styles.imgContainer}>
-                <Image 
-                  src={item.image} 
-                  alt={item.name} 
+                <Image
+                  src={item.image}
+                  alt={item.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   className={styles.actualImg}

@@ -175,6 +175,7 @@ const productsAoKhoac = [
 // 2. Dữ liệu giới thiệu / SEO của trang áo khoác
 const aoKhoacNamIcondenim = {
   page: "ao-khoac-nam-icondenim",
+  bannerImage: "/images/banners/2000x900_-_banner_nhom_sp_-_ao_khoac.jpg",
   sections: [
     {
       type: "hero",

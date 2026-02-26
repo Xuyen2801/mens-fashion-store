@@ -6,16 +6,13 @@ import ProductFilter from "../../../components/Collection/ProductFilter";
 import ProductCard from "../../../components/Product/ProductCard";
 import ProductCardModal from "../../../components/modal/ProductCardModal";
 import SeeMore from "../../../components/Product/SeeMore";
-// import FAQAccordion from "../../../components/Product/FAQAccordion"; // (Mở comment nếu bạn có dùng component này)
 import Breadcrumb from "../../../components/layout/Breadcrumb";
 
 import { IoCaretDownOutline } from "react-icons/io5";
 import "../../../styles/Product/SeeMore.css";
 import "../../../styles/Product/Fad.css";
-
-// DATA IMPORT (Lưu ý: Các file này phải export ra Object gộp gồm { products, pageDetails, faqs })
-import aoKhoacData from "../../../data/Product/ao-khoac";
-import aoThunData from "../../../data/Product/Ao-thun/productsAoThun"; 
+import aoKhoacData from "../../../data/Product/product-ao/ao-khoac";
+import aoThunData from "../../../data/Product/product-ao/ao-thun"; 
 
 // Khai báo Interface (Kiểu dữ liệu) cho TSX
 interface PageProps {
@@ -30,7 +27,7 @@ export default function Page({ params }: PageProps) {
     // 2. Lấy Data tương ứng với category hiện tại
     const categoryDataMap: Record<string, any> = {
         "ao-khoac": aoKhoacData,
-        "ao-thun": aoThunData, // Đảm bảo file áo thun cũng có cấu trúc tương tự áo khoác
+        "ao-thun": aoThunData, 
     };
 
     // Dữ liệu của danh mục hiện tại đang xem
@@ -164,7 +161,7 @@ export default function Page({ params }: PageProps) {
 
                 {/* Banner */}
                 <div className="w-full overflow-hidden shadow-lg">
-                    <CollectionBanner backgroundImage="/images/banners/2000x900_-_banner_nhom_sp_-_ao_khoac.jpg" />
+                    <CollectionBanner backgroundImage={content?.bannerImage || "/images/banners/default-banner.jpg"}  />
                 </div>
 
                 {/* Content */}
