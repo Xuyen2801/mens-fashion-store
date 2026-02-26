@@ -1,20 +1,24 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { SEASONAL_PROMOTIONS } from '../../data/configs';
+import { useCart } from '../Cart/CartContext';
 
 export default function ProductInfo({ product }) {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (product?.colors && product.colors.length > 0) {
       setSelectedColor(product.colors[0].name);
     }
   }, [product]);
+  
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // Sau này bạn Logic có thể thêm code gọi API, cập nhật Redux/Context ở đây
+    // Gọi CartContext để thêm sản phẩm vào giỏ hàng với đủ thông tin
+    addToCart(product, selectedSize, selectedColor, quantity);
     alert(`Đã thêm ${product.name} vào giỏ hàng!`);
   };
   if (!product) return null;
