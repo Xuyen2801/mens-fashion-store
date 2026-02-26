@@ -1,0 +1,461 @@
+* {
+    box-sizing: border-box;
+}
+
+.retro-page {
+    background: #f3efe6;
+    color: #111;
+    font-family: "Helvetica Neue", sans-serif;
+}
+
+
+/* HERO */
+
+.retro-hero {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.retro-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.retro-hero-content {
+    position: absolute;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    text-align: right;
+}
+
+.retro-hero h1 {
+    font-size: 64px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.retro-hero .subtitle {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.retro-hero span {
+    font-size: 18px;
+}
+
+
+/* MARQUEE */
+
+.retro-marquee {
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.retro-marquee .track {
+    display: inline-flex;
+    animation: marquee 12s linear infinite;
+}
+
+.retro-marquee span {
+    color: #fff;
+    padding: 25px 50px;
+    font-weight: 600;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+
+/* INTRO */
+
+.retro-intro {
+    max-width: 1000px;
+    margin: 80px auto;
+    text-align: center;
+    padding: 0px 20px;
+}
+
+.retro-intro h2 {
+    font-size: 55px;
+    font-weight: 800;
+    color: #16361f;
+    /* xanh đậm */
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+.retro-intro p {
+    font-size: 22px;
+    max-width: 900px;
+    margin: 0 auto;
+    color: #16361f;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+
+/* GALLERY */
+
+.retro-gallery img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+
+/* CTA */
+
+.retro-cta {
+    text-align: center;
+    margin: 80px 0;
+}
+
+.retro-cta button {
+    padding: 14px 40px;
+    font-size: 16px;
+    border: 1px solid #111;
+    background: transparent;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.retro-cta button:hover {
+    background: #111;
+    color: #fff;
+}
+
+
+/* ========================= */
+
+
+/* PRODUCT SHOWCASE SECTION */
+
+
+/* ========================= */
+
+.retro-product {
+    width: 90%;
+    margin: 80px auto;
+    text-align: center;
+}
+
+.product-image img {
+    width: 100%;
+    border-radius: 16px;
+    transition: 0.4s ease;
+}
+
+.product-colors {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.product-colors button {
+    padding: 10px 26px;
+    border-radius: 999px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-size: 15px;
+}
+
+.product-colors button:hover {
+    transform: translateY(-3px);
+    opacity: 0.9;
+}
+
+
+/* MÀU */
+
+.product-colors .green {
+    background: #16361f;
+    color: #fff;
+}
+
+.product-colors .cream {
+    background: #efe8d8;
+    color: #16361f;
+}
+
+.product-colors .blue {
+    background: #0d1b2a;
+    color: #fff;
+}
+
+.product-colors .black {
+    background: #000;
+    color: #fff;
+}
+
+
+/* PLAY YOUR STYLES */
+
+.retro-styles {
+    max-width: 1200px;
+    margin: 100px auto;
+    padding: 0 20px;
+}
+
+.retro-styles h2 {
+    font-size: 48px;
+    font-weight: 800;
+    color: #16361f;
+    margin-bottom: 10px;
+}
+
+.styles-sub {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #16361f;
+}
+
+
+/* TABS */
+
+.style-tabs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.style-tabs button {
+    padding: 10px 18px;
+    border-radius: 30px;
+    border: 2px solid #16361f;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.style-tabs button.active {
+    background: #16361f;
+    color: #fff;
+}
+
+
+/* SLIDER */
+
+.style-slider {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.style-slider img {
+    width: 100%;
+    height: 520px;
+    object-fit: cover;
+    transition: opacity 0.4s ease;
+}
+
+.style-title {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    font-size: 48px;
+    font-weight: 800;
+    color: #fff;
+}
+
+
+/* NAV */
+
+.style-slider .nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.style-slider .prev {
+    left: 20px;
+}
+
+.style-slider .next {
+    right: 20px;
+}
+
+
+/* PRODUCT CARDS */
+
+.retro-products {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 20px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+}
+
+.card-image {
+    position: relative;
+}
+
+.card-image img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+}
+
+.card-image .heart {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.card-info {
+    padding: 14px;
+}
+
+.card-info h4 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    min-height: 38px;
+}
+
+.price {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.price .current {
+    font-weight: 700;
+}
+
+.price .old {
+    text-decoration: line-through;
+    font-size: 13px;
+    color: #888;
+}
+
+.buy-btn {
+    width: 100%;
+    background: #16361f;
+    color: #fff;
+    border: none;
+    padding: 10px 0;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+/* NEW RULES */
+
+.retro-looks {
+    max-width: 1300px;
+    margin: 120px auto;
+    padding: 0 20px;
+}
+
+.retro-looks h2 {
+    font-size: 48px;
+    font-weight: 800;
+    color: #16361f;
+    margin-bottom: 30px;
+}
+
+
+/* Tabs */
+
+.look-tabs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.look-tabs button {
+    padding: 10px 22px;
+    border-radius: 30px;
+    border: 2px solid #16361f;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.look-tabs button.active {
+    background: #16361f;
+    color: #fff;
+}
+
+
+/* Grid */
+
+.look-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.look-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+
+/* Left */
+
+.look-left img {
+    height: 100%;
+}
+
+
+/* Right */
+
+.look-right {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+}
+
+.look-right-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
