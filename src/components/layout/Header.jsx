@@ -1,6 +1,6 @@
 // src/components/Header/Header.jsx  (or .tsx)
 "use client";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "../../styles/Product/header.css";
 import Image from "next/image";
@@ -36,13 +36,15 @@ export default function Header() {
 
           {/* LOGO */}
           <div className="header-logo">
-            <Image
-              src={logo.src}
-              alt={logo.alt}
-              width={logo.width}
-              height={logo.height}
-              priority
-            />
+            <Link href="/">
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                width={logo.width}
+                height={logo.height}
+                priority
+              />
+            </Link>
           </div>
 
           {/* MENU */}
@@ -60,6 +62,18 @@ export default function Header() {
                   </a>
                 );
               }
+              if (item.type === "link") {
+                return (
+                  <Link
+                    key={index}
+                    href={item.path}
+                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                  >
+                    {item.label}
+                    {item.highlight && <span>{item.highlight}</span>}
+                  </Link>
+                );
+              }
 
               if (item.type === "dropdown") {
                 if (item.label === "Sản phẩm") {
@@ -74,7 +88,9 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <a key={linkIdx}>{link}</a>
+                                <Link key={linkIdx} href={link.path}>
+                                  {link.label}
+                                </Link>
                               ))}
                             </div>
                           ))}
@@ -96,7 +112,9 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <a key={linkIdx}>{link}</a>
+                                <Link key={linkIdx} href={link.path}>
+                                  {link.label}
+                                </Link>
                               ))}
                             </div>
                           ))}
@@ -123,13 +141,13 @@ export default function Header() {
                       <div className="dropdown collection-dropdown">
                         <div className="collection-grid">
                           {item.collections.map((col, colIdx) => (
-                            <div key={colIdx} className="collection-card">
+                            <Link key={colIdx} href={col.path} className="collection-card">
                               <Image src={col.img} alt={col.title} width={360} height={220} />
                               <h4>{col.title}</h4>
-                              <a className="view-link">Xem ngay</a>
-                            </div>
+                              <span className="view-link">Xem ngay</span>
+                            </Link>
                           ))}
-{/* <<<<<<< HEAD
+                          {/* <<<<<<< HEAD
                           <div />
                           <div className="collection-footer">
 ======= */}
@@ -139,11 +157,11 @@ export default function Header() {
                             <button className="view-all-btn">Xem tất cả</button>
                           </div> */}
                           <div className="collection-footer">
-                            <button 
+                            <button
                               type="button"
-                              className="view-all-btn" 
+                              className="view-all-btn"
                               onClick={(e) => {
-                                e.preventDefault(); 
+                                e.preventDefault();
                                 router.push("/collection");
                               }}
                             >

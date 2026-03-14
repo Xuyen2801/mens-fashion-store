@@ -7,7 +7,7 @@ const AddToCartButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="bg-[#0044BB] text-white text-[10px] sm:text-[12px] font-medium py-1.5 px-2 sm:px-3 rounded hover:bg-blue-800 transition-colors whitespace-nowrap"
+      className="bg-[#0044BB] text-white text-[10px] sm:text-[12px] font-medium py-1.5 px-2 rounded hover:bg-blue-800 transition-colors whitespace-nowrap"
     >
       Thêm giỏ hàng
     </button>
