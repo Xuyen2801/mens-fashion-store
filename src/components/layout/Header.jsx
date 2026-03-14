@@ -7,6 +7,7 @@ import Image from "next/image";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import headerData from "../../data/Product/headerData.js";
 import { useCart } from "../../components/Cart/CartContext";
+import { FiMapPin } from "react-icons/fi";
 
 export default function Header() {
   const router = useRouter();
@@ -23,6 +24,8 @@ export default function Header() {
             {topbar.promotions.map((text, idx) => (
               <span key={idx}>{text}</span>
             ))}
+            {/* nhân đôi để chạy vô hạn */}
+
             {topbar.promotions.map((text, idx) => (
               <span key={`clone-${idx}`}>{text}</span>
             ))}
@@ -33,7 +36,6 @@ export default function Header() {
       {/* HEADER */}
       <header className="header">
         <div className="header-container">
-
           {/* LOGO */}
           <div className="header-logo">
             <Link href="/">
@@ -55,7 +57,11 @@ export default function Header() {
                   <a
                     key={index}
                     href="#"
-                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                    className={
+                      item.highlight
+                        ? item.label.toLowerCase().replace(" ", "-")
+                        : ""
+                    }
                   >
                     {item.label}
                     {item.highlight && <span>{item.highlight}</span>}
@@ -132,6 +138,7 @@ export default function Header() {
                   );
                 }
 
+
                 if (item.label === "Collection") {
                   return (
                     <div key={index} className="menu-item has-dropdown">
@@ -147,16 +154,10 @@ export default function Header() {
                               <span className="view-link">Xem ngay</span>
                             </Link>
                           ))}
-                          {/* <<<<<<< HEAD
-                          <div />
-                          <div className="collection-footer">
-======= */}
-                          <div></div>
-                          {/* <div className="collection-footer">
->>>>>>> ed11391ca9d75a56de265711ca52bd0519eb8480
-                            <button className="view-all-btn">Xem tất cả</button>
-                          </div> */}
-                          <div className="collection-footer">
+
+                          
+                        </div>
+                        <div className="collection-footer">
                             <button
                               type="button"
                               className="view-all-btn"
@@ -168,7 +169,6 @@ export default function Header() {
                               Xem tất cả
                             </button>
                           </div>
-                        </div>
                       </div>
                     </div>
                   );
@@ -181,9 +181,24 @@ export default function Header() {
           {/* ICONS */}
           <div className="header-icons">
             {icons.search && <FiSearch />}
-            {icons.user && <FiUser />}
 
-            {/* ── CART ICON — wired to drawer ── */}
+            {icons.user && (
+              <Link
+                href="/login"
+                className="cursor-pointer hover:text-blue-600 transition-colors"
+              >
+                <FiUser />
+              </Link>
+            )}
+
+            {/* MAP ICON */}
+            <Link
+              href="/he-thong-cua-hang"
+              className="cursor-pointer hover:text-blue-600 transition-colors"
+            >
+              <FiMapPin />
+            </Link>
+
             {icons.cart && (
               <button
                 className="cart-icon-btn"
@@ -191,8 +206,11 @@ export default function Header() {
                 aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
               >
                 <FiShoppingCart />
+
                 {totalItems > 0 && (
-                  <span className="badge cart-badge-live">{totalItems > 99 ? "99+" : totalItems}</span>
+                  <span className="badge cart-badge-live">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
                 )}
               </button>
             )}

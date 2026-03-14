@@ -12,8 +12,8 @@ function cartReducer(state, action) {
   switch (action.type) {
     case "ADD_ITEM": {
       const { product, selectedSize, selectedColor, quantity = 1 } = action.payload;
-      const key = `${product.id}_${selectedSize}_${selectedColor}`;
-
+      
+      const key = `${product.id || product.sku || product.name}_${selectedSize}_${selectedColor}`;
       const existing = state.items.find((i) => i.key === key);
 
       if (existing) {
@@ -71,10 +71,10 @@ function cartReducer(state, action) {
         orders: state.orders.map((o) =>
           o.id === action.payload.orderId
             ? {
-                ...o,
-                status: action.payload.status,
-                updatedAt: new Date().toISOString(),
-              }
+              ...o,
+              status: action.payload.status,
+              updatedAt: new Date().toISOString(),
+            }
             : o
         ),
       };
@@ -116,12 +116,16 @@ export function CartProvider({ children }) {
     0
   );
 
-  const addToCart = (product, selectedSize, selectedColor, quantity = 1) => {
+  const addToCart = (product, size, color, quantity = 1) => {
     dispatch({
       type: "ADD_ITEM",
-      payload: { product, selectedSize, selectedColor, quantity },
+      payload: {
+        product,
+        selectedSize: size,
+        selectedColor: color,
+        quantity,
+      },
     });
-    setIsCartOpen(true);
   };
 
   return (
