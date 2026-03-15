@@ -1,42 +1,52 @@
+// src/components/Header/Header.jsx  (or .tsx)
 "use client";
-
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import "../../styles/Product/header.css";
 import Image from "next/image";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
-import headerData from "../../data/Product/headerData.js"; // điều chỉnh đường dẫn nếu cần
+import headerData from "../../data/Product/headerData.js";
+import { useCart } from "../../components/Cart/CartContext";
+import { FiMapPin } from "react-icons/fi";
 
 export default function Header() {
+  const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
+  // ─── Cart state from context ───────────────────────────────────────────────
+  const { totalItems, setIsCartOpen } = useCart();
 
   return (
     <div className="site-header">
       {/* TOP BAR */}
-    <div className="topbar">
-      <div className="topbar-track">
-        <div className="topbar-content">
-          {topbar.promotions.map((text, idx) => (
-            <span key={idx}>{text}</span>
-          ))}
-          {/* nhân đôi để chạy vô hạn */}
-          {topbar.promotions.map((text, idx) => (
-            <span key={`clone-${idx}`}>{text}</span>
-          ))}
+      <div className="topbar">
+        <div className="topbar-track">
+          <div className="topbar-content">
+            {topbar.promotions.map((text, idx) => (
+              <span key={idx}>{text}</span>
+            ))}
+            {/* nhân đôi để chạy vô hạn */}
+
+            {topbar.promotions.map((text, idx) => (
+              <span key={`clone-${idx}`}>{text}</span>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
       {/* HEADER */}
       <header className="header">
         <div className="header-container">
-
           {/* LOGO */}
           <div className="header-logo">
-            <Image
-              src={logo.src}
-              alt={logo.alt}
-              width={logo.width}
-              height={logo.height}
-              priority
-            />
+            <Link href="/">
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                width={logo.width}
+                height={logo.height}
+                priority
+              />
+            </Link>
           </div>
 
           {/* MENU */}
@@ -47,11 +57,27 @@ export default function Header() {
                   <a
                     key={index}
                     href="#"
-                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                    className={
+                      item.highlight
+                        ? item.label.toLowerCase().replace(" ", "-")
+                        : ""
+                    }
                   >
                     {item.label}
                     {item.highlight && <span>{item.highlight}</span>}
                   </a>
+                );
+              }
+              if (item.type === "link") {
+                return (
+                  <Link
+                    key={index}
+                    href={item.path}
+                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                  >
+                    {item.label}
+                    {item.highlight && <span>{item.highlight}</span>}
+                  </Link>
                 );
               }
 
@@ -68,7 +94,9 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <a key={linkIdx}>{link}</a>
+                                <Link key={linkIdx} href={link.path}>
+                                  {link.label}
+                                </Link>
                               ))}
                             </div>
                           ))}
@@ -90,7 +118,9 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <a key={linkIdx}>{link}</a>
+                                <Link key={linkIdx} href={link.path}>
+                                  {link.label}
+                                </Link>
                               ))}
                             </div>
                           ))}
@@ -98,12 +128,7 @@ export default function Header() {
                         <div className="denim-right">
                           {item.denim.rightCards.map((card, cardIdx) => (
                             <div key={cardIdx} className="denim-card">
-                              <Image
-                                src={card.src}
-                                alt={card.text}
-                                width={260}
-                                height={160}
-                              />
+                              <Image src={card.src} alt={card.text} width={260} height={160} />
                               <span>{card.text}</span>
                             </div>
                           ))}
@@ -112,6 +137,7 @@ export default function Header() {
                     </div>
                   );
                 }
+
 
                 if (item.label === "Collection") {
                   return (
@@ -122,28 +148,32 @@ export default function Header() {
                       <div className="dropdown collection-dropdown">
                         <div className="collection-grid">
                           {item.collections.map((col, colIdx) => (
-                            <div key={colIdx} className="collection-card">
-                              <Image
-                                src={col.img}
-                                alt={col.title}
-                                width={360}
-                                height={220}
-                              />
+                            <Link key={colIdx} href={col.path} className="collection-card">
+                              <Image src={col.img} alt={col.title} width={360} height={220} />
                               <h4>{col.title}</h4>
-                              <a className="view-link">Xem ngay</a>
-                            </div>
+                              <span className="view-link">Xem ngay</span>
+                            </Link>
                           ))}
-                          <div></div>
-                          <div className="collection-footer">
-                            <button className="view-all-btn">Xem tất cả</button>
-                          </div>
+
+                          
                         </div>
+                        <div className="collection-footer">
+                            <button
+                              type="button"
+                              className="view-all-btn"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                router.push("/collection");
+                              }}
+                            >
+                              Xem tất cả
+                            </button>
+                          </div>
                       </div>
                     </div>
                   );
                 }
               }
-
               return null;
             })}
           </nav>
@@ -151,14 +181,38 @@ export default function Header() {
           {/* ICONS */}
           <div className="header-icons">
             {icons.search && <FiSearch />}
-            {icons.user && <FiUser />}
+
+            {icons.user && (
+              <Link
+                href="/login"
+                className="cursor-pointer hover:text-blue-600 transition-colors"
+              >
+                <FiUser />
+              </Link>
+            )}
+
+            {/* MAP ICON */}
+            <Link
+              href="/he-thong-cua-hang"
+              className="cursor-pointer hover:text-blue-600 transition-colors"
+            >
+              <FiMapPin />
+            </Link>
+
             {icons.cart && (
-              <div className="cart">
+              <button
+                className="cart-icon-btn"
+                onClick={() => setIsCartOpen(true)}
+                aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
+              >
                 <FiShoppingCart />
-                {icons.cart.showBadge && (
-                  <span className="badge">{icons.cart.initialCount}</span>
+
+                {totalItems > 0 && (
+                  <span className="badge cart-badge-live">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
                 )}
-              </div>
+              </button>
             )}
           </div>
         </div>
