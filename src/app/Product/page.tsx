@@ -6,7 +6,6 @@ import ProductFilter from "../../components/Collection/ProductFilter";
 import ProductCard from "../../components/Product/ProductCard";
 import ProductCardModal from "../../components/modal/ProductCardModal";
 import SeeMore from "../../components/Product/SeeMore";
-import FAQAccordion from "../../components/Product/FAQAccordion";
 import Breadcrumb from "../../components/layout/Breadcrumb";
 
 import { IoCaretDownOutline } from "react-icons/io5";
