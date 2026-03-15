@@ -3,7 +3,7 @@ const collections = [
         id: 1,
         title: "AIRFLEX COLLECTION",
         image: "/images/collection/Airflex.png",
-        link: "/collections/airflex",
+        link: "/collection/AIRFLEX",
         name: "Airflex",
     },
     {

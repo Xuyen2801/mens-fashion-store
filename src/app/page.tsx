@@ -1,15 +1,18 @@
 "use client";
-import ServiceBar from "../components/home/ServiceBar/ServiceBar";
-import HeroBanner from "../components/home/HeroBanner/HeroBanner";
+import ServiceBar from "../components/Home/ServiceBar/ServiceBar";
+import HeroBanner from "../components/Home/HeroBanner/HeroBanner";
 import { useState } from "react";
 import homeStore from "../data/Banner/homeStore";
-import VoucherSection from "../components/home/VoucherSection/VoucherSection";
-import CategorySection from "../components/home/CategorySection/CategorySection";
-import ProductSection from "../components/home/ProductSection/ProductSection";
-import CollectionSection from "../components/home/CollectionSection/CollectionSection";
+import VoucherSection from "../components/Home/VoucherSection/VoucherSection";
+import CategorySection from "../components/Home/CategorySection/CategorySection";
+import ProductSection from "../components/Home/ProductSection/ProductSection";
+import CollectionSection from "../components/Home/CollectionSection/CollectionSection";
 import collections from "../data/collection";
-import MixMatchSection from "../components/home/MixMatchSection/MixMatchSection";
+import MixMatchSection from "../components/Home/MixMatchSection/MixMatchSection";
 import mixmatchData from "../data/mixmatch";
+import InstagramSection from "../components/home/InstagramSection/InstagramSection";
+import NewsSection from "../components/home/NewsSection/NewsSection";
+
 
 export default function HomePage() {
 
@@ -54,6 +57,8 @@ export default function HomePage() {
       />
       <CollectionSection collections={collections} />
       <MixMatchSection items={mixmatchData} />
+      <InstagramSection />
+      <NewsSection />
     </div>
   );
 }
