@@ -1,7 +1,7 @@
-// src/components/cart/CheckoutForm.jsx
+"use client";
 import { useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
-import { paymentMethods, shippingMethods, ORDER_STATUS } from "../../data/Product/Ao-thun/productsAoThun";
+import { shippingMethods, ORDER_STATUS } from "../../data/Product/product-ao/ao-thun.js";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -11,6 +11,10 @@ const genOrderId = () =>
 
 export default function CheckoutForm({ onBack, onSuccess }) {
   const { state, dispatch, subtotal } = useCart();
+
+  // ✅ CHỈ LẤY SẢN PHẨM ĐƯỢC CHỌN
+  const selectedItems = state.items.filter((i) => i.selected);
+
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -20,18 +24,24 @@ export default function CheckoutForm({ onBack, onSuccess }) {
     district: "",
     ward: "",
   });
+
   const [errors, setErrors] = useState({});
   const [isPlacing, setIsPlacing] = useState(false);
 
-  const selectedShipping = shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0];
+  const selectedShipping =
+    shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0];
+
   const v = state.appliedVoucher;
+
   let discount = 0;
   let shippingFee = selectedShipping.price;
+
   if (v && !v.error) {
     if (v.type === "percent") discount = Math.round((subtotal * v.value) / 100);
     else if (v.type === "fixed") discount = Math.min(v.value, subtotal);
     else if (v.type === "shipping") shippingFee = 0;
   }
+
   const total = subtotal - discount + shippingFee;
 
   const validate = () => {
@@ -51,18 +61,26 @@ export default function CheckoutForm({ onBack, onSuccess }) {
 
   const handleSubmit = async () => {
     const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
+
+    // ❗ Không cho checkout nếu chưa chọn sản phẩm
+    if (selectedItems.length === 0) {
+      alert("Vui lòng chọn sản phẩm!");
+      return;
+    }
 
     setIsPlacing(true);
-    // Simulate network delay
     await new Promise((r) => setTimeout(r, 1200));
 
     const order = {
       id: genOrderId(),
-      items: state.items,
+      items: selectedItems, // ✅ FIX QUAN TRỌNG
       shippingInfo: form,
       shippingMethod: selectedShipping,
-      paymentMethod: state.paymentMethod,
+      paymentMethod: "cod", // ✅ chỉ 1 hình thức
       voucher: state.appliedVoucher,
       note: state.note,
       subtotal,
@@ -72,17 +90,10 @@ export default function CheckoutForm({ onBack, onSuccess }) {
       status: ORDER_STATUS.PENDING.key,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      timeline: [
-        {
-          status: ORDER_STATUS.PENDING.key,
-          label: ORDER_STATUS.PENDING.label,
-          time: new Date().toISOString(),
-          note: "Đơn hàng đã được đặt thành công",
-        },
-      ],
     };
 
     dispatch({ type: "PLACE_ORDER", payload: order });
+
     setIsPlacing(false);
     onSuccess(order);
   };
@@ -104,19 +115,18 @@ export default function CheckoutForm({ onBack, onSuccess }) {
       </button>
 
       <div className="checkout-grid">
-        {/* Left — address & payment */}
+        {/* LEFT */}
         <div className="checkout-left">
           <section className="cf-section">
             <h3 className="cf-section-title">
               <span className="step-num">1</span> Thông tin giao hàng
             </h3>
+
             <div className="cf-fields">
               {fields.map((f) => (
                 <div key={f.id} className={`cf-field ${errors[f.id] ? "has-error" : ""}`}>
-                  <label className="cf-label" htmlFor={f.id}>{f.label}</label>
+                  <label className="cf-label">{f.label}</label>
                   <input
-                    id={f.id}
-                    type={f.type}
                     className="cf-input"
                     placeholder={f.placeholder}
                     value={form[f.id]}
@@ -128,61 +138,38 @@ export default function CheckoutForm({ onBack, onSuccess }) {
             </div>
           </section>
 
+          {/* ✅ CHỈ 1 HÌNH THỨC THANH TOÁN */}
           <section className="cf-section">
             <h3 className="cf-section-title">
-              <span className="step-num">2</span> Phương thức thanh toán
+              <span className="step-num">2</span> Thanh toán
             </h3>
-            <div className="payment-options">
-              {paymentMethods.map((pm) => (
-                <label
-                  key={pm.id}
-                  className={`payment-opt ${state.paymentMethod === pm.id ? "active" : ""}`}
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value={pm.id}
-                    checked={state.paymentMethod === pm.id}
-                    onChange={() => dispatch({ type: "SET_PAYMENT", payload: pm.id })}
-                  />
-                  <span className="pm-icon">{pm.icon}</span>
-                  <span className="pm-name">{pm.name}</span>
-                  {state.paymentMethod === pm.id && (
-                    <span className="pm-check">✓</span>
-                  )}
-                </label>
-              ))}
-            </div>
 
-            {state.paymentMethod === "bank_transfer" && (
-              <div className="bank-info">
-                <p className="bank-info__title">Thông tin chuyển khoản</p>
-                <p>Ngân hàng: <strong>Vietcombank</strong></p>
-                <p>STK: <strong>1234567890</strong></p>
-                <p>Chủ TK: <strong>DUSK FASHION</strong></p>
-                <p className="bank-info__note">Nội dung: <strong>Mã đơn hàng</strong></p>
-              </div>
-            )}
+            <div className="payment-opt active">
+              💵 Thanh toán khi nhận hàng (COD)
+            </div>
           </section>
         </div>
 
-        {/* Right — order review */}
+        {/* RIGHT */}
         <div className="checkout-right">
           <section className="cf-section sticky-top">
             <h3 className="cf-section-title">
-              <span className="step-num">3</span> Xác nhận đơn hàng
+              <span className="step-num">3</span> Sản phẩm đã chọn
             </h3>
 
             <div className="review-items">
-              {state.items.map((item) => (
+              {/* ✅ FIX CHÍNH */}
+              {selectedItems.map((item) => (
                 <div key={item.key} className="review-item">
-                  <img src={item.product.image} alt={item.product.name} className="review-img" />
+                  <img src={item.product.image} className="review-img" />
+
                   <div className="review-info">
                     <p className="review-name">{item.product.name}</p>
                     <p className="review-meta">
                       {item.selectedSize} · {item.selectedColor} · x{item.quantity}
                     </p>
                   </div>
+
                   <span className="review-price">
                     {fmt((item.product.salePrice ?? item.product.price) * item.quantity)}
                   </span>
@@ -192,39 +179,33 @@ export default function CheckoutForm({ onBack, onSuccess }) {
 
             <div className="review-totals">
               <div className="total-row">
-                <span>Tạm tính</span><span>{fmt(subtotal)}</span>
+                <span>Tạm tính</span>
+                <span>{fmt(subtotal)}</span>
               </div>
+
               <div className="total-row">
                 <span>Vận chuyển</span>
                 <span>{shippingFee === 0 ? "Miễn phí" : fmt(shippingFee)}</span>
               </div>
+
               {discount > 0 && (
                 <div className="total-row discount-row">
-                  <span>Giảm giá ({v?.code})</span>
+                  <span>Giảm giá</span>
                   <span>−{fmt(discount)}</span>
                 </div>
               )}
+
               <div className="total-row grand-total">
-                <span>Tổng cộng</span><span>{fmt(total)}</span>
+                <span>Tổng cộng</span>
+                <span>{fmt(total)}</span>
               </div>
             </div>
 
-            {state.note && (
-              <p className="review-note">📝 Ghi chú: {state.note}</p>
-            )}
-
             <button
-              className={`checkout-btn place-order-btn ${isPlacing ? "loading" : ""}`}
+              className={`checkout-btn ${isPlacing ? "loading" : ""}`}
               onClick={handleSubmit}
-              disabled={isPlacing}
             >
-              {isPlacing ? (
-                <>
-                  <span className="spinner" /> Đang xử lý...
-                </>
-              ) : (
-                <>Đặt hàng ngay · {fmt(total)}</>
-              )}
+              {isPlacing ? "Đang xử lý..." : `Đặt hàng · ${fmt(total)}`}
             </button>
           </section>
         </div>
