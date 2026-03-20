@@ -1,14 +1,19 @@
 // src/components/Header/Header.jsx  (or .tsx)
 "use client";
-
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import "../../styles/Product/header.css";
 import Image from "next/image";
 import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import headerData from "../../data/Product/headerData.js";
 import { useCart } from "../../components/Cart/CartContext";
+import { FiMapPin } from "react-icons/fi";
+import { useState } from "react";
 
 export default function Header() {
+  const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
+  const [openSearch, setOpenSearch] = useState(false);
   // ─── Cart state from context ───────────────────────────────────────────────
   const { totalItems, setIsCartOpen } = useCart();
 
@@ -21,6 +26,8 @@ export default function Header() {
             {topbar.promotions.map((text, idx) => (
               <span key={idx}>{text}</span>
             ))}
+            {/* nhân đôi để chạy vô hạn */}
+
             {topbar.promotions.map((text, idx) => (
               <span key={`clone-${idx}`}>{text}</span>
             ))}
@@ -31,16 +38,17 @@ export default function Header() {
       {/* HEADER */}
       <header className="header">
         <div className="header-container">
-
           {/* LOGO */}
           <div className="header-logo">
-            <Image
-              src={logo.src}
-              alt={logo.alt}
-              width={logo.width}
-              height={logo.height}
-              priority
-            />
+            <Link href="/">
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                width={logo.width}
+                height={logo.height}
+                priority
+              />
+            </Link>
           </div>
 
           {/* MENU */}
@@ -51,11 +59,27 @@ export default function Header() {
                   <a
                     key={index}
                     href="#"
-                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                    className={
+                      item.highlight
+                        ? item.label.toLowerCase().replace(" ", "-")
+                        : ""
+                    }
                   >
                     {item.label}
                     {item.highlight && <span>{item.highlight}</span>}
                   </a>
+                );
+              }
+              if (item.type === "link") {
+                return (
+                  <Link
+                    key={index}
+                    href={item.path}
+                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+                  >
+                    {item.label}
+                    {item.highlight && <span>{item.highlight}</span>}
+                  </Link>
                 );
               }
 
@@ -72,7 +96,9 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <a key={linkIdx}>{link}</a>
+                                <Link key={linkIdx} href={link.path}>
+                                  {link.label}
+                                </Link>
                               ))}
                             </div>
                           ))}
@@ -94,7 +120,9 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <a key={linkIdx}>{link}</a>
+                                <Link key={linkIdx} href={link.path}>
+                                  {link.label}
+                                </Link>
                               ))}
                             </div>
                           ))}
@@ -112,6 +140,7 @@ export default function Header() {
                   );
                 }
 
+
                 if (item.label === "Collection") {
                   return (
                     <div key={index} className="menu-item has-dropdown">
@@ -121,17 +150,27 @@ export default function Header() {
                       <div className="dropdown collection-dropdown">
                         <div className="collection-grid">
                           {item.collections.map((col, colIdx) => (
-                            <div key={colIdx} className="collection-card">
+                            <Link key={colIdx} href={col.path} className="collection-card">
                               <Image src={col.img} alt={col.title} width={360} height={220} />
                               <h4>{col.title}</h4>
-                              <a className="view-link">Xem ngay</a>
-                            </div>
+                              <span className="view-link">Xem ngay</span>
+                            </Link>
                           ))}
-                          <div />
-                          <div className="collection-footer">
-                            <button className="view-all-btn">Xem tất cả</button>
-                          </div>
+
+                          
                         </div>
+                        <div className="collection-footer">
+                            <button
+                              type="button"
+                              className="view-all-btn"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                router.push("/collection");
+                              }}
+                            >
+                              Xem tất cả
+                            </button>
+                          </div>
                       </div>
                     </div>
                   );
@@ -143,10 +182,32 @@ export default function Header() {
 
           {/* ICONS */}
           <div className="header-icons">
-            {icons.search && <FiSearch />}
-            {icons.user && <FiUser />}
+            {icons.search && (
+  <button
+    className="search-btn"
+    onClick={() => setOpenSearch(!openSearch)}
+  >
+    <FiSearch />
+  </button>
+)}
 
-            {/* ── CART ICON — wired to drawer ── */}
+            {icons.user && (
+              <Link
+                href="/login"
+                className="cursor-pointer hover:text-blue-600 transition-colors"
+              >
+                <FiUser />
+              </Link>
+            )}
+
+            {/* MAP ICON */}
+            <Link
+              href="/he-thong-cua-hang"
+              className="cursor-pointer hover:text-blue-600 transition-colors"
+            >
+              <FiMapPin />
+            </Link>
+
             {icons.cart && (
               <button
                 className="cart-icon-btn"
@@ -154,14 +215,38 @@ export default function Header() {
                 aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
               >
                 <FiShoppingCart />
+
                 {totalItems > 0 && (
-                  <span className="badge cart-badge-live">{totalItems > 99 ? "99+" : totalItems}</span>
+                  <span className="badge cart-badge-live">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
                 )}
               </button>
             )}
           </div>
         </div>
       </header>
+      {openSearch && (
+  <div className="search-dropdown">
+    <div className="search-box">
+      <input
+        type="text"
+        placeholder="Tìm kiếm sản phẩm..."
+      />
+      <FiSearch className="search-icon" />
+    </div>
+
+    <div className="search-suggestions">
+      <p>Từ khóa nổi bật hôm nay</p>
+
+      <div className="tags">
+        {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
+          <span key={tag}>{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

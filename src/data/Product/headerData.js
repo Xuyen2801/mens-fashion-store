@@ -23,46 +23,36 @@ const headerData = {
         {
           title: "TẤT CẢ SẢN PHẨM",
           links: [
-            "Tất cả sản phẩm",
-            "Sản phẩm mới",
-            "Bán chạy nhất",
-            "OUTLET - Sale up to 50%",
+            { label: "Tất cả sản phẩm", path: "/Product" },
+            { label: "Sản phẩm mới", path: "/Product/new" },
+            { label: "Bán chạy nhất", path: "/Product/best-seller" },
+            { label: "OUTLET - Sale up to 50%", path: "/Product/sale" },
           ],
         },
         {
           title: "ÁO NAM",
           links: [
-            "Áo thun",
-            "Áo polo",
-            "Áo sơ mi",
-            "Áo khoác",
-            "Hoodie",
-            "Tank top",
-            "Set đồ",
+            { label: "Áo thun", path: "/Product/ao-thun" },
+            { label: "Áo polo", path: "/Product/ao-polo" },
+            { label: "Áo sơ mi", path: "/Product/ao-so-mi" },
+            { label: "Áo khoác", path: "/Product/ao-khoac" },
+            { label: "Hoodie", path: "/Product/hoodie" },
+            { label: "Tank top", path: "/Product/tank-top" },
+            { label: "Set đồ", path: "/Product/set-do" },
           ],
         },
         {
           title: "QUẦN NAM",
           links: [
-            "Quần jean",
-            "Quần short",
-            "Quần kaki & chino",
-            "Quần jogger",
-            "Quần tây",
-            "Quần boxer",
+            { label: "Quần jean", path: "/Product/quan-jean" },
+            { label: "Quần short", path: "/Product/quan-short" },
+            { label: "Quần kaki & chino", path: "/Product/quan-kaki" },
+            { label: "Quần jogger", path: "/Product/quan-jogger" },
+            { label: "Quần tây", path: "/Product/quan-tay" },
+            { label: "Quần boxer", path: "/Product/quan-boxer" },
           ],
-        },
-        {
-          title: "GIÀY & PHỤ KIỆN",
-          links: [
-            "Giày & dép",
-            "Balo, túi & ví",
-            "Nón",
-            "Thắt lưng",
-            "Vớ",
-            "Mắt kính",
-          ],
-        },
+        }
+        
       ],
     },
 
@@ -70,11 +60,13 @@ const headerData = {
       type: "link",
       label: "Hàng mới",
       highlight: "New",
+      path: "/new",
     },
 
     {
       type: "link",
       label: "Hàng bán chạy",
+      path: "/best-seller",
     },
 
     {
@@ -84,20 +76,28 @@ const headerData = {
         left: [
           {
             title: "JEANS",
-            links: ["Quần Jeans", "Quần Short Jeans", "Áo Khoác Jeans"],
+            links: [
+              { label: "Quần Jeans", path: "/denim/jeans" },
+              { label: "Quần Short Jeans", path: "/denim/short-jeans" },
+              { label: "Áo Khoác Jeans", path: "/denim/jacket" },
+            ],
           },
           {
             title: "SIGNATURE",
             links: [
-              "AIRFLEX™",
-              "ProCOOL++™",
-              "SMART JEANS™",
-              "ICON105 Lightweight™",
+              { label: "AIRFLEX™", path: "/collection/AIRFLEX" },
+              { label: "ProCOOL++™", path: "/collection/ProCOOL" },
+              { label: "STITCH™", path: "/collection/STITCH" },
+              { label: "RETRO SPORTS", path: "/collection/RETRO" },
             ],
           },
           {
             title: "FORM DÁNG",
-            links: ["Smart-Fit", "Straight", "Slim-Fit"],
+            links: [
+              { label: "Smart-Fit", path: "/denim/smart-fit" },
+              { label: "Straight", path: "/denim/straight" },
+              { label: "Slim-Fit", path: "/denim/slim-fit" },
+            ],
           },
         ],
         rightCards: [
@@ -123,8 +123,9 @@ const headerData = {
 
     {
       type: "link",
-      label: "SALE TẾT",
+      label: "SIÊU SALE",
       highlight: "-50%",
+      path: "/sale",
     },
 
     {
@@ -134,14 +135,17 @@ const headerData = {
         {
           title: "AIRFLEX™ COLLECTION",
           img: "/images/header/gonnhe.png",
+          path: "/collection/AIRFLEX",
         },
         {
           title: "Retro Sports",
           img: "/images/header/sieunhe.png",
+          path: "/collection/RETRO",
         },
         {
-          title: "Snoopy",
+          title: "STITCH together",
           img: "/images/header/cogian.png",
+          path: "/collection/STITCH",
         },
       ],
     },

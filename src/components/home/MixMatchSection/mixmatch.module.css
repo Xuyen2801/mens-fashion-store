@@ -1,0 +1,74 @@
+.section {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.heading {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.card {
+  display: block;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 130%; /* giữ tỉ lệ giống hình */
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.btnWrapper {
+  margin-top: 40px;
+}
+
+.button {
+  display: inline-block;
+  padding: 14px 36px;
+  border: 2px solid black;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background: black;
+  color: white;
+}
+
+/* Responsive */
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .heading {
+    font-size: 28px;
+  }
+}

@@ -23,22 +23,18 @@ const ProductCard = (props) => {
   // Nếu `product` được truyền vào là object đầy đủ thì dùng luôn.
   // Nếu không thì tổng hợp từ các props rời (cách gọi cũ).
   const product =
-    props.product && typeof props.product === "object"
-      ? props.product
-      : {
-          id:        props.id,
-          name:      props.name,
-          image:     props.image,
-          images:    props.images,
-          price:     props.price,
-          salePrice: props.salePrice,
-          discount:  props.discount,
-          status:    props.status,
-          sizes:     props.sizes  ?? [],
-          colors:    props.colors ?? [],
-          sku:       props.sku,
-        };
-
+  props.product && typeof props.product === "object"
+    ? props.product
+    : {
+        id: props.id || props.sku,
+        sku: props.sku || props.id,
+        name: props.name,
+        image: props.image,
+        price: props.price,
+        salePrice: props.salePrice,
+        sizes: props.sizes ?? [],
+        colors: props.colors ?? [],
+      };
   const { onOpenModal } = props;
 
   // Destructure từ object đã normalize
@@ -48,7 +44,7 @@ const ProductCard = (props) => {
     price,
     salePrice,
     status,
-    sizes  = [],
+    sizes = [],
     colors = [],
     discount,
   } = product;
@@ -59,9 +55,24 @@ const ProductCard = (props) => {
   // ── Handlers ───────────────────────────────────────────────────────────────
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    const defaultSize  = sizes[0]         ?? "M";
-    const defaultColor = colors[0]?.name  ?? "Default";
-    addToCart(product, defaultSize, defaultColor, 1);
+
+    const defaultSize = sizes.length > 0 ? sizes[0] : "M";
+    const defaultColor =
+      colors.length > 0
+        ? colors[0].name || colors[0]
+        : "Default";
+
+    addToCart(
+      {
+        ...product,
+        image: image || product.images?.[0],
+        price: salePrice || price,
+      },
+      defaultSize,
+      defaultColor,
+      1
+    );
+
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -135,7 +146,7 @@ const ProductCard = (props) => {
           <button
             onClick={handleAddToCart}
             className={`
-              text-white text-[10px] sm:text-[12px] font-medium py-1.5 px-2 sm:px-3
+              text-white text-[10px] font-medium py-1.5 px-2 sm:px-3
               rounded transition-all duration-200 whitespace-nowrap flex items-center gap-1
               ${added ? "bg-green-600 scale-95" : "bg-[#0044BB] hover:bg-blue-800"}
             `}

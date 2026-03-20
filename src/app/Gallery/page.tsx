@@ -1,5 +1,5 @@
-import RetroSports from "../../components/Gallery/RetroSports";
+import RetroSports from "../../components/Gallery/component-detail";
 
 export default function GalleryPage() {
-  return <RetroSports />;
+  return <RetroSports data={undefined} />;
 }
