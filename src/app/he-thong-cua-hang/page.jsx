@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import StoreCard from "../../components/store/StoreCard";
-import { stores } from "../../store/stores";
+import stores from "../../store/stores";
 
 export default function StoreLocatorPage() {
   // State để lưu trữ giá trị người dùng đang chọn ở bộ lọc
