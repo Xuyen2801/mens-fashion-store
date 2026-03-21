@@ -1,20 +1,60 @@
 /* ===== TOP BAR ===== */
+/* ===== TOP BAR ===== */
 .topbar {
-  background: #001f5d;
+  background: #b91c1c; /* đỏ sale */
   color: #fff;
-  font-size: 13px;
-  height: 36px;
+  height: 40px;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
-.topbar-container {
+.topbar-track {
+  width: 100%;
+  overflow: hidden;
+}
+
+.topbar-content {
+  display: flex;
+  gap: 60px;
+  white-space: nowrap;
+  animation: marquee 18s linear infinite;
+}
+
+.topbar-content span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ===== HEADER CONTAINER ===== */
+.header {
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.header-container {
   max-width: 1920px;
+  height: 80px; /* Cố định chiều cao để dễ căn chỉnh */
   margin: 0 auto;
   padding: 0 40px;
-  display: flex;
-  gap: 28px;
-  white-space: nowrap;
+  display: flex; /* Chuyển từ grid sang flex để căn chỉnh linh hoạt hơn */
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* ===== HEADER ===== */
@@ -75,18 +115,23 @@
 }
 
 /* ===== LOGO ===== */
+.header-logo {
+  flex: 0 0 180px; /* Độ rộng cố định cho logo */
+  display: flex;
+  align-items: center;
+}
+
 .header-logo img {
   height: auto;
   max-height: 32px;
 }
-
 /* ===== MENU CẤP 1 ===== */
 .header-menu {
   display: flex;
+  align-items: center; /* Căn giữa tất cả mục menu theo chiều dọc */
   justify-content: center;
-  gap: 28px;
-  font-size: 15px;
-  font-weight: 600;
+  gap: 30px;
+  flex: 1;
 }
 
 .header-menu > a,
@@ -98,7 +143,7 @@
   height: 40px;
   color: #111;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* Gạch chân hover */
@@ -194,12 +239,10 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 40px;
   width: 1000px;
-  
-  
 }
-.drop_pro{
-min-width: max-content;
-transform: translateX(-20%);
+.drop_pro {
+  min-width: max-content;
+  transform: translateX(-20%);
 }
 
 .dropdown-col h4 {
@@ -226,7 +269,7 @@ transform: translateX(-20%);
 .menu-item.has-dropdown:hover .collection-dropdown {
   display: flex;
   position: fixed;
-  top: 100px;                    
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -402,8 +445,8 @@ transform: translateX(-20%);
   align-items: center;
   justify-content: center;
   position: relative;
-  color: inherit;          /* inherits header icon color */
-  font-size: inherit;      /* inherits icon size */
+  color: inherit; /* inherits header icon color */
+  font-size: inherit; /* inherits icon size */
   line-height: 1;
   transition: opacity 0.15s;
 }
@@ -411,7 +454,7 @@ transform: translateX(-20%);
   opacity: 0.75;
 }
 .cart-icon-btn:focus-visible {
-  outline: 2px solid #0044BB;
+  outline: 2px solid #0044bb;
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -421,7 +464,7 @@ transform: translateX(-20%);
   position: absolute;
   top: -7px;
   right: -8px;
-  background: #E53E3E;       /* red — stands out on white header */
+  background: #e53e3e; /* red — stands out on white header */
   color: #fff;
   font-size: 0.6rem;
   font-weight: 800;
@@ -438,7 +481,37 @@ transform: translateX(-20%);
 }
 
 @keyframes badge-pop {
-  0%   { transform: scale(0.4); }
-  70%  { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.badge-tag {
+  font-size: 15px;
+  font-weight: 400; /* Chữ thường, không in đậm theo ý bạn */
+  padding: 2px 8px; /* Tạo khoảng trống bên trong để hiện màu nền */
+  border-radius: 4px; /* Bo góc nhẹ cho giống cái tag */
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px; /* Khoảng cách với chữ chính */
+  text-transform: none; /* Giữ nguyên chữ thường/hoa như data */
+}
+
+/* Tag màu đen cho hàng mới */
+.new-tag {
+  background-color: #da0606; /* Nền đen */
+  color: #ffffff !important; /* Chữ trắng */
+}
+
+/* Tag màu đỏ đặc trưng cho hàng Sale */
+.sale-tag {
+  background-color: #ed1c24; /* Nền đỏ thương hiệu */
+  color: #ffffff !important; /* Chữ trắng */
 }
