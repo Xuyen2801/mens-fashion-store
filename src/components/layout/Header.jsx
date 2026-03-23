@@ -1,5 +1,5 @@
-// src/components/Header/Header.jsx  (or .tsx)
 "use client";
+import { useState, useEffect } from "react"; // THÊM useEffect ở đây
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "../../styles/Product/header.css";
@@ -12,8 +12,15 @@ import { FiMapPin } from "react-icons/fi";
 export default function Header() {
   const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
-  // ─── Cart state from context ───────────────────────────────────────────────
   const { totalItems, setIsCartOpen } = useCart();
+
+  // ─── THÊM TRẠNG THÁI KIỂM TRA MOUNTED ──────────────────────────────────────
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  // ───────────────────────────────────────────────────────────────────────────
 
   return (
     <div className="site-header">
@@ -24,8 +31,6 @@ export default function Header() {
             {topbar.promotions.map((text, idx) => (
               <span key={idx}>{text}</span>
             ))}
-            {/* nhân đôi để chạy vô hạn */}
-
             {topbar.promotions.map((text, idx) => (
               <span key={`clone-${idx}`}>{text}</span>
             ))}
@@ -54,25 +59,9 @@ export default function Header() {
             {mainMenu.map((item, index) => {
               if (item.type === "link") {
                 return (
-                  <a
-                    key={index}
-                    href="#"
-                    className={
-                      item.highlight
-                        ? item.label.toLowerCase().replace(" ", "-")
-                        : ""
-                    }
-                  >
-                    {item.label}
-                    {item.highlight && <span>{item.highlight}</span>}
-                  </a>
-                );
-              }
-              if (item.type === "link") {
-                return (
                   <Link
                     key={index}
-                    href={item.path}
+                    href={item.path || "#"}
                     className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
                   >
                     {item.label}
@@ -125,7 +114,7 @@ export default function Header() {
                             </div>
                           ))}
                         </div>
-                        <div className="denim-right">
+                        <div className="denim-left">
                           {item.denim.rightCards.map((card, cardIdx) => (
                             <div key={cardIdx} className="denim-card">
                               <Image src={card.src} alt={card.text} width={260} height={160} />
@@ -137,7 +126,6 @@ export default function Header() {
                     </div>
                   );
                 }
-
 
                 if (item.label === "Collection") {
                   return (
@@ -154,21 +142,19 @@ export default function Header() {
                               <span className="view-link">Xem ngay</span>
                             </Link>
                           ))}
-
-                          
                         </div>
                         <div className="collection-footer">
-                            <button
-                              type="button"
-                              className="view-all-btn"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                router.push("/collection");
-                              }}
-                            >
-                              Xem tất cả
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            className="view-all-btn"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              router.push("/collection");
+                            }}
+                          >
+                            Xem tất cả
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -191,7 +177,6 @@ export default function Header() {
               </Link>
             )}
 
-            {/* MAP ICON */}
             <Link
               href="/he-thong-cua-hang"
               className="cursor-pointer hover:text-blue-600 transition-colors"
@@ -203,11 +188,13 @@ export default function Header() {
               <button
                 className="cart-icon-btn"
                 onClick={() => setIsCartOpen(true)}
-                aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
+                // THÊM KIỂM TRA isMounted ĐỂ ĐỒNG BỘ ARIA-LABEL
+                aria-label={!isMounted ? "Giỏ hàng" : `Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
               >
                 <FiShoppingCart />
 
-                {totalItems > 0 && (
+                {/* THÊM KIỂM TRA isMounted Ở ĐÂY ĐỂ TRÁNH LỖI ĐỎ */}
+                {isMounted && totalItems > 0 && (
                   <span className="badge cart-badge-live">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>

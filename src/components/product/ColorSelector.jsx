@@ -1,21 +1,32 @@
-export default function ColorSelector({ colors, selectedColor, onSelectColor }) {
+
+export default function ColorSelector({ variants, selectedVariant, onColorChange }) {
+  if (!variants || variants.length === 0) return null;
+
   return (
     <div className="mt-4">
-      <p className="text-sm">Màu sắc: <span className="font-bold">{selectedColor}</span></p>
+      <p className="text-sm">
+        Màu sắc: <span className="font-bold">{selectedVariant?.color}</span>
+      </p>
       <div className="flex gap-2 mt-2">
-        {colors.map((color) => (
+        {variants.map((v) => (
           <button
-            key={color.name}
-            onClick={() => onSelectColor(color.name)}
-            className={`w-10 h-10 rounded-full border-2 p-0.5 transition-all ${
-              selectedColor === color.name ? 'border-black scale-110' : 'border-gray-200 opacity-70'
+            key={v.color}
+            onClick={() => onColorChange(v)} 
+            className={`w-12 h-12 rounded-full border-2 p-0.5 transition-all overflow-hidden ${
+              selectedVariant?.color === v.color 
+                ? 'border-black scale-110 shadow-md' 
+                : 'border-gray-200 opacity-80 hover:opacity-100'
             }`}
+            title={v.color}
           >
-            <img src={color.thumbnail} alt={color.name} className="w-full h-full rounded-full object-cover" />
+            <img 
+              src={v.image} 
+              alt={v.color} 
+              className="w-full h-full rounded-full object-cover" 
+            />
           </button>
         ))}
       </div>
     </div>
   );
 }
-
