@@ -9,6 +9,8 @@ import headerData from "../../data/Product/headerData.js";
 import { useCart } from "../../components/Cart/CartContext";
 import { FiMapPin } from "react-icons/fi";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Header() {
   const router = useRouter();
@@ -16,7 +18,11 @@ export default function Header() {
   const [openSearch, setOpenSearch] = useState(false);
   // ─── Cart state from context ───────────────────────────────────────────────
   const { totalItems, setIsCartOpen } = useCart();
+  const pathname = usePathname();
 
+  useEffect(() => {
+  setOpenSearch(false); // 🔥 đóng search khi đổi trang
+}, [pathname]);
   return (
     <div className="site-header">
       {/* TOP BAR */}
