@@ -153,8 +153,6 @@ function CartApp() {
 
 export default function CartPage() {
   return (
-    <CartProvider>
       <CartApp />
-    </CartProvider>
   );
 }

@@ -1,7 +1,7 @@
 // src/components/cart/OrderTracker.jsx
 import { useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
-import { ORDER_STATUS } from "../../data/Product/Ao-thun/productsAoThun";
+import { ORDER_STATUS } from "../../data/Product/product-ao/ao-thun";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
