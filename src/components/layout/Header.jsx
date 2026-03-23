@@ -1,5 +1,6 @@
 // src/components/Header/Header.jsx  (or .tsx)
 "use client";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "../../styles/Product/header.css";
@@ -14,6 +15,22 @@ export default function Header() {
   const { topbar, logo, mainMenu, icons } = headerData;
   // ─── Cart state from context ───────────────────────────────────────────────
   const { totalItems, setIsCartOpen } = useCart();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+  setIsMounted(true); 
+  }, []);
+
+  const handleUserClick = (e) => {
+    e.preventDefault();
+    const loggedInUser = localStorage.getItem("user"); 
+
+    if (loggedInUser) {
+      router.push("/account"); 
+    } else {
+      router.push("/login");   
+    }
+  };
 
   return (
     <div className="site-header">
@@ -183,12 +200,13 @@ export default function Header() {
             {icons.search && <FiSearch />}
 
             {icons.user && (
-              <Link
-                href="/login"
-                className="cursor-pointer hover:text-blue-600 transition-colors"
+              <button
+                onClick={handleUserClick}
+                className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
+                aria-label="Tài khoản của tôi"
               >
-                <FiUser />
-              </Link>
+                <FiUser className="text-[20px]" />
+              </button>
             )}
 
             {/* MAP ICON */}
@@ -200,20 +218,25 @@ export default function Header() {
             </Link>
 
             {icons.cart && (
-              <button
-                className="cart-icon-btn"
-                onClick={() => setIsCartOpen(true)}
-                aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
-              >
-                <FiShoppingCart />
-
-                {totalItems > 0 && (
-                  <span className="badge cart-badge-live">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                )}
-              </button>
-            )}
+  <button
+    className="cart-icon-btn"
+    onClick={() => {
+      if (!isMounted) return; 
+      const loggedInUser = localStorage.getItem("user");
+      if (loggedInUser) {
+        setIsCartOpen(true);
+      } else {
+        alert("Vui lòng đăng nhập!");
+        router.push("/login");
+      }
+    }}
+  >
+    <FiShoppingCart />
+    {isMounted && totalItems > 0 && (
+      <span className="badge">{totalItems}</span>
+    )}
+  </button>
+)}
           </div>
         </div>
       </header>

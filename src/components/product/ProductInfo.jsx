@@ -14,10 +14,36 @@ export default function ProductInfo({ product }) {
       setSelectedColor(product.colors[0].name);
     }
   }, [product]);
+
+  useEffect(() => {
+    if (!selectedColor) return;
+    console.log("Click chọn màu mới:", selectedColor);
+    setQuantity(1);
+
+  }, [selectedColor]);
   
   const handleAddToCart = (e) => {
-    e.stopPropagation();
-    // Gọi CartContext để thêm sản phẩm vào giỏ hàng với đủ thông tin
+    if (e) e.stopPropagation();
+
+    const rawUser = localStorage.getItem("user");
+    let isValidUser = false;
+
+    try {
+      if (rawUser && rawUser !== "null" && rawUser !== "undefined") {
+        const userData = JSON.parse(rawUser);
+        if (userData && (userData.id || userData.fullName || userData.phone)) {
+          isValidUser = true;
+        }
+      }
+    } catch (err) {
+      isValidUser = false;
+    }
+    if (!isValidUser) {
+      alert("Hãy đăng nhập để thêm vào giỏ hàng!");
+      window.location.href = "/login"; 
+      return; 
+    }
+
     addToCart(product, selectedSize, selectedColor, quantity);
     alert(`Đã thêm ${product.name} vào giỏ hàng!`);
   };

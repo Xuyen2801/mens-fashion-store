@@ -151,6 +151,9 @@ export function CartProvider({ children }) {
     );
 
   const addToCart = (product, size, color, quantity = 1) => {
+    if (typeof window !== 'undefined' && !localStorage.getItem("user")) {
+    return; 
+    }
     dispatch({
       type: "ADD_ITEM",
       payload: {

@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "phone": "0337279763",
+      "fullName": "Phạm Khả Vy",
+      "email": "khavy05092005@gmail.com",
+      "address": "ấp thượng xã thường thới tiền huyện hồng ngự tỉnh đồng tháp",
+      "password": "$2b$10$l/KYSdm.IY8lGj9Bi.13BuH89Z0.Y5UtWvffvH1L8N.zKJjlmDU/e",
+      "role": "customer",
+      "createdAt": "2026-03-23T11:29:15.485Z",
+      "id": "DBLpuUzpynk"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

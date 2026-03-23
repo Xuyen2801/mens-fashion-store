@@ -2,6 +2,9 @@
 "use client";
 import React, { useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
+import { useRouter } from "next/navigation";
+import AddToCartButton from "./AddToCartButton";
+import toast from 'react-hot-toast';
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -18,6 +21,7 @@ const fmt = (n) =>
 const ProductCard = (props) => {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const router = useRouter();
 
   // ── Normalize props ────────────────────────────────────────────────────────
   // Nếu `product` được truyền vào là object đầy đủ thì dùng luôn.
@@ -54,29 +58,41 @@ const ProductCard = (props) => {
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const handleAddToCart = (e) => {
+  if (e) {
     e.stopPropagation();
+    e.preventDefault();
+  }
 
-    const defaultSize = sizes.length > 0 ? sizes[0] : "M";
-    const defaultColor =
-      colors.length > 0
-        ? colors[0].name || colors[0]
-        : "Default";
-
-    addToCart(
-      {
-        ...product,
-        image: image || product.images?.[0],
-        price: salePrice || price,
+  const rawUser = localStorage.getItem("user");
+  
+  if (!rawUser || rawUser === "null" || rawUser === "undefined") {
+    toast.error("Hãy đăng nhập để thêm sản phẩm vào giỏ hàng!", {
+      style: {
+        border: '1px solid #ff4b4b',
+        padding: '16px',
+        color: '#ff4b4b',
+        fontSize: '14px',
+        fontWeight: 'bold'
       },
-      defaultSize,
-      defaultColor,
-      1
-    );
+      iconTheme: {
+        primary: '#ff4b4b',
+        secondary: '#FFFAEE',
+      },
+    });
 
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
+    setTimeout(() => {
+      router.push("/login");
+    }, 1500);
+    
+    return; 
+  }
 
+  addToCart(product, "M", "Default", 1);
+  toast.success("Đã thêm vào giỏ hàng!"); 
+  
+  setAdded(true);
+  setTimeout(() => setAdded(false), 1500);
+};
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div
@@ -143,25 +159,12 @@ const ProductCard = (props) => {
           </div>
 
           {/* Add to cart */}
-          <button
-            onClick={handleAddToCart}
-            className={`
-              text-white text-[10px] font-medium py-1.5 px-2 sm:px-3
-              rounded transition-all duration-200 whitespace-nowrap flex items-center gap-1
-              ${added ? "bg-green-600 scale-95" : "bg-[#0044BB] hover:bg-blue-800"}
-            `}
-          >
-            {added ? (
-              <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Đã thêm
-              </>
-            ) : (
-              "Thêm giỏ hàng"
-            )}
-          </button>
+          <div onClick={(e) => e.stopPropagation()}>
+            <AddToCartButton 
+              onClick={handleAddToCart} 
+              added={added} 
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 // src/components/cart/CartDrawer.jsx
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
 
 const fmt = (n) =>
@@ -9,7 +9,12 @@ const fmt = (n) =>
 function DrawerItem({ item }) {
   const { dispatch } = useCart();
   const { product, selectedSize, selectedColor, quantity, key } = item;
+  const [isMounted, setIsMounted] = useState(false)
   const price = product.salePrice ?? product.price;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <div className="di-row">
@@ -82,7 +87,11 @@ function DrawerItem({ item }) {
 export default function CartDrawer() {
   const { state, totalItems, subtotal, isCartOpen, setIsCartOpen } = useCart();
   const overlayRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   // lock body scroll when open
   useEffect(() => {
     document.body.style.overflow = isCartOpen ? "hidden" : "";
@@ -117,7 +126,11 @@ export default function CartDrawer() {
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
             <span className="cd-title">Giỏ hàng</span>
-            {totalItems > 0 && <span className="cd-count">{totalItems}</span>}
+            {isMounted && (
+              <span className="cd-count">
+                ({state.items.length} sản phẩm)
+              </span>
+            )}
           </div>
           <button className="cd-close" onClick={() => setIsCartOpen(false)} aria-label="Đóng">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
