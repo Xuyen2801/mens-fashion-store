@@ -1,7 +1,7 @@
 // src/components/cart/OrderSummary.jsx
 import { useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
-import { shippingMethods } from "../../data/Product/product-ao/ao-thun";
+import { shippingMethods } from "../../data/Product/Ao-thun/productsAoThun";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);

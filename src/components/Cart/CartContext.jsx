@@ -12,7 +12,7 @@ function cartReducer(state, action) {
   switch (action.type) {
     case "ADD_ITEM": {
       const { product, selectedSize, selectedColor, quantity = 1 } = action.payload;
-
+      
       const key = `${product.id || product.sku || product.name}_${selectedSize}_${selectedColor}`;
       const existing = state.items.find((i) => i.key === key);
 
@@ -27,17 +27,7 @@ function cartReducer(state, action) {
 
       return {
         ...state,
-        items: [
-          ...state.items,
-          {
-            key,
-            product,
-            selectedSize,
-            selectedColor,
-            quantity,
-            selected: true, // 🔥 mặc định chọn
-          },
-        ],
+        items: [...state.items, { key, product, selectedSize, selectedColor, quantity }],
       };
     }
 
@@ -65,27 +55,6 @@ function cartReducer(state, action) {
       };
     }
 
-    // ✅ toggle từng item
-    case "TOGGLE_SELECT_ITEM":
-      return {
-        ...state,
-        items: state.items.map((i) =>
-          i.key === action.payload
-            ? { ...i, selected: !i.selected }
-            : i
-        ),
-      };
-
-    // ✅ chọn tất cả
-    case "TOGGLE_SELECT_ALL":
-      return {
-        ...state,
-        items: state.items.map((i) => ({
-          ...i,
-          selected: action.payload,
-        })),
-      };
-
     case "CLEAR_CART":
       return { ...state, items: [] };
 
@@ -102,10 +71,10 @@ function cartReducer(state, action) {
         orders: state.orders.map((o) =>
           o.id === action.payload.orderId
             ? {
-                ...o,
-                status: action.payload.status,
-                updatedAt: new Date().toISOString(),
-              }
+              ...o,
+              status: action.payload.status,
+              updatedAt: new Date().toISOString(),
+            }
             : o
         ),
       };
@@ -142,13 +111,10 @@ export function CartProvider({ children }) {
 
   const totalItems = state.items.reduce((s, i) => s + i.quantity, 0);
 
-  // 🔥 CHỈ tính item được chọn
-  const subtotal = state.items
-    .filter((i) => i.selected)
-    .reduce(
-      (s, i) => s + (i.product.salePrice ?? i.product.price) * i.quantity,
-      0
-    );
+  const subtotal = state.items.reduce(
+    (s, i) => s + (i.product.salePrice ?? i.product.price) * i.quantity,
+    0
+  );
 
   const addToCart = (product, size, color, quantity = 1) => {
     dispatch({
