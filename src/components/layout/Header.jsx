@@ -85,17 +85,22 @@ export default function Header() {
           <nav className="header-menu">
             {mainMenu.map((item, index) => {
               if (item.type === "link") {
-                return (
-                  <Link
-                    key={index}
-                    href={item.path || "#"}
-                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
-                  >
-                    {item.label}
-                    {item.highlight && <span>{item.highlight}</span>}
-                  </Link>
-                );
-              }
+  return (
+    <Link
+      key={index}
+      href={item.path || "#"}
+      style={{ position: "relative" }} 
+      className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+    >
+      {item.label}
+      {item.highlight && (
+        <span className={item.highlight === "New" ? "tag-new" : "tag-sale"}>
+          {item.highlight}
+        </span>
+      )}
+    </Link>
+  );
+}
 
               if (item.type === "dropdown") {
                 if (item.label === "Sản phẩm") {
@@ -141,14 +146,14 @@ export default function Header() {
                             </div>
                           ))}
                         </div>
-                        <div className="denim-left">
-                          {item.denim.rightCards.map((card, cardIdx) => (
-                            <div key={cardIdx} className="denim-card">
-                              <Image src={card.src} alt={card.text} width={260} height={160} />
-                              <span>{card.text}</span>
-                            </div>
-                          ))}
-                        </div>
+                        <div className="denim-right"> 
+    {item.denim.rightCards.map((card, cardIdx) => (
+        <div key={cardIdx} className="denim-card" onClick={() => router.push(card.path || "#")}>
+            <Image src={card.src} alt={card.text} width={260} height={160} />
+            <span>{card.text}</span>
+        </div>
+    ))}
+</div>
                       </div>
                     </div>
                   );
