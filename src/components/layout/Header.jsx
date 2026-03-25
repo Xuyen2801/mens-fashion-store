@@ -1,5 +1,5 @@
-// src/components/Header/Header.jsx  (or .tsx)
 "use client";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "../../styles/Product/header.css";
@@ -8,13 +8,47 @@ import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import headerData from "../../data/Product/headerData.js";
 import { useCart } from "../../components/Cart/CartContext";
 import { FiMapPin } from "react-icons/fi";
+import { usePathname } from "next/navigation";
+
 
 export default function Header() {
   const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
-  // ─── Cart state from context ───────────────────────────────────────────────
-  const { totalItems, setIsCartOpen } = useCart();
 
+  const { totalItems, setIsCartOpen } = useCart();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+  setIsMounted(true); 
+  }, []);
+
+  const handleUserClick = (e) => {
+    e.preventDefault();
+    const loggedInUser = localStorage.getItem("user"); 
+
+    if (loggedInUser) {
+      router.push("/account"); 
+    } else {
+      router.push("/login");   
+    }
+  };
+
+  // ─── THÊM TRẠNG THÁI KIỂM TRA MOUNTED ──────────────────────────────────────
+  // const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const [openSearch, setOpenSearch] = useState(false);
+  // ─── Cart state from context ───────────────────────────────────────────────
+  const pathname = usePathname();
+
+
+  useEffect(() => {
+  setOpenSearch(false); // 🔥 đóng search khi đổi trang
+}, [pathname]);
   return (
     <div className="site-header">
       {/* TOP BAR */}
@@ -24,8 +58,6 @@ export default function Header() {
             {topbar.promotions.map((text, idx) => (
               <span key={idx}>{text}</span>
             ))}
-            {/* nhân đôi để chạy vô hạn */}
-
             {topbar.promotions.map((text, idx) => (
               <span key={`clone-${idx}`}>{text}</span>
             ))}
@@ -53,33 +85,22 @@ export default function Header() {
           <nav className="header-menu">
             {mainMenu.map((item, index) => {
               if (item.type === "link") {
-                return (
-                  <a
-                    key={index}
-                    href="#"
-                    className={
-                      item.highlight
-                        ? item.label.toLowerCase().replace(" ", "-")
-                        : ""
-                    }
-                  >
-                    {item.label}
-                    {item.highlight && <span>{item.highlight}</span>}
-                  </a>
-                );
-              }
-              if (item.type === "link") {
-                return (
-                  <Link
-                    key={index}
-                    href={item.path}
-                    className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
-                  >
-                    {item.label}
-                    {item.highlight && <span>{item.highlight}</span>}
-                  </Link>
-                );
-              }
+  return (
+    <Link
+      key={index}
+      href={item.path || "#"}
+      style={{ position: "relative" }} 
+      className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+    >
+      {item.label}
+      {item.highlight && (
+        <span className={item.highlight === "New" ? "tag-new" : "tag-sale"}>
+          {item.highlight}
+        </span>
+      )}
+    </Link>
+  );
+}
 
               if (item.type === "dropdown") {
                 if (item.label === "Sản phẩm") {
@@ -125,19 +146,18 @@ export default function Header() {
                             </div>
                           ))}
                         </div>
-                        <div className="denim-right">
-                          {item.denim.rightCards.map((card, cardIdx) => (
-                            <div key={cardIdx} className="denim-card">
-                              <Image src={card.src} alt={card.text} width={260} height={160} />
-                              <span>{card.text}</span>
-                            </div>
-                          ))}
-                        </div>
+                        <div className="denim-right"> 
+    {item.denim.rightCards.map((card, cardIdx) => (
+        <div key={cardIdx} className="denim-card" onClick={() => router.push(card.path || "#")}>
+            <Image src={card.src} alt={card.text} width={260} height={160} />
+            <span>{card.text}</span>
+        </div>
+    ))}
+</div>
                       </div>
                     </div>
                   );
                 }
-
 
                 if (item.label === "Collection") {
                   return (
@@ -154,21 +174,19 @@ export default function Header() {
                               <span className="view-link">Xem ngay</span>
                             </Link>
                           ))}
-
-                          
                         </div>
                         <div className="collection-footer">
-                            <button
-                              type="button"
-                              className="view-all-btn"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                router.push("/collection");
-                              }}
-                            >
-                              Xem tất cả
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            className="view-all-btn"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              router.push("/collection");
+                            }}
+                          >
+                            Xem tất cả
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -180,18 +198,25 @@ export default function Header() {
 
           {/* ICONS */}
           <div className="header-icons">
-            {icons.search && <FiSearch />}
+            {icons.search && (
+  <button
+    className="search-btn"
+    onClick={() => setOpenSearch(!openSearch)}
+  >
+    <FiSearch />
+  </button>
+)}
 
             {icons.user && (
-              <Link
-                href="/login"
-                className="cursor-pointer hover:text-blue-600 transition-colors"
+              <button
+                onClick={handleUserClick}
+                className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
+                aria-label="Tài khoản của tôi"
               >
-                <FiUser />
-              </Link>
+                <FiUser className="text-[20px]" />
+              </button>
             )}
 
-            {/* MAP ICON */}
             <Link
               href="/he-thong-cua-hang"
               className="cursor-pointer hover:text-blue-600 transition-colors"
@@ -200,23 +225,68 @@ export default function Header() {
             </Link>
 
             {icons.cart && (
+
+  <button
+    className="cart-icon-btn"
+    onClick={() => {
+      if (!isMounted) return; 
+      const loggedInUser = localStorage.getItem("user");
+      if (loggedInUser) {
+        setIsCartOpen(true);
+      } else {
+        alert("Vui lòng đăng nhập!");
+        router.push("/login");
+      }
+    }}
+  >
+    <FiShoppingCart />
+    {isMounted && totalItems > 0 && (
+      <span className="badge">{totalItems}</span>
+    )}
+  </button>
+)}
+{/* =======
               <button
                 className="cart-icon-btn"
                 onClick={() => setIsCartOpen(true)}
-                aria-label={`Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
+                // THÊM KIỂM TRA isMounted ĐỂ ĐỒNG BỘ ARIA-LABEL
+                aria-label={!isMounted ? "Giỏ hàng" : `Giỏ hàng${totalItems > 0 ? ` (${totalItems} sản phẩm)` : ""}`}
               >
                 <FiShoppingCart />
 
-                {totalItems > 0 && (
+                {/* THÊM KIỂM TRA isMounted Ở ĐÂY ĐỂ TRÁNH LỖI ĐỎ */}
+                {/* {isMounted && totalItems > 0 && (
                   <span className="badge cart-badge-live">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 )}
               </button>
             )}
+>>>>>>> 59093de9880acb17b3eefae9083fbc66ab237ac2 */} 
           </div>
         </div>
       </header>
+      {openSearch && (
+  <div className="search-dropdown">
+    <div className="search-box">
+      <input
+        type="text"
+        placeholder="Tìm kiếm sản phẩm..."
+      />
+      <FiSearch className="search-icon" />
+    </div>
+
+    <div className="search-suggestions">
+      <p>Từ khóa nổi bật hôm nay</p>
+
+      <div className="tags">
+        {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
+          <span key={tag}>{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

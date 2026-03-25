@@ -13,32 +13,42 @@ import "../../../styles/Product/SeeMore.css";
 import "../../../styles/Product/Fad.css";
 import aoKhoacData from "../../../data/Product/product-ao/ao-khoac";
 import aoThunData from "../../../data/Product/product-ao/ao-thun"; 
+import poloData from "../../../data/Product/product-ao/ao-polo";
+import hoodieData from "../../../data/Product/product-ao/hoodie";
+import somiData from "../../../data/Product/product-ao/so-mi";
+import tanktopData from "../../../data/Product/product-ao/tank-top";
+import setdoData from "../../../data/Product/product-ao/set-do";
 
-// Khai báo Interface (Kiểu dữ liệu) cho TSX
+
 interface PageProps {
     params: Promise<{ category: string }>;
 }
 
 export default function Page({ params }: PageProps) {
-    // 1. Unwrap params (Chuẩn Next.js 15+)
+
     const resolvedParams = use(params);
     const category = resolvedParams.category;
 
-    // 2. Lấy Data tương ứng với category hiện tại
     const categoryDataMap: Record<string, any> = {
         "ao-khoac": aoKhoacData,
         "ao-thun": aoThunData, 
+        "ao-polo": poloData,
+        "hoodie": hoodieData,
+        "ao-so-mi": somiData,
+        "somi": somiData, 
+        "tank-top": tanktopData,
+        "set-do": setdoData,
     };
 
-    // Dữ liệu của danh mục hiện tại đang xem
+  
     const currentCategoryData = categoryDataMap[category] || {};
 
-    // Tách riêng rẽ từng phần (Thêm fallback [] hoặc null để tránh lỗi Undefined)
+
     const products: any[] = currentCategoryData.products || [];
     const content: any = currentCategoryData.pageDetails || null;
     const currentFaqs: any[] = currentCategoryData.faqs || [];
 
-    // 3. Xử lý Bộ lọc (Filter)
+    
     const FILTER_OPTIONS = [
         { label: "Sản phẩm nổi bật", value: "default" },
         { label: "Giá thấp đến cao", value: "price_asc" },
@@ -51,7 +61,7 @@ export default function Page({ params }: PageProps) {
     const [filter, setFilter] = useState("default");
 
     const filteredProducts = useMemo(() => {
-        // Lúc này products chắc chắn là 1 mảng (Array), sẽ không bị lỗi "not iterable"
+ 
         let result = [...products];
 
         switch (filter) {
@@ -77,7 +87,6 @@ export default function Page({ params }: PageProps) {
         return result;
     }, [filter, products]);
 
-    // 4. Các State giao diện (Modal & Accordion)
     const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -85,7 +94,7 @@ export default function Page({ params }: PageProps) {
         setOpenIndex(openIndex === index ? null : index);
     };
 
-    /* ===== YouTube embed helper ===== */
+
     const getYoutubeEmbed = (url: string) => {
         if (!url) return "";
         if (url.includes("youtu.be"))
@@ -96,7 +105,6 @@ export default function Page({ params }: PageProps) {
         return url;
     };
 
-    /* ===== Media renderer ===== */
     const renderMedia = (media: { type: string; src: string } | undefined, alt = "") => {
         if (!media) return null;
 
@@ -145,29 +153,27 @@ export default function Page({ params }: PageProps) {
         return null;
     };
 
-    // 5. RENDER UI
     return (
         <div className="min-h-screen flex flex-col font-sans bg-gray-50">
             <main className="flex-grow">
-                {/* Breadcrumb */}
+        
                 <Breadcrumb
                     className="ml-5"
                     items={[
                         { label: "Trang chủ", href: "/" },
                         { label: "Danh mục", href: "/collections" },
-                        { label: category === "ao-khoac" ? "Áo khoác nam" : "Áo thun nam" }
+                        { label: currentCategoryData.pageDetails?.title || "Sản phẩm nam" }
                     ]}
                 />
 
-                {/* Banner */}
+          
                 <div className="w-full overflow-hidden shadow-lg">
                     <CollectionBanner backgroundImage={content?.bannerImage || "/images/banners/default-banner.jpg"}  />
                 </div>
 
-                {/* Content */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     
-                    {/* Filter */}
+                  
                     <div className="my-6 flex justify-end">
                         <ProductFilter
                             conditions={FILTER_OPTIONS}
@@ -176,7 +182,6 @@ export default function Page({ params }: PageProps) {
                         />
                     </div>
 
-                    {/* Product grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 pb-10 lg:pb-16">
                         {filteredProducts.map((product) => (
                             <div
@@ -195,7 +200,7 @@ export default function Page({ params }: PageProps) {
                         ))}
                     </div>
 
-                    {/* See more Content (SEO) */}
+                
                     <div className="body py-10 border-t border-gray-200">
                         <SeeMore maxHeight={700}>
                             {Array.isArray(content?.sections) && content.sections.map((section: any, index: number) => {
@@ -283,7 +288,7 @@ export default function Page({ params }: PageProps) {
                             })}
                         </SeeMore>
 
-                        {/* FAQ Section */}
+                    
                         {currentFaqs.length > 0 && (
                             <section className="faq-section mt-16">
                                 <h2 className="text-3xl font-bold text-center mb-10">
@@ -320,7 +325,6 @@ export default function Page({ params }: PageProps) {
                     </div>
                 </div>
 
-                {/* ===== MODAL ===== */}
                 {selectedProduct && (
                     <ProductCardModal
                         isOpen={true}

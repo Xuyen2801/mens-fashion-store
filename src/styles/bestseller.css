@@ -1,0 +1,185 @@
+/* ===== PAGE ===== */
+
+.collection-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+
+/* ===== BREADCRUMB ===== */
+
+.breadcrumb span {
+    color: #000;
+}
+
+
+/* LEFT TEXT */
+
+.banner-left h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: #1d3c78;
+}
+
+.banner-left p {
+    font-size: 22px;
+    color: #1d3c78;
+    margin-top: 8px;
+}
+
+
+/* RIGHT IMAGE */
+
+.banner-right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* ===== TOP BAR ===== */
+
+.collection-top {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.sort {
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+
+/* ===== GRID ===== */
+
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+
+/* ===== CARD ===== */
+
+.product-card {
+    cursor: pointer;
+}
+
+
+/* IMAGE */
+
+.card-img {
+    position: relative;
+    background: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-img img {
+    width: 100%;
+}
+
+
+/* BADGE */
+
+.badge-new {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #1d3c78;
+    color: #fff;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 3px;
+}
+
+
+/* INFO */
+
+.card-info {
+    margin-top: 8px;
+}
+
+.card-info h4 {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* PRICE */
+
+.price {
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+.price .current {
+    font-weight: 700;
+}
+
+.price .old {
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 6px;
+}
+
+
+/* ===== SORT DROPDOWN ===== */
+
+.sort {
+    position: relative;
+    border: 1px solid #000;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    min-width: 180px;
+}
+
+.sort-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #000;
+    z-index: 999;
+}
+
+.sort-item {
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.sort-item:hover {
+    background: #f2f2f2;
+}
+
+.sort-item.active {
+    background: #1d3c78;
+    color: #fff;
+}
+
+
+/* ===== ADD TO CART ===== */
+
+.add-cart-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    background: #1d3c78;
+    color: #fff;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add-cart-btn:hover {
+    background: #163061;
+}
