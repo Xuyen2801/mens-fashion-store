@@ -51,18 +51,16 @@ const headerData = {
             { label: "Quần tây", path: "/Product/quan-tay" },
             { label: "Quần boxer", path: "/Product/quan-boxer" },
           ],
-        }
-        
+        },
       ],
     },
 
     {
-      type: "link",
       label: "Hàng mới",
+      path: "/Product/new", // Đổi từ "/new" thành "/Product/new"
+      type: "link",
       highlight: "New",
-      path: "/new",
     },
-
     {
       type: "link",
       label: "Hàng bán chạy",
@@ -122,12 +120,11 @@ const headerData = {
     },
 
     {
+      label: "Siêu sale",
+      path: "/Product/sale", // Đổi từ "/sale" thành "/Product/sale"
       type: "link",
-      label: "SIÊU SALE",
       highlight: "-50%",
-      path: "/sale",
     },
-
     {
       type: "dropdown",
       label: "Collection",
