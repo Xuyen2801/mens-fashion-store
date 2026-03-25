@@ -1,10 +1,20 @@
 // src/data/products.js
+const generateSlug = (name) => {
+  return name.toLowerCase()
+    .normalize("NFD") // Tách chữ có dấu thành chữ thường + dấu
+    .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
+    .replace(/\s+/g, '-') // Thay khoảng trắng bằng dấu gạch ngang
+    .replace(/[^a-z0-9-]/g, '') // Loại bỏ ký tự đặc biệt
+    .replace(/-+/g, '-') // Thay nhiều dấu gạch ngang liên tiếp bằng một
+    .replace(/^-+|-+$/g, ''); // Loại bỏ dấu gạch ngang ở đầu và cuối
+}
 
 export const productsAll = [
   {
     id: 1,
     name: "Quần Jeans Nam Paints Form Straight",
     sku: "QJID0249-02",
+    slug: "quan-jeans-nam-paints-form-straight",
     price: 549000,
     salePrice: 521550,
     image: "/images/products/jeans1.jpg",
@@ -31,6 +41,7 @@ export const productsAll = [
     id: 2,
     name: "Áo Thun Nam Cotton L",
     sku: "ATCDL001",
+    slug: "ao-thun-nam-cotton-l",
     price: 329000,
     salePrice: 299000,
     image: "/images/productcart/2.jpg",
@@ -49,6 +60,7 @@ export const productsAll = [
     id: 3,
     name: "Áo Thun Nam In Find New",
     sku: "ATIN002",
+    slug: "ao-thun-nam-in-find-new",
     price: 329000,
     salePrice: 199000,
     image: "/images/productcart/3.jpg",
@@ -67,6 +79,7 @@ export const productsAll = [
     id: 4,
     name: "Áo Thun Nam Cotton Prime Label",
     sku: "ATPL004",
+    slug: "ao-thun-nam-cotton-prime-label",
     price: 420000,
     salePrice: 350000,
     image: "/images/productcart/5.jpg",
@@ -85,6 +98,7 @@ export const productsAll = [
     id: 5,
     name: "Áo Thun Nam Basic Classic",
     sku: "ATBC005",
+    slug: "ao-thun-nam-basic-classic",
     price: 299000,
     salePrice: 259000,
     image: "/images/productcart/6.jpg",
@@ -103,6 +117,7 @@ export const productsAll = [
     id: 6,
     name: "Áo Thun Nam Oversize Street",
     sku: "ATOS006",
+    slug: "ao-thun-nam-oversize-street",
     price: 379000,
     salePrice: 329000,
     image: "/images/productcart/7.jpg",
@@ -120,6 +135,7 @@ export const productsAll = [
   {
     id: 7,
     name: "Áo Thun Nam Graphic Minimal",
+    slug: "ao-thun-nam-graphic-minimal",
     sku: "ATGM007",
     price: 349000,
     salePrice: 299000,
@@ -138,6 +154,7 @@ export const productsAll = [
   {
     id: 8,
     name: "Áo Polo Nam Basic",
+    slug: "ao-polo-nam-basic",
     sku: "PLB008",
     price: 459000,
     salePrice: 399000,
@@ -156,6 +173,7 @@ export const productsAll = [
   {
     id: 9,
     name: "Áo Thun Nam In Typo",
+    slug: "ao-thun-nam-in-typo",
     sku: "ATTP009",
     price: 329000,
     salePrice: 279000,
@@ -174,6 +192,7 @@ export const productsAll = [
   {
     id: 10,
     name: "Áo Thun Nam Premium Cotton",
+    slug: "ao-thun-nam-premium-cotton",
     sku: "ATPR010",
     price: 399000,
     salePrice: 349000,
@@ -192,6 +211,7 @@ export const productsAll = [
   id: 11,
   name: "Áo Khoác Varsity Nam Stallion Club",
   sku: "AKVS000",
+  slug: "ao-khoac-varsity-nam-stallion-club",
   price: 699000,
   salePrice: 664000,
   image: "/images/products/ao_khoac/01.jpg",
@@ -210,6 +230,7 @@ export const productsAll = [
   id: 12,
   name: "Áo Khoác Gió Active Nam AirFlex Siêu Nhẹ",
   sku: "AKG001",
+  slug: "ao-khoac-gio-active-nam-airflex-sieu-nhe",
   price: 549000,
   salePrice: 521000,
   image: "/images/products/ao_khoac/02.jpg",
@@ -228,6 +249,7 @@ export const productsAll = [
   id: 13,
   name: "Áo Khoác Gió Nam Phối Nón Rời",
   sku: "AKG002",
+  slug: "ao-khoac-gio-nam-phoi-non-roi",
   price: 699000,
   salePrice: 664000,
   image: "/images/products/ao_khoac/03.jpg",
@@ -246,6 +268,7 @@ export const productsAll = [
   id: 14,
   name: "Áo Khoác Phao Nam Snowward",
   sku: "AKP003",
+  slug: "ao-khoac-phao-nam-snowward",
   price: 799000,
   salePrice: 559000,
   image: "/images/products/ao_khoac/04.jpg",
@@ -264,6 +287,7 @@ export const productsAll = [
   id: 15,
   name: "Áo Khoác Jeans Nam Offwhite Pocket",
   sku: "AKJ004",
+  slug: "ao-khoac-jeans-nam-offwhite-pocket",
   price: 599000,
   salePrice: 419000,
   image: "/images/products/ao_khoac/05.jpg",
@@ -282,6 +306,7 @@ export const productsAll = [
   id: 16,
   name: "Áo Khoác Nam Heritage Varsity",
   sku: "AKVS005",
+  slug: "ao-khoac-nam-heritage-varsity",
   price: 699000,
   salePrice: 664000,
   image: "/images/products/ao_khoac/06.jpg",
@@ -300,6 +325,7 @@ export const productsAll = [
   id: 17,
   name: "Áo Khoác Jean Nam Trucker Steel Mark",
   sku: "AKJ006",
+  slug: "ao-khoac-jean-nam-trucker-steel-mark",
   price: 629000,
   salePrice: 597000,
   image: "/images/products/ao_khoac/07.jpg",
@@ -318,6 +344,7 @@ export const productsAll = [
   id: 18,
   name: "Áo Khoác Hoodie Zip Nam Mixing Stripes",
   sku: "AKH007",
+  slug: "ao-khoac-hoodie-zip-nam-mixing-stripes",
   price: 449000,
   salePrice: 381000,
   image: "/images/products/ao_khoac/08.jpg",
@@ -336,6 +363,7 @@ export const productsAll = [
   id: 19,
   name: "Áo Khoác Phao Nam ICON AirLite",
   sku: "AKP008",
+  slug: "ao-khoac-phao-nam-icon-airlite",
   price: 749000,
   salePrice: 374000,
   image: "/images/products/ao_khoac/09.jpg",
@@ -354,6 +382,7 @@ export const productsAll = [
   id: 20,
   name: "Áo Khoác Nam Chống Nắng UltraShade",
   sku: "AKCN009",
+  slug: "ao-khoac-nam-chong-nang-ultrashade",
   price: 349000,
   salePrice: 249000,
   image: "/images/products/ao_khoac/10.jpg",

@@ -1,10 +1,12 @@
 // src/components/product/ProductCard.jsx
 "use client";
 import React, { useState } from "react";
-import { useCart } from "../../components/Cart/CartContext";
+import { useCart } from "../Cart/CartContext";
 import { useRouter } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
 import toast from 'react-hot-toast';
+
+
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -22,6 +24,15 @@ const ProductCard = (props) => {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const router = useRouter();
+
+
+const handleGoToDetail = (e) => {
+    e.preventDefault();
+    const safeCategory = "ao-polo";
+    const slug = props.slug || props.id || "product-detail";
+    router.push(`Product/${safeCategory}/${slug}`);
+}
+
 
   // ── Normalize props ────────────────────────────────────────────────────────
   // Nếu `product` được truyền vào là object đầy đủ thì dùng luôn.

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiCreditCard, FiBox, FiTruck, FiStar } from "react-icons/fi";
 import { FaCrown } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -18,10 +19,15 @@ export default function AccountPage() {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    alert("Đã đăng xuất thành công!");
-    router.push("/login");
-  };
+  localStorage.removeItem("user");
+
+  toast.success("Đã đăng xuất thành công!", {
+  });
+  
+  setTimeout(() => {
+    window.location.href = "/login";
+  }, 1000);
+};
 
   if (!user) return <div className="text-center mt-20">Đang tải thông tin...</div>;
 

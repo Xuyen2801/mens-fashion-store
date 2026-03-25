@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "@/src/lib/firebase";
+import { auth } from "../../lib/firebase";
 import bcrypt from "bcryptjs";
 import toast from "react-hot-toast";
 
@@ -167,7 +167,7 @@ export default function RegisterForm() {
           console.error("Lỗi khi gọi API gửi mail:", mailErr);
         }
 
-        toast.success("Đăng ký thành công! Vy kiểm tra email nhé.", {
+        toast.success("Đăng ký thành công! Kiểm tra email nhé.", {
         duration: 4000
         });
 

@@ -11,7 +11,7 @@ import Breadcrumb from "../../components/layout/Breadcrumb";
 import { IoCaretDownOutline } from "react-icons/io5";
 
 import content from "../../data/Product/Tat-ca-san-pham/contentSeeMoreAll";
-import products from "../../data/Product/Tat-ca-san-pham/productsAll"
+import productsAll from "@/data/Product/Tat-ca-san-pham/productsAll";
 import "../../styles/Product/SeeMore.css";
 import "../../styles/Product/Fad.css";
 
@@ -30,7 +30,7 @@ export default function Home() {
     ];
     const [filter, setFilter] = useState("default");
     const filteredProducts = React.useMemo(() => {
-        let result = [...products];
+        let result = [...productsAll];
 
         switch (filter) {
             case "price_asc":
@@ -62,7 +62,7 @@ export default function Home() {
     }, [filter]);
 
 
-    const [selectedProduct, setSelectedProduct] = useState<(typeof products)[0] | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<(typeof productsAll)[0] | null>(null);
 
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
