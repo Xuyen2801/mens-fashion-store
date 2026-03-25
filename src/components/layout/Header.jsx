@@ -1,9 +1,5 @@
 "use client";
-// <<<<<<< HEAD
 import React, { useState, useEffect } from "react";
-// =======
-// import { useState, useEffect } from "react"; // THÊM useEffect ở đây
-// >>>>>>> 59093de9880acb17b3eefae9083fbc66ab237ac2
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "../../styles/Product/header.css";
@@ -12,10 +8,13 @@ import { FiSearch, FiUser, FiShoppingCart } from "react-icons/fi";
 import headerData from "../../data/Product/headerData.js";
 import { useCart } from "../../components/Cart/CartContext";
 import { FiMapPin } from "react-icons/fi";
+import { usePathname } from "next/navigation";
+
 
 export default function Header() {
   const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
+
   const { totalItems, setIsCartOpen } = useCart();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -42,6 +41,14 @@ export default function Header() {
   }, []);
   // ───────────────────────────────────────────────────────────────────────────
 
+  const [openSearch, setOpenSearch] = useState(false);
+  // ─── Cart state from context ───────────────────────────────────────────────
+  const pathname = usePathname();
+
+
+  useEffect(() => {
+  setOpenSearch(false); // 🔥 đóng search khi đổi trang
+}, [pathname]);
   return (
     <div className="site-header">
       {/* TOP BAR */}
@@ -186,7 +193,14 @@ export default function Header() {
 
           {/* ICONS */}
           <div className="header-icons">
-            {icons.search && <FiSearch />}
+            {icons.search && (
+  <button
+    className="search-btn"
+    onClick={() => setOpenSearch(!openSearch)}
+  >
+    <FiSearch />
+  </button>
+)}
 
             {icons.user && (
               <button
@@ -247,6 +261,27 @@ export default function Header() {
           </div>
         </div>
       </header>
+      {openSearch && (
+  <div className="search-dropdown">
+    <div className="search-box">
+      <input
+        type="text"
+        placeholder="Tìm kiếm sản phẩm..."
+      />
+      <FiSearch className="search-icon" />
+    </div>
+
+    <div className="search-suggestions">
+      <p>Từ khóa nổi bật hôm nay</p>
+
+      <div className="tags">
+        {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
+          <span key={tag}>{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
