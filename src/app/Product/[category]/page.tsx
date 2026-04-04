@@ -23,6 +23,11 @@ import aoKhoacData from "../../../data/Product/product-ao/ao-khoac";
 
 // =======
 import aoThunData from "../../../data/Product/product-ao/ao-thun";
+import aoSoMiData from "../../../data/Product/product-ao/so-mi";
+import aoPoloData from "../../../data/Product/product-ao/ao-polo";
+import setDoData from "../../../data/Product/product-ao/set-do";
+import hoodieData from "../../../data/Product/product-ao/hoodie";
+import tankTopData from "../../../data/Product/product-ao/tank-top";
 import jeanData from "../../../data/product-quan/jean";
 import shortData from "../../../data/product-quan/short";
 import kakiData from "../../../data/product-quan/kaki";
@@ -92,6 +97,11 @@ export default function Page({ params }: PageProps) {
     "quan-jogger": joggerData,
     "quan-tay": tayData,
     "san-pham-moi": sanPhamMoiData,
+    "ao-polo":aoPoloData,
+    "ao-so-mi": aoSoMiData,
+    "hoodie":hoodieData,
+    "tank-top":tankTopData,
+    "set-do":setDoData,
     new: sanPhamMoiData,
     outlet: outletData,
     sale: outletData,

@@ -75,9 +75,9 @@ const headerData = {
           {
             title: "JEANS",
             links: [
-              { label: "Quần Jeans", path: "/denim/jeans" },
-              { label: "Quần Short Jeans", path: "/denim/short-jeans" },
-              { label: "Áo Khoác Jeans", path: "/denim/jacket" },
+              { label: "Quần Jeans", path: "/Product/quan-jean" },
+              { label: "Quần Short Jeans", path: "/Product/quan-short" },
+              { label: "Áo Khoác Jeans", path: "/Product/ao-khoac" },
             ],
           },
           {
@@ -89,14 +89,7 @@ const headerData = {
               { label: "RETRO SPORTS", path: "/collection/RETRO" },
             ],
           },
-          {
-            title: "FORM DÁNG",
-            links: [
-              { label: "Smart-Fit", path: "/denim/smart-fit" },
-              { label: "Straight", path: "/denim/straight" },
-              { label: "Slim-Fit", path: "/denim/slim-fit" },
-            ],
-          },
+        
         ],
         rightCards: [
           {

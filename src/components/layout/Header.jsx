@@ -181,16 +181,6 @@ export default function Header() {
                             </div>
                           ))}
                         </div>
-{/* <<<<<<< HEAD
-                        <div className="denim-right"> 
-    {item.denim.rightCards.map((card, cardIdx) => (
-        <div key={cardIdx} className="denim-card" onClick={() => router.push(card.path || "#")}>
-            <Image src={card.src} alt={card.text} width={260} height={160} />
-            <span>{card.text}</span>
-        </div>
-    ))}
-</div>
-======= */}
                         <div className="denim-right">
                           {item.denim.rightCards.map((card, cardIdx) => (
                             <div
@@ -208,20 +198,10 @@ export default function Header() {
                             </div>
                           ))}
                         </div>
-{/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */}
                       </div>
                     )}
-{/* 
-<<<<<<< HEAD
-                if (item.label === "Collection") {
-                  return (
-                    <div key={index} className="menu-item has-dropdown">
-                      <a href="#" className="menu-link">
-                        {item.label} <span className="arrow">▾</span>
-                      </a>
-======= */}
+
                     {item.label === "Collection" && (
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
                       <div className="dropdown collection-dropdown">
                         <div className="collection-grid">
                           {item.collections.map((col, colIdx) => (
@@ -245,14 +225,8 @@ export default function Header() {
                           <button
                             type="button"
                             className="view-all-btn"
-// <<<<<<< HEAD
-//                             onClick={(e) => {
-//                               e.preventDefault();
-//                               router.push("/collection");
-//                             }}
-// =======
+
                             onClick={() => router.push("/collection")}
-// {/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */}
                           >
                             Xem tất cả
                           </button>
