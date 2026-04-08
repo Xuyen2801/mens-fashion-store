@@ -1,0 +1,228 @@
+/* src/styles/bestseller.css */
+
+/* 1. Khung tổng thể của Card */
+.product-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* 2. Nhãn HÀNG MỚI ở góc phải */
+.badge-new {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #0035b8; /* Màu xanh đặc trưng */
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  z-index: 10;
+  border-radius: 0 0 0 4px;
+  text-transform: uppercase;
+}
+
+/* 3. Container ảnh và thanh công cụ */
+.image-container {
+  position: relative;
+  background-color: #f5f5f5; /* Nền xám nhạt như ảnh mẫu */
+  aspect-ratio: 3/4; /* Tỉ lệ ảnh thời trang chuẩn */
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Thanh công cụ trắng chứa icon giỏ hàng/mắt */
+.action-tools {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  display: flex;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  padding: 8px 15px;
+  gap: 20px;
+  opacity: 0; /* Mặc định ẩn */
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .action-tools {
+  opacity: 1; /* Hiện lên khi hover vào card */
+  transform: translateX(-50%) translateY(0);
+}
+
+.action-tools svg {
+  font-size: 18px;
+  cursor: pointer;
+  color: #333;
+}
+
+.action-tools svg:hover {
+  color: #0035b8;
+}
+
+/* 4. Thông tin chữ và giá */
+.product-info {
+  padding: 12px 10px;
+}
+
+.product-name {
+  font-size: 14px;
+  color: #333;
+  font-weight: 400; /* Chữ thường không in đậm */
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Cắt tên nếu quá dài */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-price {
+  color: #0035b8; /* Màu xanh đậm cho giá */
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* 5. Ô chọn màu sắc (Color Swatches) */
+.color-options {
+  display: flex;
+  gap: 8px;
+  padding: 5px 10px 15px;
+}
+
+.color-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #eee;
+  padding: 2px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.color-dot:hover,
+.color-dot.active {
+  border-color: #000;
+}
+
+.color-dot img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* src/styles/bestseller.css */
+
+/* Container bao quanh các ô màu */
+.color-options {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép xuống dòng nếu quá nhiều màu */
+  gap: 6px; /* Khoảng cách giữa các ô */
+  padding: 10px 5px;
+  margin-top: auto; /* Đẩy xuống dưới cùng của card */
+}
+
+/* Từng ô màu tròn */
+.color-dot {
+  width: 24px; /* Kích thước nhỏ gọn như ảnh mẫu */
+  height: 24px;
+  border-radius: 50%; /* Tạo hình tròn hoàn hảo */
+  border: 1px solid #e0e0e0; /* Viền xám nhạt */
+  overflow: hidden; /* Để ảnh không bị tràn ra ngoài hình tròn */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-dot:hover {
+  border-color: #000; /* Đổi màu viền khi di chuột qua */
+  transform: scale(1.1);
+}
+
+/* Ảnh thu nhỏ bên trong ô màu */
+.color-dot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Đảm bảo ảnh lấp đầy vòng tròn mà không bị méo */
+}
+/* src/styles/bestseller.css */
+
+/* Định dạng cho vòng tròn chứa ảnh thu nhỏ */
+.product-symbol-circle {
+  width: 32px; /* Kích thước icon */
+  height: 32px;
+  border-radius: 50%; /* Tạo hình tròn hoàn hảo */
+  border: 1px solid #e0e0e0; /* Viền xám nhạt nhẹ nhàng */
+  padding: 2px;
+  overflow: hidden;
+  margin-top: 10px; /* Khoảng cách với phần giá tiền */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.product-symbol-circle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover; /* Đảm bảo ảnh không bị méo khi thu nhỏ */
+}
+
+/* Style cho phần giá tiền để trông chuyên nghiệp */
+/* src/styles/bestseller.css */
+
+.product-price {
+  margin-top: 5px; /* Giảm nhẹ khoảng cách phía trên giá */
+  margin-bottom: 0; /* Đảm bảo không có khoảng cách phía dưới giá */
+}
+
+.product-symbol-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  padding: 2px;
+  overflow: hidden;
+
+  /* THAY ĐỔI Ở ĐÂY: Giảm từ 10px xuống còn 2px hoặc 0 */
+  margin-top: 0px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+.price-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.current-price {
+  font-weight: 700;
+  color: #0035b8; /* Màu xanh đậm ICONDENIM */
+  font-size: 15px;
+}
+
+.old-price {
+  font-size: 11px;
+  color: #999;
+  text-decoration: line-through;
+}
