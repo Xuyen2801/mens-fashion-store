@@ -1,105 +1,12 @@
 /* ===== TOP BAR ===== */
-/* <<<<<<< HEAD
 
 .topbar {
-    background: #001f5d;
-    color: #fff;
-    font-size: 13px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-}
-
-.topbar-container {
-    max-width: 1920px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: flex;
-    gap: 28px;
-    white-space: nowrap;
-======= */
-/* ===== TOP BAR ===== */
-.topbar {
-  background: #b91c1c; /* đỏ sale */
-  color: #fff;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.topbar-track {
-  width: 100%;
-  overflow: hidden;
-}
-
-.topbar-content {
-  display: flex;
-  gap: 60px;
-  white-space: nowrap;
-  animation: marquee 18s linear infinite;
-}
-
-.topbar-content span {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* ===== HEADER CONTAINER ===== */
-.header {
-  background: #ffffff;
-  border-bottom: 1px solid #eee;
-}
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-}
-
-.header-container {
-  max-width: 1920px;
-  height: 80px; /* Cố định chiều cao để dễ căn chỉnh */
-  margin: 0 auto;
-  padding: 0 40px;
-  display: flex; /* Chuyển từ grid sang flex để căn chỉnh linh hoạt hơn */
-  align-items: center;
-  justify-content: space-between;
-/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */
-}
-
-
-/* ===== HEADER ===== */
-
-.header {
-    background: #ffffff;
-    border-bottom: 1px solid #eee;
-    /* Nếu header sticky thì thêm: position: sticky; top: 0; z-index: 1000; */
-}
-
-.site-header {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-}
-
-.topbar {
-    height: 40px;
     background: #b91c1c;
-    /* đỏ sale */
     color: #fff;
-    overflow: hidden;
+    height: 40px;
     display: flex;
     align-items: center;
+    overflow: hidden;
 }
 
 .topbar-track {
@@ -119,9 +26,6 @@
     font-weight: 500;
 }
 
-
-/* animation chạy ngang */
-
 @keyframes marquee {
     from {
         transform: translateX(0);
@@ -131,69 +35,60 @@
     }
 }
 
+
+/* ===== SITE / HEADER WRAPPER ===== */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.header {
+    background: #ffffff;
+    border-bottom: 1px solid #eee;
+}
+
 .header-container {
     max-width: 1920px;
-    height: 87px;
+    height: 80px;
     margin: 0 auto;
     padding: 0 40px;
-    display: grid;
-    grid-template-columns: 180px 1fr 180px;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 24px;
 }
 
 
 /* ===== LOGO ===== */
-/* <<<<<<< HEAD
-======= */
+
 .header-logo {
-  flex: 0 0 180px; /* Độ rộng cố định cho logo */
-  display: flex;
-  align-items: center;
+    flex: 0 0 180px;
+    display: flex;
+    align-items: center;
 }
-/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */
 
 .header-logo img {
     height: auto;
     max-height: 32px;
 }
-/* <<<<<<< HEAD
 
 
-=======
->>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */
 /* ===== MENU CẤP 1 ===== */
 
 .header-menu {
-/* <<<<<<< HEAD
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 28px;
-    font-size: 15px;
+    gap: 30px;
     font-weight: 600;
+    flex: 1;
 }
 
 .header-menu>a,
 .header-menu .menu-item>a {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 40px;
-    color: #111;
-    text-decoration: none;
-    font-weight: 600;
-======= */
-  display: flex;
-  align-items: center; /* Căn giữa tất cả mục menu theo chiều dọc */
-  justify-content: center;
-  gap: 30px;
-  font-weight: 600;
-  flex: 1;
-}
-
-.header-menu > a,
-.header-menu .menu-item > a {
-    position: relative !important; 
     display: inline-flex;
     align-items: center;
     color: #111;
@@ -224,86 +119,425 @@
 
 /* Badge NEW & SALE */
 
-.header-menu a.new span,
-.header-menu a.sale span {
+.tag-new,
+.tag-sale,
+.badge-tag {
     position: absolute;
-    top: -10px;
-    right: -22px;
+    top: -8px;
+    right: -12px;
     font-size: 10px;
     font-weight: 700;
-    color: #c30000;
-}
-
-.header-menu a.sale {
-    color: #c30000;
-    font-weight: 700;
-}
-/* ===== ĐỊNH VỊ NHÃN BAY LÊN GÓC ===== */
-.tag-new, .tag-sale, .badge-tag {
-    position: absolute !important;
-    top: -8px !important;    /* Đẩy lên phía trên chữ */
-    right: -12px !important; /* Kéo sang phía bên phải chữ */
-    
-    font-size: 10px !important;
-    font-weight: 700 !important;
     line-height: 1;
-    padding: 2px 4px !important;
-    border-radius: 2px !important;
+    padding: 2px 4px;
+    border-radius: 2px;
     white-space: nowrap;
     pointer-events: none;
     text-transform: uppercase;
 }
 
-/* Màu sắc chuẩn cho từng loại */
-.tag-new, .new-tag {
-    background-color: #ed1c24 !important; /* Màu đỏ nổi bật */
+.tag-new,
+.new-tag {
+    background-color: #ed1c24;
     color: #fff !important;
 }
 
-.tag-sale, .sale-tag {
-    background-color: #ed1c24 !important;
+.tag-sale,
+.sale-tag {
+    background-color: #ed1c24;
     color: #fff !important;
-    right: -25px !important; /* Vì "-50%" dài hơn chữ "New" nên kéo ra xa hơn chút */
+    right: -25px;
 }
 
 
 /* ===== ICONS ===== */
 
 .header-icons {
+    flex: 0 0 auto;
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 20px;
     font-size: 20px;
 }
 
-.header-icons svg {
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
     cursor: pointer;
-}
-
-.cart {
-    position: relative;
-}
-
-.badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    background: red;
-    color: #fff;
-    font-size: 10px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: inherit;
+    font-size: inherit;
+    transition: opacity 0.15s;
+}
+
+.icon-btn:hover {
+    opacity: 0.7;
+}
+
+.icon-btn.active {
+    color: #000;
+}
+
+.cart-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: inherit;
+    font-size: inherit;
+    line-height: 1;
+    transition: opacity 0.15s;
+}
+
+.cart-icon-btn:hover {
+    opacity: 0.75;
+}
+
+.cart-icon-btn:focus-visible {
+    outline: 2px solid #0044bb;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.badge,
+.cart-badge-live {
+    position: absolute;
+    top: -7px;
+    right: -8px;
+    background: #e53e3e;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    min-width: 17px;
+    height: 17px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+    pointer-events: none;
+    animation: badge-pop 0.2s ease-out;
+}
+
+@keyframes badge-pop {
+    0% {
+        transform: scale(0.4);
+    }
+    70% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 
-/* ===== DROPDOWN CHUNG (cho "Sản phẩm" - theo cha) ===== */
+/* ===== INLINE SEARCH ===== */
+
+.header-search-inline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 16px;
+    animation: searchFadeIn 0.2s ease;
+}
+
+@keyframes searchFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-form-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.search-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #222;
+    border-radius: 4px;
+    padding: 0 12px;
+    height: 40px;
+    background: #fff;
+    gap: 8px;
+}
+
+.search-input-icon {
+    color: #888;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.search-input-inline {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    color: #222;
+}
+
+.search-input-inline::placeholder {
+    color: #aaa;
+}
+
+.search-clear-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-size: 15px;
+}
+
+.search-clear-btn:hover {
+    color: #222;
+}
+
+.search-tags-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-tags-label {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.search-tags-list {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.search-tag {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.search-tag:hover {
+    border-color: #222;
+    color: #000;
+}
+
+
+/* ===== SEARCH INPUT (icon nằm bên phải như ảnh) ===== */
+
+.search-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.search-input-inline {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 0 12px;
+    height: 40px;
+    background: transparent;
+    color: #222;
+}
+
+.search-input-inline::placeholder {
+    color: #aaa;
+}
+
+.search-submit-btn {
+    width: 44px;
+    height: 40px;
+    background: none;
+    border: none;
+    border-left: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 17px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.search-submit-btn:hover {
+    background: #f5f5f5;
+    color: #111;
+}
+
+
+/* ===== SEARCH RESULTS DROPDOWN (bên dưới header, như ảnh) ===== */
+
+.search-results-dropdown {
+    position: fixed;
+    top: 120px;
+    /* topbar(40) + header(80) */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 380px;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    z-index: 9999;
+    animation: searchFadeIn 0.15s ease;
+    /* Scrollbar mỏng */
+    scrollbar-width: thin;
+    scrollbar-color: #ddd transparent;
+}
+
+.search-results-dropdown::-webkit-scrollbar {
+    width: 5px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.12s;
+}
+
+.search-result-item:last-of-type {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: #fafafa;
+}
+
+.search-result-img-wrap {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f5f5f5;
+    border: 1px solid #eee;
+}
+
+.search-result-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+}
+
+.search-result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.search-result-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-price {
+    font-size: 13px;
+    color: #c30000;
+    font-weight: 600;
+}
+
+.search-results-all {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    background: #fafafa;
+    border: none;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+    color: #444;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s;
+}
+
+.search-results-all:hover {
+    background: #f0f0f0;
+    color: #000;
+}
+
+.search-no-result {
+    padding: 20px 14px;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+}
+
+
+/* search-form-inline không cần position relative nữa */
+
+.search-form-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* ===== DROPDOWN CHUNG ===== */
 
 .menu-item {
     position: relative;
+}
+
+.menu-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 40px;
+    color: #111;
+    text-decoration: none;
+    font-weight: 600;
 }
 
 .dropdown {
@@ -325,7 +559,6 @@
 }
 
 .dropdown-container {
-/* <<<<<<< HEAD
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
@@ -335,16 +568,6 @@
 .drop_pro {
     min-width: max-content;
     transform: translateX(-20%);
-======= */
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-  width: 1000px;
-}
-.drop_pro {
-  min-width: max-content;
-  transform: translateX(-20%);
-/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */
 }
 
 .dropdown-col h4 {
@@ -357,7 +580,7 @@
 .dropdown-col a {
     display: block;
     font-size: 14px;
-    font-weight: 400 !important;
+    font-weight: 400;
     margin-bottom: 10px;
     color: #333;
     text-decoration: none;
@@ -368,11 +591,10 @@
 }
 
 
-/* ===== DROPDOWN LỚN - CĂN GIỮA VIEWPORT (fixed) ===== */
+/* ===== DROPDOWN LỚN (DENIM / COLLECTION) ===== */
 
 .menu-item.has-dropdown:hover .denim-dropdown,
 .menu-item.has-dropdown:hover .collection-dropdown {
-/* <<<<<<< HEAD
     display: flex;
     position: fixed;
     top: 100px;
@@ -385,24 +607,10 @@
     max-width: 90vw;
     padding: 32px 40px;
     box-sizing: border-box;
-======= */
-  display: flex;
-  position: fixed;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  background: #fff;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
-  border-radius: 0 0 12px 12px;
-  max-width: 90vw;
-  padding: 32px 40px;
-  box-sizing: border-box;
-/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */
 }
 
 
-/* DENIM cụ thể */
+/* DENIM */
 
 .denim-dropdown {
     gap: 60px;
@@ -457,7 +665,7 @@
 }
 
 
-/* COLLECTION cụ thể */
+/* COLLECTION */
 
 .collection-dropdown {
     width: auto;
@@ -479,6 +687,7 @@
     text-align: center;
     transition: all 0.28s ease;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .collection-card:hover {
@@ -529,7 +738,20 @@
 }
 
 
-/* Responsive */
+/* ===== MENU LINK ITEM (type: link) ===== */
+
+.menu-link-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    color: #111;
+    text-decoration: none;
+    height: 40px;
+    font-weight: 600;
+}
+
+
+/* ===== RESPONSIVE ===== */
 
 @media (max-width: 1300px) {
     .denim-dropdown,
@@ -547,255 +769,8 @@
 }
 
 @media (max-width: 768px) {
-    /* Ẩn dropdown lớn trên mobile - nên chuyển sang menu hamburger */
     .menu-item.has-dropdown:hover .denim-dropdown,
     .menu-item.has-dropdown:hover .collection-dropdown {
         display: none;
     }
 }
-
-
-/* ── Append these rules to your existing header.css ──────────────────────── */
-
-
-/*
-  The cart icon is now a <button> instead of a plain div,
-  so we reset button defaults and keep the same look as the other icons.
-*/
-
-.cart-icon-btn {
-/* <<<<<<< HEAD
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    color: inherit;
-    /* inherits header icon color */
-    /* font-size: inherit; */
-    /* inherits icon size */
-    /* line-height: 1;
-    transition: opacity 0.15s;
-======= */ 
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  color: inherit; /* inherits header icon color */
-  font-size: inherit; /* inherits icon size */
-  line-height: 1;
-  transition: opacity 0.15s;
-}
-.cart-icon-btn:hover {
-  opacity: 0.75;
-}
-.cart-icon-btn:focus-visible {
-  outline: 2px solid #0044bb;
-  outline-offset: 3px;
-  border-radius: 4px;
-/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */
-}
-
-.cart-icon-btn:hover {
-    opacity: 0.75;
-}
-
-.cart-icon-btn:focus-visible {
-    outline: 2px solid #0044BB;
-    outline-offset: 3px;
-    border-radius: 4px;
-}
-
-
-/* Live badge — replaces the static .badge when using CartContext */
-
-.cart-badge-live {
-/* <<<<<<< HEAD
-    position: absolute;
-    top: -7px;
-    right: -8px;
-    background: #E53E3E;
-    /* red — stands out on white header */
-    /* color: #fff;
-    font-size: 0.6rem;
-    font-weight: 800;
-    min-width: 17px;
-    height: 17px;
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 3px;
-    line-height: 1;
-    pointer-events: none;
-    animation: badge-pop 0.2s ease-out;
-}
-
-@keyframes badge-pop {
-    0% {
-        transform: scale(0.4);
-    }
-    70% {
-        transform: scale(1.15);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-
-/* SEARCH BUTTON */
-
-/* .search-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-} */
-
-
-/* DROPDOWN */
-
-/* .search-dropdown {
-    width: 100%;
-    background: #fff;
-    padding: 20px 0;
-    border-top: 1px solid #eee;
-    animation: fadeDown 0.3s ease;
-} */
-
-
-/* SEARCH BOX */
-
-/* .search-box {
-    max-width: 600px;
-    margin: 0 auto 15px;
-    display: flex;
-    align-items: center;
-    border: 2px solid #000;
-    border-radius: 30px;
-    padding: 10px 16px;
-}
-
-.search-box input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14px;
-}
-
-.search-icon {
-    font-size: 18px;
-}
- */
-
-/* SUGGEST */
-
-/* .search-suggestions {
-    text-align: center;
-}
-
-.search-suggestions p {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.tags {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.tags span {
-    padding: 6px 14px;
-    border: 1px solid #000;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: 0.2s;
-}
-
-.tags span:hover {
-    background: #000;
-    color: #fff;
-}
- */
-
-/* ANIMATION */
-
-/* @keyframes fadeDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-======= */ 
-  position: absolute;
-  top: -7px;
-  right: -8px;
-  background: #e53e3e; /* red — stands out on white header */
-  color: #fff;
-  font-size: 0.6rem;
-  font-weight: 800;
-  min-width: 17px;
-  height: 17px;
-  border-radius: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 3px;
-  line-height: 1;
-  pointer-events: none;
-  animation: badge-pop 0.2s ease-out;
-}
-
-@keyframes badge-pop {
-  0% {
-    transform: scale(0.4);
-  }
-  70% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-.badge-tag {
-  font-size: 15px;
-  font-weight: 400; /* Chữ thường, không in đậm theo ý bạn */
-  padding: 2px 8px; /* Tạo khoảng trống bên trong để hiện màu nền */
-  border-radius: 4px; /* Bo góc nhẹ cho giống cái tag */
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 6px; /* Khoảng cách với chữ chính */
-  text-transform: none; /* Giữ nguyên chữ thường/hoa như data */
-}
-
-/* Tag màu đen cho hàng mới */
-.new-tag {
-  background-color: #da0606; /* Nền đen */
-  color: #ffffff !important; /* Chữ trắng */
-}
-
-/* Tag màu đỏ đặc trưng cho hàng Sale */
-.sale-tag {
-  background-color: #ed1c24; /* Nền đỏ thương hiệu */
-  color: #ffffff !important; /* Chữ trắng */
-}
-
