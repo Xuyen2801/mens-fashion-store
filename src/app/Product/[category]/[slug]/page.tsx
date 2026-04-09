@@ -44,12 +44,9 @@ export default function Page() {
       ...(hoodieData?.products || []),
       ...(aoKhoacData?.products || []),
       ...(aoThunData?.products || []),
-      
-      // NGHIỆP VỤ JEANS: Rải mảng productsJeans trực tiếp
       ...(Array.isArray(productsJeans) ? productsJeans : []) 
     ];
 
-    // Tìm kiếm sản phẩm theo slug từ URL
     return allProducts.find((p) => p.slug === slug);
   }, [slug]);
 
@@ -57,7 +54,6 @@ export default function Page() {
     if (!product) return [];
     const cat = product.category;
    
-    // Giữ nguyên logic FAQ của nhóm
     if (cat === "Áo Polo") return poloData.faqs || [];
     if (cat === "Áo Sơ Mi") return somiData.faqs || [];
     if (cat === "Set-do") return setdoData.faqs || [];
@@ -65,8 +61,6 @@ export default function Page() {
     if (cat === "Áo Hoodie") return hoodieData.faqs || [];
     if (cat === "Áo Khoác") return aoKhoacData.faqs || [];
     if (cat === "Áo Thun") return aoThunData.faqs || [];
-    
-    // Bổ sung FAQ cho Jeans để không bị lỗi render
     if (cat === "Quần Jeans") return []; 
 
     return [];

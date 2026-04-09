@@ -199,7 +199,10 @@ const productsAoThun = [
     salePrice: 299000,
     discount: 9,
     image: "/images/productcart/2.jpg",
-    images: ["/images/productcart/2.jpg", "/images/productcart/2-1.jpg"],
+    images: [
+      "/images/productcart/2.jpg", 
+      "/images/productcart/2-1.jpg"
+    ],
     colors: [
       { name: "Đen", hex: "#1A1A1A", thumbnail: "/images/productcart/2.jpg" },
     ],

@@ -27,15 +27,25 @@ const ProductCard = (props) => {
 
 
 const handleGoToDetail = (e) => {
-    e.preventDefault();
-    // Lấy slug từ props hoặc id
-    const targetSlug = props.slug || props.product?.slug || props.id;
-    // Nghiệp vụ Jeans: dùng category mặc định hoặc từ props để khớp folder [category]
-    const safeCategory = props.category || props.product?.category || "quan-jeans";
+  e.preventDefault();
+  
+
+  const targetProduct = props.product || props;
+  const targetSlug = targetProduct.slug || targetProduct.id;
+  
+  if (!targetSlug) return;
+
+  const rawCategory = targetProduct.category || "ao-polo"; 
+
+
+  const safeCategory = rawCategory
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, '-');
     
-    // Path chuẩn theo folder nhóm: /Product/[category]/[slug]
-    router.push(`/Product/${safeCategory}/${targetSlug}`);
-  };
+  router.push(`/Product/${safeCategory}/${targetSlug}`);
+};
 
 
   // ── Normalize props ────────────────────────────────────────────────────────
