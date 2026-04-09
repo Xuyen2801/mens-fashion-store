@@ -1,54 +1,46 @@
-import Link from "next/link"
 import ProductCard from "../../Product/ProductCard"
-import products from "../../../data/promotions"
+import { productsJeans } from "../../../data/product-quan/filter_quan" 
 import styles from "./ProductSection.module.css"
 
 interface Props {
-  filter: string
-  tag: string
+  filter: string;
+  tag: string;
 }
 
 function ProductSection({ filter, tag }: Props) {
+  // 1. Lọc sản phẩm
+  const filtered = productsJeans.filter((p) => {
+    if (filter === "all") return true;
+    return p.type === filter;
+  });
 
-  const filtered = products.filter((p) => {
-    if (filter === "all") {
-      return p.category === "all"
-    }
-    return p.category === filter
-  })
-
-  const displayProducts =
-    filter === "all" ? filtered.slice(0, 5) : filtered
+  // 2. Logic hiển thị
+  let displayProducts;
+  if (filter === "all") {
+    // Nếu là 'Tất cả', xáo trộn mảng rồi mới lấy 5 cái để nhìn cho đa dạng
+    displayProducts = [...filtered].sort(() => 0.5 - Math.random()).slice(0, 5);
+  } else {
+    // Nếu lọc theo loại, cứ lấy 5 cái đầu tiên của loại đó
+    displayProducts = filtered.slice(0, 5);
+  }
 
   return (
     <section className={styles.section}>
-      
-      {/* {tag && <h2 style={{ marginBottom: "20px" }}>{tag}</h2>} */}
-
       <div className={styles.grid}>
         {displayProducts.map((p) => (
           <ProductCard
             key={p.id}
+            id={p.id}
+            slug={p.slug}
             image={p.image}
             name={p.name}
             price={p.price}
             salePrice={p.salePrice}
-            status={p.status}
+            status={tag} 
           />
         ))}
       </div>
-
-      {filter === "all" && (
-        <div className={styles.btnWrapper}>
-          <Link href={`/products?category=${filter}`}>
-            <button className={styles.button}>
-              Xem tất cả
-            </button>
-          </Link>
-        </div>
-      )}
     </section>
-  )
+  );
 }
-
-export default ProductSection
+export default ProductSection;

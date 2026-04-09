@@ -5,7 +5,6 @@ import vouchers from "../../../data/voucher";
 function VoucherSection(){
     return(
         <section className={styles.section}>
-            <h2 className={styles.title}>ƯU ĐÃI KHAI XUÂN</h2>
 
             <div className={styles.list}>
                 {vouchers.map((voucher) =>(

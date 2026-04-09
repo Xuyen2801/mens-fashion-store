@@ -28,10 +28,14 @@ const ProductCard = (props) => {
 
 const handleGoToDetail = (e) => {
     e.preventDefault();
-    const safeCategory = "ao-polo";
-    const slug = props.slug || props.id || "product-detail";
-    router.push(`Product/${safeCategory}/${slug}`);
-}
+    // Lấy slug từ props hoặc id
+    const targetSlug = props.slug || props.product?.slug || props.id;
+    // Nghiệp vụ Jeans: dùng category mặc định hoặc từ props để khớp folder [category]
+    const safeCategory = props.category || props.product?.category || "quan-jeans";
+    
+    // Path chuẩn theo folder nhóm: /Product/[category]/[slug]
+    router.push(`/Product/${safeCategory}/${targetSlug}`);
+  };
 
 
   // ── Normalize props ────────────────────────────────────────────────────────
@@ -109,7 +113,8 @@ const handleGoToDetail = (e) => {
     <div
       className="group flex flex-col bg-white border border-transparent hover:border-gray-200 transition-all duration-300 overflow-hidden relative shadow-sm hover:shadow-md rounded-[8px] p-[5px] cursor-pointer"
       style={{ aspectRatio: "334/558" }}
-      onClick={() => onOpenModal?.(product)}
+      // 2. GẮN onClick VÀO ĐÂY
+      onClick={handleGoToDetail} 
     >
       {/* IMAGE */}
       <div className="relative w-full" style={{ aspectRatio: "334/455" }}>
