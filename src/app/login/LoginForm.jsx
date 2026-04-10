@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import bcrypt from "bcryptjs";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 
 const API_URL = "http://localhost:5000/users";
 
@@ -19,7 +19,7 @@ export default function LoginForm({ onSwitchTab }) {
     } else {
       setFormData({ ...formData, [name]: value });
     }
-    if (error) setError(""); 
+    if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
@@ -54,17 +54,27 @@ export default function LoginForm({ onSwitchTab }) {
 
       toast.success(`Chào mừng ${user.fullName} đã quay trở lại!`, {
         duration: 3000
-    });
-      
+      });
+
       localStorage.setItem("user", JSON.stringify({
         id: user.id,
         fullName: user.fullName,
-        phone: user.phone
+        phone: user.phone,
+        role: user.role
       }));
 
-    setTimeout(() => {
-        window.location.href = "/account";
-    }, 1000);
+      // setTimeout(() => {
+      //     window.location.href = "/account";
+      // }, 1000);
+
+      setTimeout(() => {
+        if (user.role === "admin") {
+          toast.success("Chào mừng Admin quay trở lại!");
+          window.location.href = "/admin/orders";
+        } else {
+          window.location.href = "/account";
+        }
+      }, 1000);
 
     } catch (err) {
       console.error("Lỗi đăng nhập:", err);

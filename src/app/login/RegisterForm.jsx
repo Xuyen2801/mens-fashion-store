@@ -5,13 +5,14 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import bcrypt from "bcryptjs";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 
 const API_URL = "http://localhost:5000/users";
 
 export default function RegisterForm() {
   const [step, setStep] = useState(1);
-  
+
   const [formData, setFormData] = useState({
     phone: "",
     otp: "",
@@ -31,7 +32,7 @@ export default function RegisterForm() {
   useEffect(() => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible", 
+        size: "invisible",
         callback: (response) => {
         },
       });
@@ -58,41 +59,68 @@ export default function RegisterForm() {
     setError("");
     setSuccess("");
 
+    const mode = process.env.NEXT_PUBLIC_OTP_MODE;
+    console.log("CHẾ ĐỘ HIỆN TẠI LÀ:", mode);
+
     if (!formData.phone || formData.phone.length < 10) {
       setError("Vui lòng nhập số điện thoại hợp lệ.");
       return;
     }
 
     try {
-      const res = await fetch(API_URL); 
+      const res = await fetch(API_URL);
       const allUsers = await res.json();
-      
+
       const existingUser = allUsers.find(
         (u) => u.phone.trim() === formData.phone.trim() && u.password
       );
 
       if (existingUser) {
         setError("Số điện thoại này đã được đăng ký tài khoản.");
-        return; 
+        return;
       }
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear(); 
+
+
+      if (mode === "DEVELOPMENT") {
+        if (window.recaptchaVerifier) {
+          window.recaptchaVerifier.clear();
+        }
+
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible",
+        });
+
+        const rawPhone = formData.phone.trim();
+        const formattedPhone = `+84${rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone}`;
+        const appVerifier = window.recaptchaVerifier;
+
+        setSuccess("Đang gửi mã xác nhận...");
+
+        const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+
+        window.confirmationResult = confirmationResult;
+      } else {
+        setSuccess("Đang gửi mã xác nhận qua hệ thống SMS thật...");
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        localStorage.setItem("otp_demo", otp);
+
+        const res = await fetch("/api/sms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone: formData.phone, otp: otp }),
+        });
+
+        const data = await res.json();
+
+        if (data.CodeResult !== '100') {
+          console.log("Mã lỗi eSMS:", data.CodeResult);
+          console.log("Thông báo chi tiết:", data.ErrorMessage);
+
+          throw new Error(`eSMS Error ${data.CodeResult}: ${data.ErrorMessage}`);
+        }
+
       }
-      
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
-
-      const rawPhone = formData.phone.trim();
-      const formattedPhone = `+84${rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone}`;
-      const appVerifier = window.recaptchaVerifier;
-
-      setSuccess("Đang gửi mã xác nhận...");
-
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
-      
-      window.confirmationResult = confirmationResult;
-
       setSuccess("Mã xác nhận đã được gửi thành công!");
       setStep(2);
 
@@ -106,14 +134,23 @@ export default function RegisterForm() {
     e.preventDefault();
     setError("");
 
+    const mode = process.env.NEXT_PUBLIC_OTP_MODE;
+
     if (!formData.otp || formData.otp.length < 6) {
       setError("Vui lòng nhập đủ 6 số OTP.");
       return;
     }
 
     try {
-      await window.confirmationResult.confirm(formData.otp);
-      
+      if (mode === "DEVELOPMENT") {
+        await window.confirmationResult.confirm(formData.otp);
+      } else {
+        const savedOtp = localStorage.getItem("otp_demo");
+        if (formData.otp !== savedOtp) {
+          throw new Error("Mã OTP sai");
+        }
+        localStorage.removeItem("otp_demo");
+      }
       setSuccess("Xác thực OTP thành công!");
       setStep(3);
     } catch (err) {
@@ -168,12 +205,12 @@ export default function RegisterForm() {
         }
 
         toast.success("Đăng ký thành công! Kiểm tra email nhé.", {
-        duration: 4000
+          duration: 4000
         });
 
-    setTimeout(() => {
-      window.location.href = "/login"; 
-    }, 2000);
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
       } else {
         setError("Lỗi từ DB: Không thể lưu tài khoản.");
       }
@@ -221,7 +258,7 @@ export default function RegisterForm() {
           <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Họ và tên" className="w-full border-b border-gray-300 py-3 text-[14px] focus:outline-none focus:border-black" />
           <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Email" className="w-full border-b border-gray-300 py-3 text-[14px] focus:outline-none focus:border-black" />
           <input type="text" name="address" value={formData.address} onChange={handleInputChange} placeholder="Địa chỉ giao hàng" className="w-full border-b border-gray-300 py-3 text-[14px] focus:outline-none focus:border-black" />
-          
+
           <div className="relative">
             <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleInputChange} placeholder="Mật khẩu" className="w-full border-b border-gray-300 py-3 text-[14px] focus:outline-none focus:border-black w-full" />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 p-2">

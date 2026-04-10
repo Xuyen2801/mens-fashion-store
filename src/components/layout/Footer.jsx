@@ -3,8 +3,23 @@
 import "../../styles/Product/footer.css";
 import Image from "next/image";
 import Link from "next/link"; // Thêm dòng này
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Footer() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+
+  const handleNewsLetterAction = () => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      router.push("/account");
+    } else {
+      router.push(`/login?email=${encodeURIComponent(email)}`);
+    }
+  }
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -30,8 +45,13 @@ export default function Footer() {
             </p>
 
             <div className="newsletter-box">
-              <input type="email" placeholder="Email của bạn" />
-              <button>ĐĂNG KÝ</button>
+              <input
+                type="email"
+                placeholder="Email của bạn"
+                value={email || ""}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <button onClick={handleNewsLetterAction}>ĐĂNG KÝ</button>
             </div>
           </div>
 

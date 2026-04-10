@@ -18,6 +18,17 @@ const ADMIN_STATUSES = [
   { key: "CANCELLED", label: "Đã hủy" },
 ];
 
+const getStatusColor = (status) => {
+  switch (status) {
+    case "PENDING": return "#f39c12";
+    case "CONFIRMED": return "#3498db";
+    case "SHIPPING": return "#9b59b6";
+    case "DELIVERED": return "#2ecc71";
+    case "CANCELLED": return "#e74c3c";
+    default: return "#7f8c8d";
+  }
+};
+
 // validate flow
 const canUpdate = (current, next) => {
   const flow = ["PENDING", "CONFIRMED", "SHIPPING", "DELIVERED"];
@@ -38,11 +49,33 @@ export default function AdminOrderManager() {
   const { state, dispatch } = useCart();
   const [filter, setFilter] = useState("ALL");
 
-  const updateStatus = (orderId, status) => {
-    dispatch({
-      type: "UPDATE_ORDER_STATUS",
-      payload: { orderId, status },
-    });
+  // const updateStatus = (orderId, status) => {
+  //   dispatch({
+  //     type: "UPDATE_ORDER_STATUS",
+  //     payload: { orderId, status },
+  //   });
+  // };
+
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+      const response = await fetch(`http://localhost:5000/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        dispatch({
+          type: "UPDATE_ORDER_STATUS",
+          payload: { orderId, status: newStatus },
+        });
+        alert("Cập nhật trạng thái thành công!");
+      } else {
+        alert("Lỗi server: Không thể cập nhật đơn hàng.");
+      }
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
   };
 
   // lọc đơn hàng
@@ -98,9 +131,24 @@ export default function AdminOrderManager() {
             <p>Khách: {order.shippingInfo.fullName}</p>
             <p>Tổng tiền: {fmt(order.total)}</p>
 
-            <p>
+            {/* <p>
               Trạng thái:
               <strong style={{ marginLeft: 5 }}>{order.status}</strong>
+            </p> */}
+
+            <p>
+              Trạng thái:
+              <span style={{
+                marginLeft: 10,
+                padding: "4px 12px",
+                borderRadius: "12px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                color: "#fff",
+                backgroundColor: getStatusColor(order.status) // Áp dụng hàm màu của bạn
+              }}>
+                {ADMIN_STATUSES.find(s => s.key === order.status)?.label}
+              </span>
             </p>
 
             {/* đổi trạng thái */}

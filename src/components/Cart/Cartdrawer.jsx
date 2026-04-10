@@ -16,6 +16,8 @@ function DrawerItem({ item }) {
     setIsMounted(true);
   }, []);
 
+  if (!isMounted) return null;
+
   return (
     <div className="di-row">
       {/* thumbnail */}
@@ -141,7 +143,7 @@ export default function CartDrawer() {
 
         {/* body */}
         <div className="cd-body">
-          {state.items.length === 0 ? (
+          {(!isMounted || state.items.length === 0) ? (
             <div className="cd-empty">
               <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.2">
                 <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
@@ -162,7 +164,7 @@ export default function CartDrawer() {
         </div>
 
         {/* footer — only show when there are items */}
-        {state.items.length > 0 && (
+        {isMounted && (state.items.length > 0) && (
           <div className="cd-footer">
             <div className="cd-subtotal-row">
               <span className="cd-subtotal-label">Tạm tính ({totalItems} sản phẩm)</span>

@@ -35,3 +35,8 @@ mở một terminal khác , gõ: npm install firebase (để có thể sử dụ
 chạy : npm install bcryptjs
 chạy : npm install nodemailer
 chay: npm install react-hot-toast
+chay: npm install axios
+
+
+NEXT_PUBLIC_OTP_MODE=PRODUCTION  //chế độ api sms gửi mã OTP thật
+NEXT_PUBLIC_OTP_MODE=DEVELOPMENT  //chế độ demo, mã OTP sẽ luôn là "123456" và không gửi SMS thật    

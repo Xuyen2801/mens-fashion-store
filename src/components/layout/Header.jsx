@@ -23,35 +23,63 @@ import "../../styles/Product/header.css";
 export default function Header() {
   const router = useRouter();
   const { topbar, logo, mainMenu, icons } = headerData;
-// <<<<<<< HEAD
-// =======
-//   const { totalItems, setIsCartOpen } = useCart();
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
+  // <<<<<<< HEAD
+  // =======
+  //   const { totalItems, setIsCartOpen } = useCart();
+  // >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 
   const { totalItems, setIsCartOpen } = useCart();
   const [isMounted, setIsMounted] = useState(false);
+  //them code moi
+  const [user, setUser] = useState(null);
 
+  /*
   useEffect(() => {
-  setIsMounted(true); 
+    setIsMounted(true);
   }, []);
+  */
+
+  //code mới chỉnh sửa kiểm tra login ngay khi component lên trình duyệt
+  useEffect(() => {
+    setIsMounted(true);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && storedUser !== "null" && storedUser !== "undefined") {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Lỗi parse user:", e);
+      }
+    }
+  }, []);
+
+  // const handleUserClick = (e) => {
+  //   e.preventDefault();
+  //   const loggedInUser = localStorage.getItem("user");
+
+  //   if (loggedInUser) {
+  //     router.push("/account");
+  //   } else {
+  //     router.push("/login");
+  //   }
+  // };
 
   const handleUserClick = (e) => {
     e.preventDefault();
-    const loggedInUser = localStorage.getItem("user"); 
-
-    if (loggedInUser) {
-      router.push("/account"); 
+    // Dùng biến user đã được set ở useEffect lúc đầu
+    if (user) {
+      router.push("/account");
     } else {
-      router.push("/login");   
+      router.push("/login");
     }
   };
 
   // ─── THÊM TRẠNG THÁI KIỂM TRA MOUNTED ──────────────────────────────────────
   // const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  /*
+    useEffect(() => {
+      setIsMounted(true);
+    }, []);
+    */
   // ───────────────────────────────────────────────────────────────────────────
 
   const [openSearch, setOpenSearch] = useState(false);
@@ -60,8 +88,10 @@ export default function Header() {
 
 
   useEffect(() => {
-  setOpenSearch(false); // 🔥 đóng search khi đổi trang
-}, [pathname]);
+    setOpenSearch(false); // 🔥 đóng search khi đổi trang
+  }, [pathname]);
+
+  if (!isMounted) return null;
   return (
     <div className="site-header">
       {/* 1. TOP BAR - Chạy chữ khuyến mãi */}
@@ -71,10 +101,10 @@ export default function Header() {
             {topbar.promotions.map((text, idx) => (
               <span key={idx}>{text}</span>
             ))}
-{/* <<<<<<< HEAD
+            {/* <<<<<<< HEAD
 =======
             {/* Nhân đôi nội dung để tạo hiệu ứng chạy vô hạn */}
-{/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */} 
+            {/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */}
             {topbar.promotions.map((text, idx) => (
               <span key={`clone-${idx}`}>{text}</span>
             ))}
@@ -101,25 +131,25 @@ export default function Header() {
           {/* MENU CHÍNH */}
           <nav className="header-menu">
             {mainMenu.map((item, index) => {
-// <<<<<<< HEAD
-//               if (item.type === "link") {
-//   return (
-//     <Link
-//       key={index}
-//       href={item.path || "#"}
-//       style={{ position: "relative" }} 
-//       className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
-//     >
-//       {item.label}
-//       {item.highlight && (
-//         <span className={item.highlight === "New" ? "tag-new" : "tag-sale"}>
-//           {item.highlight}
-//         </span>
-//       )}
-//     </Link>
-//   );
-// }
-// =======
+              // <<<<<<< HEAD
+              //               if (item.type === "link") {
+              //   return (
+              //     <Link
+              //       key={index}
+              //       href={item.path || "#"}
+              //       style={{ position: "relative" }} 
+              //       className={item.highlight ? item.label.toLowerCase().replace(" ", "-") : ""}
+              //     >
+              //       {item.label}
+              //       {item.highlight && (
+              //         <span className={item.highlight === "New" ? "tag-new" : "tag-sale"}>
+              //           {item.highlight}
+              //         </span>
+              //       )}
+              //     </Link>
+              //   );
+              // }
+              // =======
               // TRƯỜNG HỢP 1: CÁC LINK ĐƠN (Hàng mới, Sale, Hot...)
               if (item.type === "link") {
                 return (
@@ -139,7 +169,7 @@ export default function Header() {
                   </Link>
                 );
               }
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
+              // >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 
               // TRƯỜNG HỢP 2: DROPDOWN (Sản phẩm, Denim, Collection)
               if (item.type === "dropdown") {
@@ -243,36 +273,40 @@ export default function Header() {
           {/* 3. CÁC ICON TIỆN ÍCH */}
           <div className="header-icons">
             {icons.search && (
-// <<<<<<< HEAD
-//   <button
-//     className="search-btn"
-//     onClick={() => setOpenSearch(!openSearch)}
-//   >
-//     <FiSearch />
-//   </button>
-// )}
+              // <<<<<<< HEAD
+              //   <button
+              //     className="search-btn"
+              //     onClick={() => setOpenSearch(!openSearch)}
+              //   >
+              //     <FiSearch />
+              //   </button>
+              // )}
 
-//             {icons.user && (
-//               <button
-//                 onClick={handleUserClick}
-//                 className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
-//                 aria-label="Tài khoản của tôi"
-// =======
+              //             {icons.user && (
+              //               <button
+              //                 onClick={handleUserClick}
+              //                 className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
+              //                 aria-label="Tài khoản của tôi"
+              // =======
               <button className="icon-btn">
                 <FiSearch />
               </button>
             )}
 
-            {icons.user && (
+            {/* {icons.user && (
               <Link
                 href="/login"
                 className="icon-btn hover:text-blue-600 transition-colors"
-// {/* >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef */}
               >
                 <FiUser className="text-[20px]" />
               </Link>
-            )}
+            )} */}
 
+            {icons.user && (
+              <button onClick={handleUserClick} className="icon-btn">
+                <FiUser size={22} />
+              </button>
+            )}
             <Link
               href="/he-thong-cua-hang"
               className="icon-btn hover:text-blue-600 transition-colors"
@@ -282,26 +316,26 @@ export default function Header() {
 
             {icons.cart && (
 
-  <button
-    className="cart-icon-btn"
-    onClick={() => {
-      if (!isMounted) return; 
-      const loggedInUser = localStorage.getItem("user");
-      if (loggedInUser) {
-        setIsCartOpen(true);
-      } else {
-        alert("Vui lòng đăng nhập!");
-        router.push("/login");
-      }
-    }}
-  >
-    <FiShoppingCart />
-    {isMounted && totalItems > 0 && (
-      <span className="badge">{totalItems}</span>
-    )}
-  </button>
-)}
-{/* =======
+              <button
+                className="cart-icon-btn"
+                onClick={() => {
+                  if (!isMounted) return;
+                  const loggedInUser = localStorage.getItem("user");
+                  if (loggedInUser) {
+                    setIsCartOpen(true);
+                  } else {
+                    alert("Vui lòng đăng nhập!");
+                    router.push("/login");
+                  }
+                }}
+              >
+                <FiShoppingCart />
+                {isMounted && totalItems > 0 && (
+                  <span className="badge">{totalItems}</span>
+                )}
+              </button>
+            )}
+            {/* =======
               <button
                 className="cart-icon-btn"
                 onClick={() => setIsCartOpen(true)}
@@ -312,7 +346,7 @@ export default function Header() {
                 <FiShoppingCart />
 
                 {/* THÊM KIỂM TRA isMounted Ở ĐÂY ĐỂ TRÁNH LỖI ĐỎ */}
-                {/* {isMounted && totalItems > 0 && (
+            {/* {isMounted && totalItems > 0 && (
 =======
                 aria-label={`Giỏ hàng (${totalItems} sản phẩm)`}
               >
@@ -325,31 +359,31 @@ export default function Header() {
                 )}
               </button>
             )}
->>>>>>> 59093de9880acb17b3eefae9083fbc66ab237ac2 */} 
+>>>>>>> 59093de9880acb17b3eefae9083fbc66ab237ac2 */}
           </div>
         </div>
       </header>
       {openSearch && (
-  <div className="search-dropdown">
-    <div className="search-box">
-      <input
-        type="text"
-        placeholder="Tìm kiếm sản phẩm..."
-      />
-      <FiSearch className="search-icon" />
-    </div>
+        <div className="search-dropdown">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Tìm kiếm sản phẩm..."
+            />
+            <FiSearch className="search-icon" />
+          </div>
 
-    <div className="search-suggestions">
-      <p>Từ khóa nổi bật hôm nay</p>
+          <div className="search-suggestions">
+            <p>Từ khóa nổi bật hôm nay</p>
 
-      <div className="tags">
-        {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
-          <span key={tag}>{tag}</span>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+            <div className="tags">
+              {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
