@@ -23,3 +23,15 @@ cách dùng
 
 
 
+login:(để chạy json server)
+Sau khi pull code , mở terminal -> npm install -D json-server
+    chạy xong , tiếp tục gõ : npm run api
+
+
+mở một terminal khác , gõ: npm install firebase (để có thể sử dụng thư viện firebase để test việc xác thực và gửi mã otp về số điện thoại)
+**Lưu ý: +Khi test gửi otp trong quy trình đăng ký : dùng số điện thoại test: 0337279763 otp: 123456 (số này có thể test vô số lần)
+        +Có thể sử dụng số khác để test nhưng mỗi ngày chỉ có thể test tối đa 10 lần với số khác không phải số điện thoại test (hiện tại chưa đưuojc đang đợi duyệt)
+
+chạy : npm install bcryptjs
+chạy : npm install nodemailer
+chay: npm install react-hot-toast

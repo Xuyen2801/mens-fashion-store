@@ -51,18 +51,16 @@ const headerData = {
             { label: "Quần tây", path: "/Product/quan-tay" },
             { label: "Quần boxer", path: "/Product/quan-boxer" },
           ],
-        }
-        
+        },
       ],
     },
 
     {
-      type: "link",
       label: "Hàng mới",
+      path: "/Product/new", // Đổi từ "/new" thành "/Product/new"
+      type: "link",
       highlight: "New",
-      path: "/new",
     },
-
     {
       type: "link",
       label: "Hàng bán chạy",
@@ -77,9 +75,9 @@ const headerData = {
           {
             title: "JEANS",
             links: [
-              { label: "Quần Jeans", path: "/denim/jeans" },
-              { label: "Quần Short Jeans", path: "/denim/short-jeans" },
-              { label: "Áo Khoác Jeans", path: "/denim/jacket" },
+              { label: "Quần Jeans", path: "/Product/quan-jean" },
+              { label: "Quần Short Jeans", path: "/Product/quan-short" },
+              { label: "Áo Khoác Jeans", path: "/Product/ao-khoac" },
             ],
           },
           {
@@ -91,14 +89,7 @@ const headerData = {
               { label: "RETRO SPORTS", path: "/collection/RETRO" },
             ],
           },
-          {
-            title: "FORM DÁNG",
-            links: [
-              { label: "Smart-Fit", path: "/denim/smart-fit" },
-              { label: "Straight", path: "/denim/straight" },
-              { label: "Slim-Fit", path: "/denim/slim-fit" },
-            ],
-          },
+        
         ],
         rightCards: [
           {
@@ -122,12 +113,11 @@ const headerData = {
     },
 
     {
+      label: "Siêu sale",
+      path: "/Product/sale", // Đổi từ "/sale" thành "/Product/sale"
       type: "link",
-      label: "SIÊU SALE",
       highlight: "-50%",
-      path: "/sale",
     },
-
     {
       type: "dropdown",
       label: "Collection",
