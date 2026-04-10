@@ -7,14 +7,14 @@ const vouchers = [
     },
     {
         "id": 2, 
-        "image": "/images/vouchers/voucher50.png", 
-        "title": "Giảm 50k cho đơn hàng", 
+        "image": "/images/vouchers/voucher60.png", 
+        "title": "Giảm 60k cho đơn hàng", 
         "description": "Áp dụng cho đơn hàng từ 749k trở lên"
     },
     {
         "id": 3, 
-        "image": "/images/vouchers/voucher80.png", 
-        "title": "Giảm 80k cho đơn hàng", 
+        "image": "/images/vouchers/voucher90.png", 
+        "title": "Giảm 90k cho đơn hàng", 
         "description": "Áp dụng cho đơn hàng từ 999k trở lên"
     },
     {

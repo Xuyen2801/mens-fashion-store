@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import CollectionCard from "./CollectionCard";
-import collections from "@/src/data/collection";
+import collections from "../../../data/collection";
 
 interface Props {
   collections: typeof collections;

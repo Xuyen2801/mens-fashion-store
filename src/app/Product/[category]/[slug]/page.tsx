@@ -12,7 +12,7 @@ import tanktopData from "@/data/Product/product-ao/tank-top";
 import hoodieData from "@/data/Product/product-ao/hoodie";
 import aoKhoacData from "@/data/Product/product-ao/ao-khoac";
 import aoThunData from "@/data/Product/product-ao/ao-thun";
-
+import { productsJeans } from "@/data/product-quan/filter_quan";
 import ProductDetail from "@/components/Product/ProductDetail";
 
 // 1. Định nghĩa Interface để TypeScript không báo lỗi gạch đỏ
@@ -36,22 +36,22 @@ export default function Page() {
   const slug = params?.slug as string;
 
   const product = useMemo(() => {
-  const allProducts: any[] = [
-    ...(poloData?.products || []),
-    ...(somiData?.products || []),
-    ...(setdoData?.products || []),
-    ...(tanktopData?.products || []),
-    ...(hoodieData?.products || []),
-    ...(aoKhoacData?.products || []),
-    ...(aoThunData?.products || []),
-  ];
-  
-  return allProducts.find((p) => p.slug === slug);
-}, [slug]);
+    const allProducts: any[] = [
+      ...(poloData?.products || []),
+      ...(somiData?.products || []),
+      ...(setdoData?.products || []),
+      ...(tanktopData?.products || []),
+      ...(hoodieData?.products || []),
+      ...(aoKhoacData?.products || []),
+      ...(aoThunData?.products || []),
+      ...(Array.isArray(productsJeans) ? productsJeans : []) 
+    ];
+
+    return allProducts.find((p) => p.slug === slug);
+  }, [slug]);
 
   const currentFaq = useMemo((): FAQItem[] => {
     if (!product) return [];
-    
     const cat = product.category;
    
     if (cat === "Áo Polo") return poloData.faqs || [];
@@ -61,25 +61,18 @@ export default function Page() {
     if (cat === "Áo Hoodie") return hoodieData.faqs || [];
     if (cat === "Áo Khoác") return aoKhoacData.faqs || [];
     if (cat === "Áo Thun") return aoThunData.faqs || [];
+    if (cat === "Quần Jeans") return []; 
 
     return [];
   }, [product]);
 
-  if (!product) {
-    return (
-      <div className="p-20 text-center">
-        <h2 className="text-xl font-bold">Sản phẩm không tồn tại!</h2>
-        <Link href="/" className="text-blue-600 underline">Quay lại trang chủ</Link>
-      </div>
-    );
-  }
+  if (!product) return <div className="p-20 text-center">Sản phẩm không tồn tại!</div>;
 
   return (
     <div className="max-w-7xl mx-auto p-4 min-h-screen">
       <nav className="text-sm text-gray-500 mb-6">
         <Link href="/">Trang chủ</Link> / <span>{product.category}</span> / <span className="text-black">{product.name}</span>
       </nav>
-
       <ProductDetail product={product as any} faqData={currentFaq as any} />
     </div>
   );

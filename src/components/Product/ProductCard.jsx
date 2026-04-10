@@ -27,11 +27,25 @@ const ProductCard = (props) => {
 
 
 const handleGoToDetail = (e) => {
-    e.preventDefault();
-    const safeCategory = "ao-polo";
-    const slug = props.slug || props.id || "product-detail";
-    router.push(`Product/${safeCategory}/${slug}`);
-}
+  e.preventDefault();
+  
+
+  const targetProduct = props.product || props;
+  const targetSlug = targetProduct.slug || targetProduct.id;
+  
+  if (!targetSlug) return;
+
+  const rawCategory = targetProduct.category || "ao-polo"; 
+
+
+  const safeCategory = rawCategory
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, '-');
+    
+  router.push(`/Product/${safeCategory}/${targetSlug}`);
+};
 
 
   // ── Normalize props ────────────────────────────────────────────────────────
@@ -109,7 +123,8 @@ const handleGoToDetail = (e) => {
     <div
       className="group flex flex-col bg-white border border-transparent hover:border-gray-200 transition-all duration-300 overflow-hidden relative shadow-sm hover:shadow-md rounded-[8px] p-[5px] cursor-pointer"
       style={{ aspectRatio: "334/558" }}
-      onClick={() => onOpenModal?.(product)}
+      // 2. GẮN onClick VÀO ĐÂY
+      onClick={handleGoToDetail} 
     >
       {/* IMAGE */}
       <div className="relative w-full" style={{ aspectRatio: "334/455" }}>

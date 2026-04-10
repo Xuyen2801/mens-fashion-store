@@ -105,7 +105,12 @@ const productsPolo = [
        "/images/products/polo/League_form_regular/league_4.png",
        "/images/products/polo/League_form_regular/league_5.png",],
     variants: [
-      { color: "Trắng kem", hex: "#FFFFFF", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Trắng kem", 
+        hex: "#FFFFFF", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/League_form_regular/league_1.png"
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",
@@ -169,9 +174,15 @@ const productsPolo = [
         "/images/products/polo/Disney_Mickey/mickey_2.png",
         "/images/products/polo/Disney_Mickey/mickey_3.png",
         "/images/products/polo/Disney_Mickey/mickey_4.png",
-        "/images/products/polo/Disney_Mickey/mickey_5.png"],
+        "/images/products/polo/Disney_Mickey/mickey_5.png"
+      ],
     variants: [
-      { color: "Đỏ", hex: "#FF0000", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Đỏ", 
+        hex: "#FF0000", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/Disney_Mickey/mickey_1.png"
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",
@@ -195,7 +206,12 @@ const productsPolo = [
       "/images/products/polo/Hoa_Tiet_Inscript/inscript_7.png",
       "/images/products/polo/Hoa_Tiet_Inscript/inscript_8.png",],
     variants: [
-      { color: "Xanh đen", hex: "#000033", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Xanh đen", 
+        hex: "#000033", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/Hoa_Tiet_Inscript/inscript_1.png"
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",
@@ -282,7 +298,12 @@ const productsPolo = [
       "/images/products/polo/Disney_sport/disney_sport_10.png"
     ],
     variants: [
-      { color: "Trắng", hex: "#FFFFFF", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Trắng", 
+        hex: "#FFFFFF", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/Disney_sport/disney_sport_1.png"
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",
@@ -342,7 +363,12 @@ const productsPolo = [
       "/images/products/polo/Marvel_super/mavel_5.png",
     ],
     variants: [
-      { color: "Xanh-Đen", hex: "#000000", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Xanh-Đen", 
+        hex: "#000000", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/Marvel_super/mavel_1.png" 
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",
@@ -400,7 +426,12 @@ const productsPolo = [
       "/images/products/polo/Retro_Line/retro_line_7.png",
       "/images/products/polo/Retro_Line/retro_line_8.png",],
     variants: [
-      { color: "Đen sọc trắng", hex: "#F5F5DC", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Đen sọc trắng", 
+        hex: "#F5F5DC", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/Retro_Line/retro_line_1.png" 
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",
@@ -425,7 +456,12 @@ const productsPolo = [
       "/images/products/polo/Velocity/velocity_8.png",
     ],
     variants: [
-      { color: "Đen", hex: "#000000", sizes: ["S", "M", "L", "XL"] },
+      { 
+        color: "Đen", 
+        hex: "#000000", 
+        sizes: ["S", "M", "L", "XL"],
+        image: "/images/products/polo/Velocity/velocity_1.png" 
+      },
     ],
     category: "Áo Polo",
     brand: "ICONDENIM®",

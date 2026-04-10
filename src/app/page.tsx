@@ -18,18 +18,18 @@ export default function HomePage() {
 
   const bannerData = {
     all: "/images/banners/homepage/banner-all.png",
-    skinny: "/images/banners/homepage/banner-skinny.png",
-    cool: "/images/banners/homepage/banner-cool.png",
-    light: "/images/banners/homepage/banner-light.png",
-    stretch: "/images/banners/homepage/banner-stretch.png",
+    "sieu-gon-nhe": "/images/banners/homepage/banner-skinny.png",
+    "sieu-mat": "/images/banners/homepage/banner-cool.png",
+    "sieu-nhe": "/images/banners/homepage/banner-light.png",
+    "sieu-co-dan": "/images/banners/homepage/banner-stretch.png",
   };
 
   const tagData = {
     all: "HÀNG MỚI",
-    skinny: "SIÊU GỌN NHẸ",
-    cool: "SIÊU MÁT",
-    light: "SIÊU NHẸ",
-    stretch: "SIÊU CO DÃN",
+    "sieu-gon-nhe": "SIÊU GỌN NHẸ",
+    "sieu-mat": "SIÊU MÁT",
+    "sieu-nhe": "SIÊU NHẸ",
+    "sieu-co-dan": "SIÊU CO DÃN",
   }
 
   const [filter, setFilter] = useState("all");
