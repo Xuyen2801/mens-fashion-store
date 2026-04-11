@@ -1,23 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./CategorySection.module.css";
-import { jeansFilters } from "../../../data/product-quan/filter_quan"; 
-import filterItems from "@/data/filterItems";      
+import { fetchCollection } from "../../../lib/api";
 
 interface Props {
   bannerImage: string;
   onFilterClick: (type: string, banner: string) => void;
 }
 
+type JeansFilter = {
+  id: string;
+  label: string;
+  banner: string;
+};
+
+type FilterItem = {
+  value: string;
+  on: string;
+  off: string;
+};
+
 function CategorySection({ bannerImage, onFilterClick }: Props) {
   const [active, setActive] = useState("all");
+  const [jeansFilters, setJeansFilters] = useState<JeansFilter[]>([]);
+  const [filterItems, setFilterItems] = useState<FilterItem[]>([]);
 
-  const currentBanner = jeansFilters.find(f => f.id === active)?.banner || jeansFilters[0].banner;
+  useEffect(() => {
+    fetchCollection("filter_quan")
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.jeansFilters ?? data : [];
+        setJeansFilters(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error("Failed to load jeans filters:", error));
+
+    fetchCollection("filterItems")
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.filterItems ?? data : [];
+        setFilterItems(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error("Failed to load filter icons:", error));
+  }, []);
+
+  const currentBanner =
+    jeansFilters.find((f) => f.id === active)?.banner || bannerImage;
 
   const handleClick = (type: string) => {
     setActive(type);
-    const selectedFilter = jeansFilters.find(f => f.id === type);
+    const selectedFilter = jeansFilters.find((f) => f.id === type);
     onFilterClick(type, selectedFilter?.banner || "");
   };
 

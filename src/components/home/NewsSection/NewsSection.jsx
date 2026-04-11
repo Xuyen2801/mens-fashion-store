@@ -1,8 +1,21 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import styles from './NewsSection.module.css';
-import newsData from '../../../data/news';
+import { fetchCollection } from '../../../lib/api';
 
 const NewsSection = () => {
+  const [newsData, setNewsData] = useState([]);
+
+  useEffect(() => {
+    fetchCollection('news')
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.newsData ?? data : [];
+        setNewsData(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error('Failed to load news:', error));
+  }, []);
+
   return (
     <section className={styles.container}>
       <h2 className={styles.mainTitle}>Tin Thời Trang</h2>

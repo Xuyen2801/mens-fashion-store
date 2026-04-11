@@ -1,28 +1,75 @@
-import poloData from "@/data/Product/product-ao/ao-polo"; 
-import hoodieData from "@/data/Product/product-ao/hoodie";
-import somiData from "@/data/Product/product-ao/so-mi";
-import setdoData from "@/data/Product/product-ao/set-do";
-import tanktopData from "@/data/Product/product-ao/tank-top"; 
+import { useEffect, useMemo, useState } from "react";
+import { fetchCollection } from "@/lib/api";
 import ProductDetail from "@/components/Product/ProductDetail"; 
 import Link from "next/link";
 
 export default function Page({ params }) {
   const { slug } = params; 
+  const [allProducts, setAllProducts] = useState([]);
+  const [cachedProduct, setCachedProduct] = useState(null);
 
+  const normalizeText = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
 
-  const allProducts = [
-    ...(poloData?.products || []),
-    ...(hoodieData?.products || []),
-    ...(somiData?.products || []),
-    ...(setdoData?.products || []),
-    ...(tanktopData?.products || []),
-  ];
+  useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem(`product-detail:${slug}`);
+      if (cached) {
+        setCachedProduct(JSON.parse(cached));
+      }
+    } catch {
+      setCachedProduct(null);
+    }
 
+    const collections = ["ao-khoac", "ao-thun", "ao-polo", "hoodie", "so-mi", "set-do", "tank-top", "jean", "short", "kaki", "boxer", "jogger", "tay", "productsNew", "productsOutLet", "productsAll"];
 
-  const product = allProducts.find((p) => p.slug === slug);
+    const loadProducts = async () => {
+      try {
+        const results = await Promise.all(
+          collections.map((name) => fetchCollection(name))
+        );
+
+        const merged = results.flatMap((items) => {
+          const first = Array.isArray(items) ? items[0] : null;
+          if (first && Array.isArray(first.products)) {
+            return first.products;
+          }
+          return Array.isArray(items) ? items : [];
+        });
+
+        setAllProducts(merged);
+      } catch (error) {
+        console.error("Failed to load product detail data:", error);
+        setAllProducts([]);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  const product = useMemo(
+    () => {
+      const normalizedSlug = normalizeText(slug);
+      return allProducts.find((p) => {
+        const productSlug = normalizeText(p.slug || "");
+        const productId = normalizeText(p.id?.toString?.() || p.id || "");
+        return productSlug === normalizedSlug || productId === normalizedSlug;
+      });
+    },
+    [allProducts, slug]
+  );
+
+  const displayProduct = product || cachedProduct;
 
   
-  if (!product) {
+  if (!displayProduct) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center gap-4 text-center">
         <h2 className="text-xl font-bold text-gray-800">Sản phẩm không tồn tại!</h2>
@@ -41,12 +88,12 @@ export default function Page({ params }) {
       <nav className="text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-black">Trang chủ</Link>
         <span className="mx-2">/</span>
-        <span className="capitalize">{product.category?.replace('-', ' ')}</span>
+        <span className="capitalize">{displayProduct.category?.replace('-', ' ')}</span>
         <span className="mx-2">/</span>
-        <span className="text-black font-medium">{product.name}</span>
+        <span className="text-black font-medium">{displayProduct.name}</span>
       </nav>
 
-      <ProductDetail product={product} />
+      <ProductDetail product={displayProduct} />
     </main>
   );
 }

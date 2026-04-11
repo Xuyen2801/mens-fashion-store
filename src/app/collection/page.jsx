@@ -1,11 +1,45 @@
 "use client";
+"use client";
 import React from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./CollectionPage.module.css";
-import collections from "../../data/Gallery/collections";
+import { fetchCollection } from "../../lib/api";
 
 const CollectionPage = () => {
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    Promise.all([fetchCollection("collections"), fetchCollection("collection")])
+      .then(([detailed, basic]) => {
+        const detailedList = Array.isArray(detailed) ? detailed : [];
+        const basicList = Array.isArray(basic) ? basic : [];
+
+        const merged = [...detailedList, ...basicList]
+          .filter((item) => item?.image && item?.name)
+          .map((item) => ({
+            ...item,
+            slug:
+              item.slug ||
+              item.name
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9\s-]/g, "")
+                .replace(/\s+/g, "-")
+                .replace(/-+/g, "-"),
+          }))
+          .filter(
+            (item, index, arr) =>
+              index === arr.findIndex((x) => x.slug === item.slug)
+          );
+
+        setCollections(merged);
+      })
+      .catch((error) => console.error("Failed to load collections:", error));
+  }, []);
+
   return (
     <main className={styles.pageWrapper}>
       <div className={styles.breadcrumbBar}>

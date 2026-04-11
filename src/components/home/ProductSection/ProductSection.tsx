@@ -1,5 +1,8 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../../Product/ProductCard"
-import { productsJeans } from "../../../data/product-quan/filter_quan" 
+import { fetchCollection } from "../../../lib/api"
 import styles from "./ProductSection.module.css"
 
 interface Props {
@@ -7,20 +10,38 @@ interface Props {
   tag: string;
 }
 
+type Product = {
+  id: string;
+  slug: string;
+  type: string;
+  image: string;
+  name: string;
+  price: number;
+  salePrice: number;
+  status?: string;
+};
+
 function ProductSection({ filter, tag }: Props) {
-  // 1. Lọc sản phẩm
-  const filtered = productsJeans.filter((p) => {
+  const [productsJeans, setProductsJeans] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetchCollection("filter_quan")
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.productsJeans ?? data : [];
+        setProductsJeans(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error("Failed to load products:", error));
+  }, []);
+
+  const filtered = useMemo(() => productsJeans.filter((p) => {
     if (filter === "all") return true;
     return p.type === filter;
-  });
+  }), [filter, productsJeans]);
 
-  // 2. Logic hiển thị
-  let displayProducts;
+  let displayProducts: Product[];
   if (filter === "all") {
-    // Nếu là 'Tất cả', xáo trộn mảng rồi mới lấy 5 cái để nhìn cho đa dạng
-    displayProducts = [...filtered].sort(() => 0.5 - Math.random()).slice(0, 5);
+    displayProducts = [...filtered].slice(0, 5);
   } else {
-    // Nếu lọc theo loại, cứ lấy 5 cái đầu tiên của loại đó
     displayProducts = filtered.slice(0, 5);
   }
 

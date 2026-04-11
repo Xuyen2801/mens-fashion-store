@@ -1,8 +1,21 @@
+"use client";
 import styles from "./VoucherSection.module.css";
-import vouchers from "../../../data/voucher";
+import { useEffect, useState } from "react";
+import { fetchCollection } from "../../../lib/api";
 
 
 function VoucherSection(){
+    const [vouchers, setVouchers] = useState([]);
+
+    useEffect(() => {
+        fetchCollection("voucher")
+            .then((data) => {
+                const list = Array.isArray(data) ? data[0]?.voucherData ?? data : [];
+                setVouchers(Array.isArray(list) ? list : []);
+            })
+            .catch((error) => console.error("Failed to load vouchers:", error));
+    }, []);
+
     return(
         <section className={styles.section}>
 

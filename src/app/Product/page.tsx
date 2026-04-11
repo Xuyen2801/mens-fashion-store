@@ -1,28 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CollectionBanner from "../../components/Collection/CollectionBanner";
 import ProductFilter from "../../components/Collection/ProductFilter";
 import ProductCard from "../../components/Product/ProductCard";
 import ProductCardModal from "../../components/modal/ProductCardModal";
 import SeeMore from "../../components/Product/SeeMore";
 import Breadcrumb from "../../components/layout/Breadcrumb";
+import { fetchCollection } from "../../lib/api";
 
 import { IoCaretDownOutline } from "react-icons/io5";
 
-import content from "../../data/Product/Tat-ca-san-pham/contentSeeMoreAll";
-// <<<<<<< HEAD
-// import productsAll from "@/data/Product/Tat-ca-san-pham/productsAll";
-// =======
-import products from "../../data/Product/Tat-ca-san-pham/productsAll";
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 import "../../styles/Product/SeeMore.css";
 import "../../styles/Product/Fad.css";
 
 export default function Home() {
-  console.log("Content data:", content);
-  console.log("Sections:", content?.sections);
-  console.log("Is array?", Array.isArray(content?.sections));
+  const [content, setContent] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchCollection("contentSeeMoreAll")
+      .then((data) => {
+        const list = Array.isArray(data) ? data : [];
+        setContent(list[0] ?? null);
+      })
+      .catch((error) => console.error("Failed to load contentSeeMoreAll:", error));
+
+    fetchCollection("productsAll")
+      .then((data) => {
+        const list = Array.isArray(data)
+          ? data[0]?.productsAll ?? data[0]?.products ?? data
+          : [];
+        setProducts(list);
+      })
+      .catch((error) => console.error("Failed to load productsAll:", error));
+  }, []);
+
   const FILTER_OPTIONS = [
     { label: "Sản phẩm nổi bật", value: "default" },
     { label: "Giá thấp đến cao", value: "price_asc" },
@@ -34,28 +47,10 @@ export default function Home() {
   const [filter, setFilter] = useState("default");
   const filteredProducts = React.useMemo(() => {
     let result = [...products];
-
-// <<<<<<< HEAD
-//     console.log("Content data:", content);
-//     console.log("Sections:", content?.sections);
-//     console.log("Is array?", Array.isArray(content?.sections));
-//     const FILTER_OPTIONS = [
-//         { label: "Sản phẩm nổi bật", value: "default" },
-//         { label: "Giá thấp đến cao", value: "price_asc" },
-//         { label: "Giá cao đến thấp", value: "price_desc" },
-//         { label: "Mới nhất", value: "newest" },
-//         { label: "Đang giảm giá", value: "sale" },
-//         { label: "Hàng HOT", value: "hot" },
-//     ];
-//     const [filter, setFilter] = useState("default");
-//     const filteredProducts = React.useMemo(() => {
-//         let result = [...productsAll];
-// =======
     switch (filter) {
       case "price_asc":
         result.sort((a, b) => a.salePrice - b.salePrice);
         break;
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 
       case "price_desc":
         result.sort((a, b) => b.salePrice - a.salePrice);
@@ -79,17 +74,14 @@ export default function Home() {
     }
 
     return result;
-  }, [filter]);
+  }, [filter, products]);
 
   const [selectedProduct, setSelectedProduct] = useState<
-    (typeof products)[0] | null
+    any
   >(null);
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-// <<<<<<< HEAD
-//     const [selectedProduct, setSelectedProduct] = useState<(typeof productsAll)[0] | null>(null);
-// =======
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -190,15 +182,11 @@ export default function Home() {
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="cursor-pointer transition-transform duration-200 hover:scale-105"
-                onClick={() => setSelectedProduct(product)}
+                className="transition-transform duration-200 hover:scale-105"
               >
                 <ProductCard
-                  image={product.image}
-                  name={product.name}
-                  price={product.price}
-                  salePrice={product.salePrice}
-                  status={product.status}
+                  product={product}
+                  onOpenModal={setSelectedProduct}
                 />
               </div>
             ))}

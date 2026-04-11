@@ -15,6 +15,28 @@ export default function ProductCardModal({ isOpen, onClose, product }) {
       ? Math.round(((product.price - product.salePrice) / product.price) * 100)
       : 0;
 
+  const modalImages = React.useMemo(() => {
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      return product.images;
+    }
+
+    const variantImages = Array.isArray(product.variants)
+      ? product.variants
+          .map((v) => v?.image)
+          .filter((img) => typeof img === "string" && img.length > 0)
+      : [];
+
+    if (variantImages.length > 0) {
+      return Array.from(new Set(variantImages));
+    }
+
+    if (typeof product.image === "string" && product.image.length > 0) {
+      return [product.image];
+    }
+
+    return [];
+  }, [product]);
+
   /**
    * Called by ProductInfo when the user picks a size/color and clicks "Thêm vào giỏ"
    * @param {{ size: string, color: string, quantity: number }} opts
@@ -48,7 +70,7 @@ export default function ProductCardModal({ isOpen, onClose, product }) {
 
         {/* gallery */}
         <div className="relative md:w-1/2 bg-[#f9f9f9] p-8 flex items-center justify-center min-h-0">
-          <ProductGallery images={product.images || []} />
+          <ProductGallery images={modalImages} product={product} />
           {discountPercent > 0 && (
             <div className="absolute top-4 left-4 bg-red-600 text-white font-bold text-xs px-2.5 py-1.5 rounded-full shadow-lg z-20">
               -{discountPercent}%

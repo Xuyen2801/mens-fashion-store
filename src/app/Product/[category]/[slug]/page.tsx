@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { fetchCollection } from "@/lib/api";
 
-// Import dữ liệu
-import poloData from "@/data/Product/product-ao/ao-polo"; 
-import somiData from "@/data/Product/product-ao/so-mi";
-import setdoData from "@/data/Product/product-ao/set-do";
-import tanktopData from "@/data/Product/product-ao/tank-top";
-import hoodieData from "@/data/Product/product-ao/hoodie";
-import aoKhoacData from "@/data/Product/product-ao/ao-khoac";
-import aoThunData from "@/data/Product/product-ao/ao-thun";
-import { productsJeans } from "@/data/product-quan/filter_quan";
 import ProductDetail from "@/components/Product/ProductDetail";
 
 // 1. Định nghĩa Interface để TypeScript không báo lỗi gạch đỏ
@@ -34,46 +26,110 @@ interface FAQItem {
 export default function Page() {
   const params = useParams();
   const slug = params?.slug as string;
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [cachedProduct, setCachedProduct] = useState<any | null>(null);
 
-  const product = useMemo(() => {
-    const allProducts: any[] = [
-      ...(poloData?.products || []),
-      ...(somiData?.products || []),
-      ...(setdoData?.products || []),
-      ...(tanktopData?.products || []),
-      ...(hoodieData?.products || []),
-      ...(aoKhoacData?.products || []),
-      ...(aoThunData?.products || []),
-      ...(Array.isArray(productsJeans) ? productsJeans : []) 
+  const normalizeText = (value: string) =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+
+  useEffect(() => {
+    try {
+      const cached = sessionStorage.getItem(`product-detail:${slug}`);
+      if (cached) {
+        setCachedProduct(JSON.parse(cached));
+      }
+    } catch {
+      setCachedProduct(null);
+    }
+
+    const collections = [
+      "ao-khoac",
+      "ao-thun",
+      "ao-polo",
+      "so-mi",
+      "set-do",
+      "tank-top",
+      "hoodie",
+      "jean",
+      "short",
+      "kaki",
+      "boxer",
+      "jogger",
+      "tay",
+      "productsNew",
+      "productsOutLet",
+      "productsAll",
+      "ao-khoac",
+      "ao-thun",
+      "jean",
+      "short",
+      "kaki",
+      "boxer",
+      "jogger",
+      "tay",
+      "productsNew",
+      "productsOutLet",
     ];
 
-    return allProducts.find((p) => p.slug === slug);
-  }, [slug]);
+    const loadProducts = async () => {
+      try {
+        const results = await Promise.all(
+          collections.map((name) => fetchCollection<any[]>(name))
+        );
+
+        const merged = results.flatMap((items) => {
+          const first = Array.isArray(items) ? items[0] : null;
+          if (first && Array.isArray(first.products)) {
+            return first.products;
+          }
+          return Array.isArray(items) ? items : [];
+        });
+
+        setAllProducts(merged);
+      } catch (error) {
+        console.error("Failed to load product collections:", error);
+        setAllProducts([]);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  const product = useMemo(() => {
+    const normalizedSlug = normalizeText(slug);
+
+    return allProducts.find((p) => {
+      const productSlug = normalizeText(p.slug || "");
+      const productId = normalizeText(p.id?.toString?.() || p.id || "");
+      return productSlug === normalizedSlug || productId === normalizedSlug;
+    });
+  }, [allProducts, slug]);
+
+  const displayProduct = product || cachedProduct;
 
   const currentFaq = useMemo((): FAQItem[] => {
-    if (!product) return [];
-    const cat = product.category;
-   
-    if (cat === "Áo Polo") return poloData.faqs || [];
-    if (cat === "Áo Sơ Mi") return somiData.faqs || [];
-    if (cat === "Set-do") return setdoData.faqs || [];
-    if (cat === "Tanktop") return tanktopData.faqs || [];
-    if (cat === "Áo Hoodie") return hoodieData.faqs || [];
-    if (cat === "Áo Khoác") return aoKhoacData.faqs || [];
-    if (cat === "Áo Thun") return aoThunData.faqs || [];
-    if (cat === "Quần Jeans") return []; 
-
+    if (!displayProduct) return [];
+    if (Array.isArray(displayProduct.faqs)) {
+      return displayProduct.faqs;
+    }
     return [];
-  }, [product]);
+  }, [displayProduct]);
 
-  if (!product) return <div className="p-20 text-center">Sản phẩm không tồn tại!</div>;
+  if (!displayProduct) return <div className="p-20 text-center">Sản phẩm không tồn tại!</div>;
 
   return (
     <div className="max-w-7xl mx-auto p-4 min-h-screen">
       <nav className="text-sm text-gray-500 mb-6">
-        <Link href="/">Trang chủ</Link> / <span>{product.category}</span> / <span className="text-black">{product.name}</span>
+        <Link href="/">Trang chủ</Link> / <span>{displayProduct.category}</span> / <span className="text-black">{displayProduct.name}</span>
       </nav>
-      <ProductDetail product={product as any} faqData={currentFaq as any} />
+      <ProductDetail product={displayProduct as any} faqData={currentFaq as any} />
     </div>
   );
 }

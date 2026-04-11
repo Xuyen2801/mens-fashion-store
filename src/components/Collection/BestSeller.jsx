@@ -1,16 +1,63 @@
 "use client";
-import { useState } from "react";
-import sanphamPYS from "../../data/Product/Tat-ca-san-pham/productsAll";
+import { useEffect, useState } from "react";
 import "../../styles/bestseller.css";
-import { useCart } from "../../components/Cart/CartContext";
+import { fetchCollection } from "../../lib/api";
+import ProductCard from "../../components/Product/ProductCard";
 
 export default function BestSeller() {
 
   // ===== STATE =====
   const [openSort, setOpenSort] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Sản phẩm nổi bật");
+  const [sanphamPYS, setSanphamPYS] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { addToCart } = useCart();
+  const normalizeProducts = (payload) => {
+    if (Array.isArray(payload)) {
+      if (payload.length === 0) return [];
+
+      if (payload[0] && typeof payload[0] === "object") {
+        if (Array.isArray(payload[0].productsAll)) return payload[0].productsAll;
+        if (Array.isArray(payload[0].products)) return payload[0].products;
+      }
+
+      return payload;
+    }
+
+    if (payload && typeof payload === "object") {
+      if (Array.isArray(payload.productsAll)) return payload.productsAll;
+      if (Array.isArray(payload.products)) return payload.products;
+    }
+
+    return [];
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      try {
+        const data = await fetchCollection("productsAll");
+        const list = normalizeProducts(data);
+
+        if (isMounted) {
+          setSanphamPYS(Array.isArray(list) ? list : []);
+        }
+      } catch (error) {
+        console.error("Failed to load best seller products:", error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const sortOptions = [
     "Sản phẩm nổi bật",
@@ -25,24 +72,31 @@ export default function BestSeller() {
 
   // ===== SORT LOGIC =====
   const sortedProducts = [...sanphamPYS].sort((a, b) => {
+    const nameA = String(a?.name || "");
+    const nameB = String(b?.name || "");
+    const priceA = Number(a?.salePrice ?? a?.price ?? 0);
+    const priceB = Number(b?.salePrice ?? b?.price ?? 0);
+    const idA = Number(a?.id ?? 0);
+    const idB = Number(b?.id ?? 0);
+
     switch (selectedSort) {
       case "Giá: Tăng dần":
-        return a.price - b.price;
+        return priceA - priceB;
 
       case "Giá: Giảm dần":
-        return b.price - a.price;
+        return priceB - priceA;
 
       case "Tên: A-Z":
-        return a.name.localeCompare(b.name);
+        return nameA.localeCompare(nameB);
 
       case "Tên: Z-A":
-        return b.name.localeCompare(a.name);
+        return nameB.localeCompare(nameA);
 
       case "Mới nhất":
-        return b.id - a.id;
+        return idB - idA;
 
       case "Cũ nhất":
-        return a.id - b.id;
+        return idA - idB;
 
       default:
         return 0;
@@ -97,42 +151,19 @@ export default function BestSeller() {
       </div>
 
       {/* GRID */}
-      <div className="collection-grid">
-        {sortedProducts.map((item) => (
-          <div className="product-card" key={item.id}>
-
-            <div className="card-img">
-              <img src={item.image} alt={item.name} />
-              <span className="badge-new">HÀNG MỚI</span>
-            </div>
-
-            <div className="card-info">
-              <h4>{item.name}</h4>
-
-              <div className="price">
-                <span className="current">
-                  {item.price.toLocaleString()}đ
-                </span>
-
-                {item.oldPrice && (
-                  <span className="old">
-                    {item.oldPrice.toLocaleString()}đ
-                  </span>
-                )}
-              </div>
-
-              {/* ADD TO CART */}
-              <button
-                className="add-cart-btn"
-                onClick={() => addToCart(item)}
-              >
-                Thêm vào giỏ
-              </button>
-
-            </div>
-
-          </div>
-        ))}
+      <div className="bestseller-grid">
+        {isLoading ? (
+          <div className="bestseller-empty">Đang tải sản phẩm bán chạy...</div>
+        ) : sortedProducts.length > 0 ? (
+          sortedProducts.map((item, index) => (
+            <ProductCard
+              key={item?.id ?? item?.sku ?? item?.slug ?? `best-${index}`}
+              product={item}
+            />
+          ))
+        ) : (
+          <div className="bestseller-empty">Chưa có sản phẩm bán chạy.</div>
+        )}
       </div>
 
     </div>
