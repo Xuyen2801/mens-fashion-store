@@ -237,10 +237,13 @@ export default function Header() {
     }, [openSearch]);
 
     const searchResults = useMemo(() => {
+      // 🔍 useMemo: Cache search results để optimize render performance
+      // Chỉ tính toán lại khi dependencies thay đổi (searchQuery, searchProducts)
+      // Nếu user chỉ gõ đôi xong (render liên tiếp) -> reuse kết quả cũ để avoid lag
       const keyword = normalizeText(searchQuery);
 
       if (!keyword) {
-        return searchProducts.slice(0, 12);
+        return searchProducts.slice(0, 12); // Nếu không search gì -> hiện thị 12 sản phẩm đầu
       }
 
       return searchProducts
@@ -249,9 +252,10 @@ export default function Header() {
           const category = normalizeText(product?.category);
           const sku = normalizeText(product?.sku || product?.id);
 
+          // Tìm kiếm trong cả 3 field: name, category, sku
           return name.includes(keyword) || category.includes(keyword) || sku.includes(keyword);
         })
-        .slice(0, 24);
+        .slice(0, 24); // Giới hạn 24 kết quả
     }, [searchProducts, searchQuery]);
 
     const getProductDetailPath = (product) => {
@@ -282,6 +286,10 @@ export default function Header() {
     };
 
   const resolveDenimCardPath = (card) => {
+    // 🧭 Chuyển card text thành URL path
+    // Logic: Nếu card có path được set rồi -> dùng nó
+    // Nếu không -> match text của card để tìm collection path tương ứng
+    // VD: "AirFlex" -> "/collection/AIRFLEX", "ProCOOL" -> "/collection/ProCOOL"
     if (card?.path && card.path !== "#") return card.path;
 
     const text = (card?.text || "").toLowerCase();
@@ -295,7 +303,7 @@ export default function Header() {
       return "/collection/smart-jeans";
     }
 
-    return "/collection";
+    return "/collection"; // Default fallback
   };
 
   return (

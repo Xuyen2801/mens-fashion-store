@@ -10,6 +10,10 @@ import toast from "react-hot-toast";
 const API_URL = "http://localhost:5000/users";
 
 export default function RegisterForm() {
+  // 🔞 3-STEP REGISTRATION FLOW (Quản lý 3 bước đăng ký)
+  // Step 1: Gửi mã OTP
+  // Step 2: Xác thực OTP
+  // Step 3: Đống ý đăng ký tài khoản
   const [step, setStep] = useState(1);
   
   const [formData, setFormData] = useState({
@@ -64,7 +68,8 @@ export default function RegisterForm() {
     }
 
     try {
-      const res = await fetch(API_URL); 
+      // 🔍 Bước 1: Kiểm tra số điện thoại có đã đăng ký
+      const res = await fetch(API_URL);
       const allUsers = await res.json();
       
       const existingUser = allUsers.find(
@@ -73,8 +78,10 @@ export default function RegisterForm() {
 
       if (existingUser) {
         setError("Số điện thoại này đã được đăng ký tài khoản.");
-        return; 
+        return; // Stop néu đã đăng ký
       }
+
+      // 🔍 Bước 2: Clear reCAPTCHA cũ (nếu có) để tạo mới
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear(); 
       }
@@ -83,18 +90,23 @@ export default function RegisterForm() {
         size: "invisible",
       });
 
+      // 🔍 Bước 3: Format phone number: 0901234567 -> +84901234567 (căn duy tapi theo FireBase)
       const rawPhone = formData.phone.trim();
       const formattedPhone = `+84${rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone}`;
       const appVerifier = window.recaptchaVerifier;
 
       setSuccess("Đang gửi mã xác nhận...");
 
+      // 🔍 Bước 4: Gửi SMS OTP thông qua Firebase
+      // confirmationResult sẽ lưu số điện thoại + session info
       const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       
+      // Lưu confirmationResult vào window để sử dụng ở step kế tiếp (handleVerifyOTP)
+      // (Chú: Cảnh báo: Không safe lưu trìn window, nên dùng state thật sự)
       window.confirmationResult = confirmationResult;
 
-      setSuccess("Mã xác nhận đã được gửi thành công!");
-      setStep(2);
+      setSuccess("Đối xác nhận đã được gửi thành công!");
+      setStep(2); // Chuyển sang step 2 (verify OTP)
 
     } catch (err) {
       console.error(err);
@@ -112,10 +124,12 @@ export default function RegisterForm() {
     }
 
     try {
+      // 🔍 Bước 2: Xác thực OTP được gửi
+      // Dùng confirmationResult từ step 1 (để xác nhận đÚng số điện thoại)
       await window.confirmationResult.confirm(formData.otp);
       
       setSuccess("Xác thực OTP thành công!");
-      setStep(3);
+      setStep(3); // Chuyển sang step 3 (đăng ký thành công)
     } catch (err) {
       setError("Mã OTP không chính xác. Vui lòng kiểm tra lại.");
     }
@@ -138,9 +152,11 @@ export default function RegisterForm() {
     }
 
     try {
-      const salt = await bcrypt.genSalt(10);
+      // 🔍 Bước 3.1: Mã hóa mật khẩu bằng bcryptjs (security best practice)
+      const salt = await bcrypt.genSalt(10); // Đồng độ 10 (stronger = slower)
       const hashedPassword = await bcrypt.hash(password, salt);
 
+      // 🔍 Bước 3.2: Lưu tài khoản vào database
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -149,13 +165,14 @@ export default function RegisterForm() {
           fullName,
           email,
           address,
-          password: hashedPassword,
+          password: hashedPassword, // Lưu password đã mã hóa (NEVER lưu mãt khẩu raw)
           role: "customer",
           createdAt: new Date().toISOString()
         }),
       });
 
       if (response.ok) {
+        // 🔍 Bước 3.3: Gửi email chào mừng (non-blocking - không bỏ cảnh báo nếu fail)
         try {
           await fetch("/api/send-email", {
             method: "POST",
@@ -164,16 +181,18 @@ export default function RegisterForm() {
           });
           console.log("Đã gửi lệnh gửi mail thành công!");
         } catch (mailErr) {
-          console.error("Lỗi khi gọi API gửi mail:", mailErr);
+          // Bỏ qua lỗi email - registration vẫn thành công
+          console.error("Lỗi khi gọi send-email API:", mailErr);
         }
 
         toast.success("Đăng ký thành công! Kiểm tra email nhé.", {
-        duration: 4000
+          duration: 4000
         });
 
-    setTimeout(() => {
-      window.location.href = "/login"; 
-    }, 2000);
+        // 🔍 Bước 3.4: Redirect sang trang login
+        setTimeout(() => {
+          window.location.href = "/login"; // Hard redirect để load lại session
+        }, 2000);
       } else {
         setError("Lỗi từ DB: Không thể lưu tài khoản.");
       }

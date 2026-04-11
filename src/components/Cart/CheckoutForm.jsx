@@ -55,14 +55,29 @@ export default function CheckoutForm({ onBack, onSuccess }) {
 
   const selectedShipping =
     shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0] || { price: 0, name: "" };
-  const v = state.appliedVoucher;
+  
+  // 💰 TÍnh giá: subtotal -> áp voucher -> + shipping fee = total
+  const v = state.appliedVoucher; // voucher đã áp dụng
   let discount = 0;
   let shippingFee = selectedShipping.price;
+  
+  // Kiểm tra voucher có hợp lệ (không có error)
   if (v && !v.error) {
-    if (v.type === "percent") discount = Math.round((subtotal * v.value) / 100);
-    else if (v.type === "fixed") discount = Math.min(v.value, subtotal);
-    else if (v.type === "shipping") shippingFee = 0;
+    // 3 loại voucher: percent (%), fixed (cố định), shipping (miễn phí vận chuyển)
+    if (v.type === "percent") {
+      // Giảm theo %: VD 10% off = 10% của subtotal
+      discount = Math.round((subtotal * v.value) / 100);
+    } else if (v.type === "fixed") {
+      // Giảm số tiền cố định: VD -20k
+      // Math.min() đảm bảo discount không vượt quá subtotal (không được âm tiền)
+      discount = Math.min(v.value, subtotal);
+    } else if (v.type === "shipping") {
+      // Miễn phí vận chuyển: set shipping fee = 0
+      shippingFee = 0;
+    }
   }
+  
+  // Tổng tiền cuối cùng
   const total = subtotal - discount + shippingFee;
 
   const validate = () => {
@@ -78,8 +93,17 @@ export default function CheckoutForm({ onBack, onSuccess }) {
     return errs;
   };
 
+  // 🔗 CURRIED FUNCTION: handleInput(field) trả về function (e) => {...}
+  // Ưu điểm:
+  // - Tạo unique handler cho mỗi field mà không cần useState cho từng field
+  // - Syntax ngắn gọn: onChange={handleInput("fullName")} thay vì onChange={(e) => handleInput(e, "fullName")}
+  // - Pattern này hay dùng trong React forms
+  // VD: User gõ vào fullName input -> handleInput("fullName")(e) được gọi
+  // -> Cập nhật form["fullName"] = e.target.value + clear errors["fullName"]
   const handleInput = (field) => (e) => {
+    // Cập nhật form data
     setForm((f) => ({ ...f, [field]: e.target.value }));
+    // Clear error message khi user bắt đầu gõ
     setErrors((er) => ({ ...er, [field]: undefined }));
   };
 

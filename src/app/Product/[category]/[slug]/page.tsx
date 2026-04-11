@@ -29,15 +29,28 @@ export default function Page() {
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [cachedProduct, setCachedProduct] = useState<any | null>(null);
 
+  // 🔤 normalizeText: Convert Vietnamese text với dấu -> URL-friendly slug
+  // VD: "Áo Thun Nam" -> "ao-thun-nam" (dùng để match với URL slug parameter)
+  // 
+  // Kỳ thuựt Unicode NFD (Normalization Form Decomposed):
+  // 1. .normalize("NFD"): Phá dấu ra riêng
+  //    - "á" (single char) -> "a" + combining acute accent (mark)
+  // 2. .replace(/[\u0300-\u036f]/g, ""): Xóa combining marks
+  //    - Unicode range \u0300-\u036f là khoảng "Combining Diacritical Marks"
+  //    - Xóa hết: "a" + mark -> "a"
+  // 3. .replace(/[^a-z0-9\s-]/g, " "): Xóa special characters
+  // 4. .replace(/\s+/g, "-"): Thế space = dash
+  // 5. .replace(/-+/g, "-"): Multiple dash -> single dash
+  // 6. .replace(/^-|-$/g, ""): Xóa leading/trailing dash
   const normalizeText = (value: string) =>
     String(value || "")
       .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, " ")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
+      .normalize("NFD") // Decompose dấu
+      .replace(/[\u0300-\u036f]/g, "") // Xóa combining marks
+      .replace(/[^a-z0-9\s-]/g, " ") // Xóa special chars
+      .replace(/\s+/g, "-") // Space -> dash
+      .replace(/-+/g, "-") // Multiple dash -> single
+      .replace(/^-|-$/g, ""); // Remove leading/trailing dash
 
   useEffect(() => {
     try {

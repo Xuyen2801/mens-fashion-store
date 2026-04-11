@@ -22,14 +22,20 @@ export default async function Page({
     safeFetchCollection<any[]>("collection", []),
   ]);
 
+  // 🗺️ aliasMap: Map slug cũ -> new collection slug
+  // Use case: URL cũ (procool) cần redirect đến collection mới (procool-new-gen)
+  // Nên dùng object map thay vì redirect: performance tớt hơn + preserve URL
+  // VD: ?????????????://domain.com/collection/procool
+  //     -> fetch data từ collection "procool-new-gen" thay vì "procool"
   const aliasMap: Record<string, string> = {
     procool: "procool-new-gen",
     stitch: "stitch-better-together",
     icon105: "icon105-lightweight-collection",
     "smart-jeans": "smart-jeans-collection",
-    smartjeans: "smart-jeans-collection",
+    smartjeans: "smart-jeans-collection", // Alias không có dash cũng map được
   };
 
+  // Tím slug thực tế: Check alias trước, không có thì dùng slug gốc
   const targetSlug = aliasMap[slug.toLowerCase()] || slug;
 
   const specializedCollection = await safeFetchCollection<any[]>(targetSlug.toUpperCase(), []);
