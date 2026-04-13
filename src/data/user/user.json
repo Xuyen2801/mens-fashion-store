@@ -21,16 +21,17 @@
       "id": "zK0aeHCLF68"
     },
     {
-      "phone": "0369149682",
-      "fullName": "Quản Trị Viên",
-      "email": "khavy050905@gmail.com",
-      "address": "Hồ Chí Minh",
-      "password": "$2b$10$KROV45hJvuaNbZTd0eCyZOgfy92cvNNn./9Zo9xegkrZ3AH8lfiUm",
-      "role": "admin",
-      "createdAt": "2026-04-10T09:28:40.051Z",
-      "id": "KczWA_QwsTo"
+
+      "phone": "0981102418",
+      "fullName": "Trần Thị Hải Yến",
+      "email": "tranthihaiyen210805@gmail.com",
+      "address": "Bình Phước",
+      "password": "$2b$10$g3p0vXhd5TsKeWtY0cfW4.ajdXRrz8Km4Q6QoUhAeTu.nysvJd28i",
+      "role": "customer",
+      "createdAt": "2026-03-25T06:00:05.603Z",
+      "id": "n9StuJycCIQ"
     }
-    
+
   ],
   "$schema": "./node_modules/json-server/schema.json"
 }
