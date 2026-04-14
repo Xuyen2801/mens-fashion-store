@@ -5,9 +5,12 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import bcrypt from "bcryptjs";
 import toast from "react-hot-toast";
-
-
-const API_URL = "http://localhost:5000/users";
+import {
+  hasDuplicateIdentity,
+  normalizePhone,
+  validateRegistrationData,
+} from "../../lib/userSchema";
+import { USERS_API_URL } from "../../lib/api";
 
 export default function RegisterForm() {
   // 🔞 3-STEP REGISTRATION FLOW (Quản lý 3 bước đăng ký)
@@ -62,19 +65,19 @@ export default function RegisterForm() {
     setError("");
     setSuccess("");
 
-    if (!formData.phone || formData.phone.length < 10) {
+    const normalizedPhone = normalizePhone(formData.phone);
+
+    if (!normalizedPhone || normalizedPhone.length !== 10) {
       setError("Vui lòng nhập số điện thoại hợp lệ.");
       return;
     }
 
     try {
       // 🔍 Bước 1: Kiểm tra số điện thoại có đã đăng ký
-      const res = await fetch(API_URL);
+      const res = await fetch(USERS_API_URL);
       const allUsers = await res.json();
       
-      const existingUser = allUsers.find(
-        (u) => u.phone.trim() === formData.phone.trim() && u.password
-      );
+      const existingUser = hasDuplicateIdentity(allUsers, normalizedPhone, "");
 
       if (existingUser) {
         setError("Số điện thoại này đã được đăng ký tài khoản.");
@@ -91,7 +94,7 @@ export default function RegisterForm() {
       });
 
       // 🔍 Bước 3: Format phone number: 0901234567 -> +84901234567 (căn duy tapi theo FireBase)
-      const rawPhone = formData.phone.trim();
+      const rawPhone = normalizedPhone;
       const formattedPhone = `+84${rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone}`;
       const appVerifier = window.recaptchaVerifier;
 
@@ -141,33 +144,51 @@ export default function RegisterForm() {
 
     const { fullName, email, address, password, confirmPassword, phone } = formData;
 
-    if (!fullName || !email || !address || !password) {
-      setError("Vui lòng nhập đầy đủ thông tin.");
-      return;
-    }
-
     if (password !== confirmPassword) {
       setError("Mật khẩu xác nhận không trùng khớp.");
       return;
     }
 
     try {
+      const validation = validateRegistrationData({
+        fullName,
+        email,
+        address,
+        password,
+        phone,
+      });
+
+      if (!validation.valid) {
+        setError(validation.errors[0]);
+        return;
+      }
+
+      const checkRes = await fetch(USERS_API_URL);
+      const allUsers = await checkRes.json();
+
+      if (hasDuplicateIdentity(allUsers, validation.user.phone, validation.user.email)) {
+        setError("Số điện thoại hoặc email đã được đăng ký.");
+        return;
+      }
+
       // 🔍 Bước 3.1: Mã hóa mật khẩu bằng bcryptjs (security best practice)
       const salt = await bcrypt.genSalt(10); // Đồng độ 10 (stronger = slower)
       const hashedPassword = await bcrypt.hash(password, salt);
 
       // 🔍 Bước 3.2: Lưu tài khoản vào database
-      const response = await fetch(API_URL, {
+      const response = await fetch(USERS_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone,
-          fullName,
-          email,
-          address,
+          phone: validation.user.phone,
+          fullName: validation.user.fullName,
+          email: validation.user.email,
+          address: validation.user.address,
           password: hashedPassword, // Lưu password đã mã hóa (NEVER lưu mãt khẩu raw)
           role: "customer",
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          schemaVersion: 1,
         }),
       });
 

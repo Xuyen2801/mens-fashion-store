@@ -9,6 +9,7 @@ import CollectionSection from "../components/home/CollectionSection/CollectionSe
 import MixMatchSection from "../components/home/MixMatchSection/MixMatchSection";
 import InstagramSection from "../components/home/InstagramSection/InstagramSection";
 import NewsSection from "../components/home/NewsSection/NewsSection";
+import { API_BASE_URL } from "../lib/api";
 
 type CollectionItem = {
   _id?: string;
@@ -38,7 +39,15 @@ type MixMatchItem = {
 
 
 export default function HomePage() {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const toSlug = (value?: string) =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
 
   const normalizeCollectionLink = (link?: string, slug?: string) => {
     const fallback = slug ? `/collection/${slug}` : "/collection";
@@ -105,8 +114,9 @@ export default function HomePage() {
           .filter((item: CollectionItem) => item?.image && item?.name)
           .map((item: CollectionItem) => ({
             ...item,
+            slug: item.slug || toSlug(item.name),
             title: item.title || item.name,
-            link: normalizeCollectionLink(item.link, item.slug),
+            link: normalizeCollectionLink(item.link, item.slug || toSlug(item.name)),
           }))
           .filter(
             (item, index, arr) =>

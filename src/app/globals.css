@@ -23,6 +23,38 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.btn-see-more-unified {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 34px;
+    border: 1px solid #1f1f1f;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1f1f1f;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-see-more-unified:hover {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+}
+
+@media (max-width: 640px) {
+    .btn-see-more-unified {
+        min-height: 46px;
+        padding: 0 24px;
+        font-size: 15px;
+    }
+}
 .gap-5{
   font-family: Arial, Helvetica, sans-serif;
 }

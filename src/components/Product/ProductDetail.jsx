@@ -33,6 +33,7 @@ export default function ProductDetail({ product, faqData = [] }) {
           <ProductInfo 
             product={product} 
             selectedVariant={selectedVariant}
+            showDetailButton={false}
             onColorChange={(variant) => setSelectedVariant(variant)} 
           />
         </div>

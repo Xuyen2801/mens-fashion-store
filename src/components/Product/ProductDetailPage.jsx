@@ -7,6 +7,7 @@ export default function Page({ params }) {
   const { slug } = params; 
   const [allProducts, setAllProducts] = useState([]);
   const [cachedProduct, setCachedProduct] = useState(null);
+  const [productFaqBundles, setProductFaqBundles] = useState([]);
 
   const normalizeText = (value) =>
     String(value || "")
@@ -36,6 +37,20 @@ export default function Page({ params }) {
           collections.map((name) => fetchCollection(name))
         );
 
+        const bundles = results.map((items) => {
+          const first = Array.isArray(items) ? items[0] : null;
+
+          const products = first && Array.isArray(first.products)
+            ? first.products
+            : Array.isArray(items)
+              ? items
+              : [];
+
+          const faqs = first && Array.isArray(first.faqs) ? first.faqs : [];
+
+          return { products, faqs };
+        });
+
         const merged = results.flatMap((items) => {
           const first = Array.isArray(items) ? items[0] : null;
           if (first && Array.isArray(first.products)) {
@@ -45,9 +60,11 @@ export default function Page({ params }) {
         });
 
         setAllProducts(merged);
+        setProductFaqBundles(bundles);
       } catch (error) {
         console.error("Failed to load product detail data:", error);
         setAllProducts([]);
+        setProductFaqBundles([]);
       }
     };
 
@@ -67,6 +84,24 @@ export default function Page({ params }) {
   );
 
   const displayProduct = product || cachedProduct;
+
+  const currentFaq = useMemo(() => {
+    if (!displayProduct) return [];
+    if (Array.isArray(displayProduct.faqs)) {
+      return displayProduct.faqs;
+    }
+
+    const normalizedDisplaySlug = normalizeText(displayProduct.slug || displayProduct.id || "");
+
+    const matchedBundle = productFaqBundles.find((bundle) =>
+      bundle.products?.some((item) => {
+        const itemSlug = normalizeText(item?.slug || item?.id || "");
+        return itemSlug === normalizedDisplaySlug;
+      })
+    );
+
+    return Array.isArray(matchedBundle?.faqs) ? matchedBundle.faqs : [];
+  }, [displayProduct, productFaqBundles]);
 
   
   if (!displayProduct) {
@@ -93,7 +128,7 @@ export default function Page({ params }) {
         <span className="text-black font-medium">{displayProduct.name}</span>
       </nav>
 
-      <ProductDetail product={displayProduct} />
+      <ProductDetail product={displayProduct} faqData={currentFaq} />
     </main>
   );
 }

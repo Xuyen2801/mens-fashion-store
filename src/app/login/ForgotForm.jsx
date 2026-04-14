@@ -4,8 +4,8 @@ import { auth } from "../../lib/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import bcrypt from "bcryptjs";
 import toast from "react-hot-toast";
-
-const API_URL = "http://localhost:5000/users";
+import { chooseLatestUserByPhone, normalizePhone } from "../../lib/userSchema";
+import { USERS_API_URL } from "../../lib/api";
 
 export default function ForgotPassword({ onSwitchTab }) {
   const [step, setStep] = useState(1);
@@ -29,23 +29,22 @@ export default function ForgotPassword({ onSwitchTab }) {
     setError("");
 
     try {
-      const res = await fetch(API_URL); 
+      const res = await fetch(USERS_API_URL); 
       const allUsers = await res.json();
+      const normalizedPhone = normalizePhone(phone);
 
       console.log("Tất cả User trong DB:", allUsers);
 
-      const validUser = allUsers.find(u => 
-        u.phone.trim() === phone.trim() && u.password
-      );
+      const validUser = chooseLatestUserByPhone(allUsers, normalizedPhone);
 
-      if (!validUser) {
+      if (!validUser || !validUser.password) {
         setError("Số điện thoại này chưa được đăng ký hệ thống.");
         return;
       }
 
       console.log("Tìm thấy:", validUser.fullName);
 
-      const rawPhone = phone.trim();
+      const rawPhone = normalizedPhone;
       const formattedPhone = `+84${rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone}`;
       
       const appVerifier = window.recaptchaVerifier;
@@ -81,10 +80,11 @@ export default function ForgotPassword({ onSwitchTab }) {
     }
 
     try {
-      const res = await fetch(API_URL); 
+      const res = await fetch(USERS_API_URL); 
       const allUsers = await res.json();
+      const normalizedPhone = normalizePhone(phone);
       
-      const validUser = allUsers.find(u => u.phone.trim() === phone.trim());
+      const validUser = chooseLatestUserByPhone(allUsers, normalizedPhone);
 
       if (!validUser) {
         setError("Lỗi: Không tìm thấy tài khoản để cập nhật.");
@@ -96,10 +96,13 @@ export default function ForgotPassword({ onSwitchTab }) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-      const patchRes = await fetch(`${API_URL}/${validUser.id}`, {
+      const patchRes = await fetch(`${USERS_API_URL}/${validUser.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: hashedPassword }),
+        body: JSON.stringify({
+          password: hashedPassword,
+          updatedAt: new Date().toISOString(),
+        }),
       });
 
       if (patchRes.ok) {

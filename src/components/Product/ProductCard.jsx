@@ -1,6 +1,6 @@
 // src/components/product/ProductCard.jsx
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useCart } from "../Cart/CartContext";
 import { useRouter } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
@@ -11,6 +11,30 @@ import toast from 'react-hot-toast';
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
+
+const PRODUCTCARD_FALLBACK_IMAGES = [
+  "/images/productcart/2.jpg",
+  "/images/productcart/3.jpg",
+  "/images/productcart/4.jpg",
+  "/images/productcart/5.jpg",
+  "/images/productcart/6.jpg",
+  "/images/productcart/7.jpg",
+  "/images/productcart/8.jpg",
+  "/images/productcart/9.jpg",
+  "/images/productcart/10.jpg",
+  "/images/productcart/11.jpg",
+];
+
+const pickFallbackImage = (seed) => {
+  const text = String(seed || "fallback");
+  let hash = 0;
+
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
+  }
+
+  return PRODUCTCARD_FALLBACK_IMAGES[hash % PRODUCTCARD_FALLBACK_IMAGES.length];
+};
 
 /**
  * Backward-compatible: hoạt động với CẢ HAI cách gọi:
@@ -26,16 +50,6 @@ const ProductCard = (props) => {
   const [added, setAdded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-
-  const normalizeText = (value) =>
-    String(value || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, " ")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
 
   // ── Normalize props ────────────────────────────────────────────────────────
   // Nếu `product` được truyền vào là object đầy đủ thì dùng luôn.
@@ -57,7 +71,11 @@ const ProductCard = (props) => {
 
   // Destructure từ object đã normalize
   const {
+    id,
+    sku,
     image,
+    images = [],
+    thumbnail,
     name,
     price,
     salePrice,
@@ -66,6 +84,20 @@ const ProductCard = (props) => {
     colors = [],
     discount,
   } = product;
+
+  const firstColor = colors[0];
+  const defaultColorName =
+    (typeof firstColor === "string" && firstColor.trim()) ||
+    (typeof firstColor === "object" && (firstColor?.name || firstColor?.color)) ||
+    product?.variants?.[0]?.color ||
+    "Tieu chuan";
+
+  const fallbackImage = pickFallbackImage(id || sku || name);
+  const resolvedImage =
+    (typeof image === "string" && image.trim()) ||
+    (Array.isArray(images) && typeof images[0] === "string" && images[0].trim()) ||
+    (typeof thumbnail === "string" && thumbnail.trim()) ||
+    fallbackImage;
 
   // Guard: không render nếu thiếu dữ liệu tối thiểu
   if (!name && !image) return null;
@@ -101,7 +133,7 @@ const ProductCard = (props) => {
     return; 
   }
 
-  addToCart(product, "M", "Default", 1);
+  addToCart(product, "M", defaultColorName, 1);
   toast.success("Đã thêm vào giỏ hàng!"); 
   
   setAdded(true);
@@ -145,9 +177,15 @@ const ProductCard = (props) => {
       <div className="relative w-full" style={{ aspectRatio: "334/455" }}>
         <div className="absolute inset-0 overflow-hidden rounded-[4px]">
           <img
-            src={image}
+            src={resolvedImage}
             alt={name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            onError={(event) => {
+              if (event.currentTarget.src !== fallbackImage) {
+                event.currentTarget.src = fallbackImage;
+              }
+            }}
           />
         </div>
 
@@ -197,10 +235,17 @@ const ProductCard = (props) => {
               <div className="flex gap-1 mt-1">
                 {colors.slice(0, 4).map((c, i) => (
                   <span
-                    key={i}
-                    className="w-4 h-4 rounded-full border border-gray-200 inline-block"
-                    style={{ background: c.hex ?? "#ccc" }}
-                    title={c.name}
+                    key={`${(typeof c === "string" ? c : c?.name || c?.color || "color")}-${i}`}
+                    className="w-4 h-4 rounded-full border border-gray-200 inline-block bg-center bg-cover"
+                    style={{
+                      backgroundImage:
+                        typeof c === "object" && (c?.thumbnail || c?.image)
+                          ? `url(${c.thumbnail || c.image})`
+                          : undefined,
+                      backgroundColor:
+                        typeof c === "object" && c?.hex ? c.hex : "#9CA3AF",
+                    }}
+                    title={typeof c === "string" ? c : c?.name || c?.color || `Mau ${i + 1}`}
                   />
                 ))}
               </div>

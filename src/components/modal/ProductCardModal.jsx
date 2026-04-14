@@ -86,6 +86,7 @@ export default function ProductCardModal({ isOpen, onClose, product }) {
           */}
           <ProductInfo
             product={product}
+            showDetailButton={true}
             onAddToCart={handleAddToCart}
           />
         </div>

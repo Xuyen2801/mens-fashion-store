@@ -17,6 +17,63 @@ import "../../styles/Product/Fad.css";
 export default function Home() {
   const [content, setContent] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [columnCount, setColumnCount] = useState(5);
+  const [showAllProducts, setShowAllProducts] = useState(false);
+
+  const ALL_PRODUCT_COLLECTIONS = [
+    "ao-khoac",
+    "ao-thun",
+    "ao-polo",
+    "so-mi",
+    "set-do",
+    "hoodie",
+    "jean",
+    "short",
+    "kaki",
+    "boxer",
+    "jogger",
+    "tay",
+    "productsNew",
+    "productsOutLet",
+    "productsAll",
+  ];
+
+  const collectProducts = (data: any): any[] => {
+    if (!Array.isArray(data)) return [];
+
+    return data.flatMap((item) => {
+      if (!item) return [];
+
+      if (Array.isArray(item?.products)) return item.products;
+      if (Array.isArray(item?.productsAll)) return item.productsAll;
+      if (Array.isArray(item)) return item;
+
+      if (
+        typeof item === "object" &&
+        item !== null &&
+        (item.name || item.sku || item.slug) &&
+        (item.price || item.salePrice)
+      ) {
+        return [item];
+      }
+
+      return [];
+    });
+  };
+
+  const buildProductKey = (product: any, index: number): string => {
+    const slug = String(product?.slug || "").trim().toLowerCase();
+    if (slug) return `slug:${slug}`;
+
+    const sku = String(product?.sku || "").trim().toLowerCase();
+    if (sku) return `sku:${sku}`;
+
+    const id = String(product?.id || "").trim().toLowerCase();
+    if (id) return `id:${id}`;
+
+    const name = String(product?.name || "").trim().toLowerCase();
+    return name ? `name:${name}` : `idx:${index}`;
+  };
 
   useEffect(() => {
     fetchCollection("contentSeeMoreAll")
@@ -26,14 +83,51 @@ export default function Home() {
       })
       .catch((error) => console.error("Failed to load contentSeeMoreAll:", error));
 
-    fetchCollection("productsAll")
-      .then((data) => {
-        const list = Array.isArray(data)
-          ? data[0]?.productsAll ?? data[0]?.products ?? data
-          : [];
-        setProducts(list);
+    Promise.allSettled(
+      ALL_PRODUCT_COLLECTIONS.map((collectionName) => fetchCollection(collectionName))
+    )
+      .then((results) => {
+        const merged = results.flatMap((result) => {
+          if (result.status !== "fulfilled") {
+            return [];
+          }
+
+          return collectProducts(result.value);
+        });
+
+        const dedupedMap = new Map<string, any>();
+        merged.forEach((product, index) => {
+          const key = buildProductKey(product, index);
+          if (!dedupedMap.has(key)) {
+            dedupedMap.set(key, product);
+          }
+        });
+
+        setProducts(Array.from(dedupedMap.values()));
       })
-      .catch((error) => console.error("Failed to load productsAll:", error));
+      .catch((error) => console.error("Failed to load all product collections:", error));
+  }, []);
+
+  useEffect(() => {
+    const getColumnCount = () => {
+      const width = window.innerWidth;
+
+      if (width >= 1024) return 5;
+      if (width >= 768) return 4;
+      if (width >= 640) return 3;
+      return 2;
+    };
+
+    const updateColumnCount = () => {
+      setColumnCount(getColumnCount());
+    };
+
+    updateColumnCount();
+    window.addEventListener("resize", updateColumnCount);
+
+    return () => {
+      window.removeEventListener("resize", updateColumnCount);
+    };
   }, []);
 
   const FILTER_OPTIONS = [
@@ -75,6 +169,11 @@ export default function Home() {
 
     return result;
   }, [filter, products]);
+
+  const initialVisibleCount = columnCount * 2;
+  const visibleProducts = showAllProducts
+    ? filteredProducts
+    : filteredProducts.slice(0, initialVisibleCount);
 
   const [selectedProduct, setSelectedProduct] = useState<
     any
@@ -179,7 +278,7 @@ export default function Home() {
 
           {/* Product grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 pb-10 lg:pb-16">
-            {filteredProducts.map((product) => (
+            {visibleProducts.map((product) => (
               <div
                 key={product.id}
                 className="transition-transform duration-200 hover:scale-105"
@@ -191,6 +290,17 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {!showAllProducts && filteredProducts.length > initialVisibleCount && (
+            <div className="flex justify-center pb-10">
+              <button
+                onClick={() => setShowAllProducts(true)}
+                className="btn-see-more-unified"
+              >
+                Xem thêm
+              </button>
+            </div>
+          )}
           {/* See more */}
           <div className="body py-10 border-t border-gray-200">
             <SeeMore maxHeight={700}>

@@ -33,7 +33,7 @@ export default function MixMatchSection({ items }: Props) {
       </div>
 
       <div className={styles.btnWrapper}>
-        <Link href="/collection/tet" className={styles.button}>
+        <Link href="/collection/tet" className="btn-see-more-unified">
           Xem thêm
         </Link>
       </div>

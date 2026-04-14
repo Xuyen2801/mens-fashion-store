@@ -28,6 +28,7 @@ export default function Page() {
   const slug = params?.slug as string;
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [cachedProduct, setCachedProduct] = useState<any | null>(null);
+  const [productFaqBundles, setProductFaqBundles] = useState<Array<{ products: any[]; faqs: FAQItem[] }>>([]);
 
   // 🔤 normalizeText: Convert Vietnamese text với dấu -> URL-friendly slug
   // VD: "Áo Thun Nam" -> "ao-thun-nam" (dùng để match với URL slug parameter)
@@ -97,6 +98,20 @@ export default function Page() {
           collections.map((name) => fetchCollection<any[]>(name))
         );
 
+        const bundles = results.map((items) => {
+          const first = Array.isArray(items) ? items[0] : null;
+
+          const products = first && Array.isArray(first.products)
+            ? first.products
+            : Array.isArray(items)
+              ? items
+              : [];
+
+          const faqs = first && Array.isArray(first.faqs) ? first.faqs : [];
+
+          return { products, faqs };
+        });
+
         const merged = results.flatMap((items) => {
           const first = Array.isArray(items) ? items[0] : null;
           if (first && Array.isArray(first.products)) {
@@ -106,9 +121,11 @@ export default function Page() {
         });
 
         setAllProducts(merged);
+        setProductFaqBundles(bundles);
       } catch (error) {
         console.error("Failed to load product collections:", error);
         setAllProducts([]);
+        setProductFaqBundles([]);
       }
     };
 
@@ -132,8 +149,22 @@ export default function Page() {
     if (Array.isArray(displayProduct.faqs)) {
       return displayProduct.faqs;
     }
+
+    const normalizedDisplaySlug = normalizeText(displayProduct.slug || displayProduct.id || "");
+
+    const matchedBundle = productFaqBundles.find((bundle) =>
+      bundle.products?.some((item) => {
+        const itemSlug = normalizeText(item?.slug || item?.id || "");
+        return itemSlug === normalizedDisplaySlug;
+      })
+    );
+
+    if (matchedBundle && Array.isArray(matchedBundle.faqs)) {
+      return matchedBundle.faqs;
+    }
+
     return [];
-  }, [displayProduct]);
+  }, [displayProduct, productFaqBundles]);
 
   if (!displayProduct) return <div className="p-20 text-center">Sản phẩm không tồn tại!</div>;
 

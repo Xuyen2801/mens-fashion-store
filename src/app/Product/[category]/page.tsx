@@ -112,6 +112,15 @@ export default function Page({ params }: PageProps) {
     sale: "Hàng Outlet - Sale up to 50%", // Thêm tên cho outlet
   };
 
+  const categoryBannerFallbacks: Record<string, string> = {
+    "ao-thun": "/images/banners/banner_nhom_sp_ao_thunjpg.jpg",
+    "ao-polo": "/images/banners/2000x900_-_banner_nhom_sp_-_ao_polo.png",
+    "ao-khoac": "/images/banners/2000x900_-_banner_nhom_sp_-_ao_khoac.jpg",
+    hoodie: "/images/banners/2000x900_banner_nhom_sp_-_ao_hoodie.png",
+    "ao-so-mi": "/images/banners/2000x900_-_banner_nhom_sp_-_ao_somi.png",
+    "tank-top": "/images/banners/2000x900_banner_nhom_sp_ao_tank_top.png",
+  };
+
   const [currentCategoryData, setCurrentCategoryData] = useState<any>({});
 
   useEffect(() => {
@@ -140,8 +149,16 @@ export default function Page({ params }: PageProps) {
     ? currentCategoryData // Nếu file data chỉ là mảng [ ... ]
     : currentCategoryData.products || currentCategoryData.productsAll || []; // Nếu data là object
 
-  const content: any = currentCategoryData.pageDetails || null;
-  const currentFaqs: any[] = currentCategoryData.faqs || [];
+  const content: any =
+    currentCategoryData.pageDetails ||
+    currentCategoryData.contentSeeMoreSetDo ||
+    currentCategoryData.contentSeeMoreAll ||
+    null;
+
+  const currentFaqs: any[] =
+    currentCategoryData.faqs ||
+    currentCategoryData.setdoFAQ ||
+    [];
 // >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 
   // Thêm dòng này để kiểm tra xem "category" đang là gì trong Console
@@ -477,7 +494,9 @@ export default function Page({ params }: PageProps) {
         <div className="w-full overflow-hidden shadow-lg">
           <CollectionBanner
             backgroundImage={
-              content?.bannerImage || "/images/banners/homepage/banner-all.png"
+              content?.bannerImage ||
+              categoryBannerFallbacks[category] ||
+              "/images/banners/2000x900_-_banner_nhom_sp_-_tat_ca_san_pham.jpg"
             }
           />
         </div>

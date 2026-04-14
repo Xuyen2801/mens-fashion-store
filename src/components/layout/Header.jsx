@@ -81,6 +81,7 @@ export default function Header() {
   // ───────────────────────────────────────────────────────────────────────────
 
   const [openSearch, setOpenSearch] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchProducts, setSearchProducts] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -106,6 +107,10 @@ export default function Header() {
 
   useEffect(() => {
     closeSearchPanel();
+  }, [pathname]);
+
+  useEffect(() => {
+    setOpenDropdown(null);
   }, [pathname]);
 
     const normalizeText = (value) =>
@@ -388,10 +393,21 @@ export default function Header() {
               // TRƯỜNG HỢP 2: DROPDOWN (Sản phẩm, Denim, Collection)
               if (item.type === "dropdown") {
                 return (
-                  <div key={index} className="menu-item has-dropdown">
-                    <span className="menu-link cursor-default">
+                  <div
+                    key={index}
+                    className={`menu-item has-dropdown ${openDropdown === item.label ? "is-open" : ""}`}
+                    onMouseEnter={() => setOpenDropdown(item.label)}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <button
+                      type="button"
+                      className="menu-link cursor-default menu-dropdown-trigger"
+                      onClick={() =>
+                        setOpenDropdown((current) => (current === item.label ? null : item.label))
+                      }
+                    >
                       {item.label} <span className="arrow">▾</span>
-                    </span>
+                    </button>
 
                     {/* Render Dropdown theo nhãn tên */}
                     {item.label === "Sản phẩm" && (
@@ -401,7 +417,7 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <Link key={linkIdx} href={link.path}>
+                                <Link key={linkIdx} href={link.path} onClick={() => setOpenDropdown(null)}>
                                   {link.label}
                                 </Link>
                               ))}
@@ -418,7 +434,7 @@ export default function Header() {
                             <div key={colIdx} className="dropdown-col">
                               <h4>{col.title}</h4>
                               {col.links.map((link, linkIdx) => (
-                                <Link key={linkIdx} href={link.path}>
+                                <Link key={linkIdx} href={link.path} onClick={() => setOpenDropdown(null)}>
                                   {link.label}
                                 </Link>
                               ))}
@@ -427,10 +443,11 @@ export default function Header() {
                         </div>
                         <div className="denim-right">
                           {item.denim.rightCards.map((card, cardIdx) => (
-                            <div
+                            <Link
                               key={cardIdx}
+                              href={resolveDenimCardPath(card)}
                               className="denim-card"
-                              onClick={() => router.push(resolveDenimCardPath(card))}
+                              onClick={() => setOpenDropdown(null)}
                             >
                               <Image
                                 src={card.src}
@@ -439,7 +456,7 @@ export default function Header() {
                                 height={160}
                               />
                               <span>{card.text}</span>
-                            </div>
+                            </Link>
                           ))}
                         </div>
                       </div>
@@ -453,6 +470,7 @@ export default function Header() {
                               key={colIdx}
                               href={col.path}
                               className="collection-card"
+                              onClick={() => setOpenDropdown(null)}
                             >
                               <Image
                                 src={col.img}
@@ -469,8 +487,10 @@ export default function Header() {
                           <button
                             type="button"
                             className="view-all-btn"
-
-                            onClick={() => router.push("/collection")}
+                            onClick={() => {
+                              setOpenDropdown(null);
+                              router.push("/collection");
+                            }}
                           >
                             Xem tất cả
                           </button>

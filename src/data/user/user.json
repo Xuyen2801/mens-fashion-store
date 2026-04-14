@@ -13,7 +13,6 @@
     {
       "phone": "0981102418",
       "fullName": "Trần Thị Hải Yến",
-      
       "email": "tranthihaiyen210805@gmail.com",
       "address": "Bình Phước",
       "password": "$2b$10$QJsqXmiYcKKJ923BVSaVc.bNmXwE3NOn5CFwA4qVvWGhQrvxVkVia",
@@ -31,5 +30,6 @@
       "createdAt": "2026-03-25T06:00:05.603Z",
       "id": "n9StuJycCIQ"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
