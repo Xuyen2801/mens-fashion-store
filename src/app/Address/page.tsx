@@ -9,7 +9,6 @@ import CollectionSection from "../../components/home/CollectionSection/Collectio
 import MixMatchSection from "../../components/home/MixMatchSection/MixMatchSection";
 import InstagramSection from "../../components/home/InstagramSection/InstagramSection";
 import NewsSection from "../../components/home/NewsSection/NewsSection";
-import { API_BASE_URL } from "../../lib/api";
 
 type CollectionItem = {
   _id?: string;
