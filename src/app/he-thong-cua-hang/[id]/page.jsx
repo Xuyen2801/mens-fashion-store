@@ -3,7 +3,7 @@
 import React, { use } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { stores } from "../../../store/stores"; // Trở ra ngoài 4 cấp để lấy data
+import stores from "../../../store/stores"; // Trở ra ngoài 4 cấp để lấy data
 
 export default function StoreDetailPage({ params }) {
   // Lấy id từ trên đường dẫn (URL)

@@ -61,30 +61,35 @@ export default function Footer() {
               alt=""
               width={28}
               height={28}
+              style={{ height: 'auto' }}
             />
             <Image
               src="/images/footer/icon-zalo.png"
               alt=""
               width={28}
               height={28}
+              style={{ height: 'auto' }}
             />
             <Image
               src="/images/footer/icon-instagram.png"
               alt=""
               width={28}
               height={28}
+              style={{ height: 'auto' }}
             />
             <Image
               src="/images/footer/icon-youtube.png"
               alt=""
               width={28}
               height={28}
+              style={{ height: 'auto' }}
             />
             <Image
               src="/images/footer/icon-tiktok.png"
               alt=""
               width={28}
               height={28}
+              style={{ height: 'auto' }}
             />
           </div>
         </div>
@@ -153,12 +158,14 @@ export default function Footer() {
               alt=""
               width={140}
               height={52}
+              style={{ height: 'auto' }}
             />
             <Image
               src="/images/footer/dmca.png"
               alt=""
               width={140}
               height={52}
+              style={{ height: 'auto' }}
             />
           </div>
         </div>

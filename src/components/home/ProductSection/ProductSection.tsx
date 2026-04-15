@@ -1,54 +1,67 @@
-import Link from "next/link"
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../../Product/ProductCard"
-import products from "../../../data/promotions"
+import { fetchCollection } from "../../../lib/api"
 import styles from "./ProductSection.module.css"
 
 interface Props {
-  filter: string
-  tag: string
+  filter: string;
+  tag: string;
 }
 
+type Product = {
+  id: string;
+  slug: string;
+  type: string;
+  image: string;
+  name: string;
+  price: number;
+  salePrice: number;
+  status?: string;
+};
+
 function ProductSection({ filter, tag }: Props) {
+  const [productsJeans, setProductsJeans] = useState<Product[]>([]);
 
-  const filtered = products.filter((p) => {
-    if (filter === "all") {
-      return p.category === "all"
-    }
-    return p.category === filter
-  })
+  useEffect(() => {
+    fetchCollection("filter_quan")
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.productsJeans ?? data : [];
+        setProductsJeans(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error("Failed to load products:", error));
+  }, []);
 
-  const displayProducts =
-    filter === "all" ? filtered.slice(0, 5) : filtered
+  const filtered = useMemo(() => productsJeans.filter((p) => {
+    if (filter === "all") return true;
+    return p.type === filter;
+  }), [filter, productsJeans]);
+
+  let displayProducts: Product[];
+  if (filter === "all") {
+    displayProducts = [...filtered].slice(0, 5);
+  } else {
+    displayProducts = filtered.slice(0, 5);
+  }
 
   return (
     <section className={styles.section}>
-      
-      {/* {tag && <h2 style={{ marginBottom: "20px" }}>{tag}</h2>} */}
-
       <div className={styles.grid}>
         {displayProducts.map((p) => (
           <ProductCard
             key={p.id}
+            id={p.id}
+            slug={p.slug}
             image={p.image}
             name={p.name}
             price={p.price}
             salePrice={p.salePrice}
-            status={p.status}
+            status={tag} 
           />
         ))}
       </div>
-
-      {filter === "all" && (
-        <div className={styles.btnWrapper}>
-          <Link href={`/products?category=${filter}`}>
-            <button className={styles.button}>
-              Xem tất cả
-            </button>
-          </Link>
-        </div>
-      )}
     </section>
-  )
+  );
 }
-
-export default ProductSection
+export default ProductSection;

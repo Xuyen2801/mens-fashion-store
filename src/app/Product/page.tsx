@@ -1,28 +1,135 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CollectionBanner from "../../components/Collection/CollectionBanner";
 import ProductFilter from "../../components/Collection/ProductFilter";
 import ProductCard from "../../components/Product/ProductCard";
 import ProductCardModal from "../../components/modal/ProductCardModal";
 import SeeMore from "../../components/Product/SeeMore";
 import Breadcrumb from "../../components/layout/Breadcrumb";
+import { fetchCollection } from "../../lib/api";
 
 import { IoCaretDownOutline } from "react-icons/io5";
 
-import content from "../../data/Product/Tat-ca-san-pham/contentSeeMoreAll";
-// <<<<<<< HEAD
-// import productsAll from "@/data/Product/Tat-ca-san-pham/productsAll";
-// =======
-import products from "../../data/Product/Tat-ca-san-pham/productsAll";
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 import "../../styles/Product/SeeMore.css";
 import "../../styles/Product/Fad.css";
 
 export default function Home() {
-  console.log("Content data:", content);
-  console.log("Sections:", content?.sections);
-  console.log("Is array?", Array.isArray(content?.sections));
+  const [content, setContent] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
+  const [columnCount, setColumnCount] = useState(5);
+  const [showAllProducts, setShowAllProducts] = useState(false);
+
+  const ALL_PRODUCT_COLLECTIONS = [
+    "ao-khoac",
+    "ao-thun",
+    "ao-polo",
+    "so-mi",
+    "set-do",
+    "hoodie",
+    "jean",
+    "short",
+    "kaki",
+    "boxer",
+    "jogger",
+    "tay",
+    "productsNew",
+    "productsOutLet",
+    "productsAll",
+  ];
+
+  const collectProducts = (data: any): any[] => {
+    if (!Array.isArray(data)) return [];
+
+    return data.flatMap((item) => {
+      if (!item) return [];
+
+      if (Array.isArray(item?.products)) return item.products;
+      if (Array.isArray(item?.productsAll)) return item.productsAll;
+      if (Array.isArray(item)) return item;
+
+      if (
+        typeof item === "object" &&
+        item !== null &&
+        (item.name || item.sku || item.slug) &&
+        (item.price || item.salePrice)
+      ) {
+        return [item];
+      }
+
+      return [];
+    });
+  };
+
+  const buildProductKey = (product: any, index: number): string => {
+    const slug = String(product?.slug || "").trim().toLowerCase();
+    if (slug) return `slug:${slug}`;
+
+    const sku = String(product?.sku || "").trim().toLowerCase();
+    if (sku) return `sku:${sku}`;
+
+    const id = String(product?.id || "").trim().toLowerCase();
+    if (id) return `id:${id}`;
+
+    const name = String(product?.name || "").trim().toLowerCase();
+    return name ? `name:${name}` : `idx:${index}`;
+  };
+
+  useEffect(() => {
+    fetchCollection("contentSeeMoreAll")
+      .then((data) => {
+        const list = Array.isArray(data) ? data : [];
+        setContent(list[0] ?? null);
+      })
+      .catch((error) => console.error("Failed to load contentSeeMoreAll:", error));
+
+    Promise.allSettled(
+      ALL_PRODUCT_COLLECTIONS.map((collectionName) => fetchCollection(collectionName))
+    )
+      .then((results) => {
+        const merged = results.flatMap((result) => {
+          if (result.status !== "fulfilled") {
+            return [];
+          }
+
+          return collectProducts(result.value);
+        });
+
+        const dedupedMap = new Map<string, any>();
+        merged.forEach((product, index) => {
+          const key = buildProductKey(product, index);
+          if (!dedupedMap.has(key)) {
+            dedupedMap.set(key, product);
+          }
+        });
+
+        setProducts(Array.from(dedupedMap.values()));
+      })
+      .catch((error) => console.error("Failed to load all product collections:", error));
+  }, []);
+
+  useEffect(() => {
+    const getColumnCount = () => {
+      const width = window.innerWidth;
+
+      if (width >= 1024) return 5;
+      if (width >= 768) return 4;
+      if (width >= 640) return 3;
+      return 2;
+    };
+
+    const updateColumnCount = () => {
+      setColumnCount(getColumnCount());
+    };
+
+    updateColumnCount();
+    window.addEventListener("resize", updateColumnCount);
+
+    return () => {
+      window.removeEventListener("resize", updateColumnCount);
+    };
+  }, []);
+
   const FILTER_OPTIONS = [
     { label: "Sản phẩm nổi bật", value: "default" },
     { label: "Giá thấp đến cao", value: "price_asc" },
@@ -34,28 +141,10 @@ export default function Home() {
   const [filter, setFilter] = useState("default");
   const filteredProducts = React.useMemo(() => {
     let result = [...products];
-
-// <<<<<<< HEAD
-//     console.log("Content data:", content);
-//     console.log("Sections:", content?.sections);
-//     console.log("Is array?", Array.isArray(content?.sections));
-//     const FILTER_OPTIONS = [
-//         { label: "Sản phẩm nổi bật", value: "default" },
-//         { label: "Giá thấp đến cao", value: "price_asc" },
-//         { label: "Giá cao đến thấp", value: "price_desc" },
-//         { label: "Mới nhất", value: "newest" },
-//         { label: "Đang giảm giá", value: "sale" },
-//         { label: "Hàng HOT", value: "hot" },
-//     ];
-//     const [filter, setFilter] = useState("default");
-//     const filteredProducts = React.useMemo(() => {
-//         let result = [...productsAll];
-// =======
     switch (filter) {
       case "price_asc":
         result.sort((a, b) => a.salePrice - b.salePrice);
         break;
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 
       case "price_desc":
         result.sort((a, b) => b.salePrice - a.salePrice);
@@ -79,17 +168,19 @@ export default function Home() {
     }
 
     return result;
-  }, [filter]);
+  }, [filter, products]);
+
+  const initialVisibleCount = columnCount * 2;
+  const visibleProducts = showAllProducts
+    ? filteredProducts
+    : filteredProducts.slice(0, initialVisibleCount);
 
   const [selectedProduct, setSelectedProduct] = useState<
-    (typeof products)[0] | null
+    any
   >(null);
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-// <<<<<<< HEAD
-//     const [selectedProduct, setSelectedProduct] = useState<(typeof productsAll)[0] | null>(null);
-// =======
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -187,22 +278,29 @@ export default function Home() {
 
           {/* Product grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 pb-10 lg:pb-16">
-            {filteredProducts.map((product) => (
+            {visibleProducts.map((product) => (
               <div
                 key={product.id}
-                className="cursor-pointer transition-transform duration-200 hover:scale-105"
-                onClick={() => setSelectedProduct(product)}
+                className="transition-transform duration-200 hover:scale-105"
               >
                 <ProductCard
-                  image={product.image}
-                  name={product.name}
-                  price={product.price}
-                  salePrice={product.salePrice}
-                  status={product.status}
+                  product={product}
+                  onOpenModal={setSelectedProduct}
                 />
               </div>
             ))}
           </div>
+
+          {!showAllProducts && filteredProducts.length > initialVisibleCount && (
+            <div className="flex justify-center pb-10">
+              <button
+                onClick={() => setShowAllProducts(true)}
+                className="btn-see-more-unified"
+              >
+                Xem thêm
+              </button>
+            </div>
+          )}
           {/* See more */}
           <div className="body py-10 border-t border-gray-200">
             <SeeMore maxHeight={700}>

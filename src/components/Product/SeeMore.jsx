@@ -21,7 +21,7 @@ export default function SeeMore({
       </div>
      <div className = "seeMore_btn">
       <button
-        className="see-more-btn"
+        className="btn-see-more-unified"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
       >

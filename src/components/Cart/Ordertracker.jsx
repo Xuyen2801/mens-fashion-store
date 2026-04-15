@@ -1,7 +1,7 @@
 // src/components/cart/OrderTracker.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
-import { ORDER_STATUS } from "../../data/Product/product-ao/ao-thun";
+import { loadAoThunMeta } from "../../lib/aoThunMeta";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -14,16 +14,11 @@ const fmtDate = (iso) => {
   });
 };
 
-const FLOW_STEPS = [
-  ORDER_STATUS.PENDING,
-  ORDER_STATUS.CONFIRMED,
-  ORDER_STATUS.PROCESSING,
-  ORDER_STATUS.SHIPPING,
-  ORDER_STATUS.DELIVERED,
-];
-
-function StatusBadge({ statusKey }) {
-  const s = ORDER_STATUS[statusKey] || ORDER_STATUS.PENDING;
+function StatusBadge({ statusKey, orderStatus }) {
+  const s = orderStatus?.[statusKey] || orderStatus?.PENDING || {
+    label: statusKey,
+    color: "#6B7280",
+  };
   return (
     <span className="status-badge" style={{ "--badge-color": s.color }}>
       {s.label}
@@ -31,12 +26,22 @@ function StatusBadge({ statusKey }) {
   );
 }
 
-function OrderDetail({ order, onClose, onCancel, onReturnRequest }) {
+function OrderDetail({ order, onClose, onCancel, onReturnRequest, orderStatus }) {
+  const flowSteps = orderStatus
+    ? [
+        orderStatus.PENDING,
+        orderStatus.CONFIRMED,
+        orderStatus.PROCESSING,
+        orderStatus.SHIPPING,
+        orderStatus.DELIVERED,
+      ]
+    : [];
+
   const isCancellable = ["PENDING", "CONFIRMED"].includes(order.status);
   const isReturnable = ["DELIVERED", "PAID"].includes(order.status);
   const isTerminal = ["CANCELLED", "RETURNED", "REFUNDED"].includes(order.status);
 
-  const currentStep = FLOW_STEPS.findIndex((s) => s.key === order.status);
+  const currentStep = flowSteps.findIndex((s) => s.key === order.status);
 
   return (
     <div className="order-detail">
@@ -46,7 +51,7 @@ function OrderDetail({ order, onClose, onCancel, onReturnRequest }) {
           <p className="od-date">Đặt lúc: {fmtDate(order.createdAt)}</p>
         </div>
         <div className="od-header-right">
-          <StatusBadge statusKey={order.status} />
+          <StatusBadge statusKey={order.status} orderStatus={orderStatus} />
           <button className="icon-btn" onClick={onClose} aria-label="Đóng">✕</button>
         </div>
       </div>
@@ -54,7 +59,7 @@ function OrderDetail({ order, onClose, onCancel, onReturnRequest }) {
       {/* Progress tracker */}
       {!isTerminal && (
         <div className="progress-tracker">
-          {FLOW_STEPS.map((step, idx) => {
+          {flowSteps.map((step, idx) => {
             const done = currentStep >= idx;
             const active = currentStep === idx;
             return (
@@ -69,7 +74,7 @@ function OrderDetail({ order, onClose, onCancel, onReturnRequest }) {
                   )}
                 </div>
                 <p className="prog-label">{step.label}</p>
-                {idx < FLOW_STEPS.length - 1 && (
+                {idx < flowSteps.length - 1 && (
                   <div className={`prog-line ${currentStep > idx ? "done" : ""}`} />
                 )}
               </div>
@@ -156,6 +161,13 @@ export default function OrderTracker() {
   const { state, dispatch } = useCart();
   const [selected, setSelected] = useState(null);
   const [filterStatus, setFilterStatus] = useState("ALL");
+  const [orderStatus, setOrderStatus] = useState(null);
+
+  useEffect(() => {
+    loadAoThunMeta()
+      .then(({ ORDER_STATUS }) => setOrderStatus(ORDER_STATUS))
+      .catch((error) => console.error("Failed to load order status meta:", error));
+  }, []);
 
   const statusFilters = [
     { key: "ALL", label: "Tất cả" },
@@ -174,7 +186,7 @@ export default function OrderTracker() {
     if (window.confirm("Bạn có chắc muốn hủy đơn hàng này?")) {
       dispatch({
         type: "UPDATE_ORDER_STATUS",
-        payload: { orderId, status: ORDER_STATUS.CANCELLED.key },
+        payload: { orderId, status: orderStatus?.CANCELLED?.key || "CANCELLED" },
       });
       setSelected(null);
     }
@@ -183,7 +195,7 @@ export default function OrderTracker() {
   const handleReturnRequest = (orderId) => {
     dispatch({
       type: "UPDATE_ORDER_STATUS",
-      payload: { orderId, status: ORDER_STATUS.RETURN_REQUESTED.key },
+      payload: { orderId, status: orderStatus?.RETURN_REQUESTED?.key || "RETURN_REQUESTED" },
     });
     setSelected(null);
   };
@@ -192,11 +204,12 @@ export default function OrderTracker() {
     const order = (state.orders ?? []).find((o) => o.id === selected);
     if (order) {
       return (
-        <OrderDetail
+          <OrderDetail
           order={order}
           onClose={() => setSelected(null)}
           onCancel={() => handleCancel(order.id)}
           onReturnRequest={() => handleReturnRequest(order.id)}
+          orderStatus={orderStatus}
         />
       );
     }
@@ -234,7 +247,7 @@ export default function OrderTracker() {
             <div key={order.id} className="order-card" onClick={() => setSelected(order.id)}>
               <div className="oc-top">
                 <span className="oc-id">#{order.id}</span>
-                <StatusBadge statusKey={order.status} />
+                <StatusBadge statusKey={order.status} orderStatus={orderStatus} />
               </div>
               <div className="oc-items-preview">
                 {order.items.slice(0, 3).map((item) => (

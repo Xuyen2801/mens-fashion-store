@@ -10,6 +10,14 @@ function HeroBanner({images}: Props){
     const [currentIndex, setCurrentIndex] = useState(0);
     
     useEffect(() =>{
+        if (!images.length) {
+          return;
+        }
+
+        if (images.length <= 1) {
+          return;
+        }
+
         const interval = setInterval(() =>{
             setCurrentIndex((prev) =>
                 prev === images.length - 1 ? 0 : prev + 1);
@@ -17,6 +25,10 @@ function HeroBanner({images}: Props){
 
         return() => clearInterval(interval);
     }, [images.length]);
+
+    if (!images.length) {
+      return null;
+    }
 
     return (
   <div className={styles.hero}>

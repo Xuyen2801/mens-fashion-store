@@ -1,43 +1,17 @@
 "use client";
 
-import React, { use, useState, useMemo } from "react";
+import React, { use, useEffect, useState, useMemo } from "react";
 import CollectionBanner from "../../../components/Collection/CollectionBanner";
 import ProductFilter from "../../../components/Collection/ProductFilter";
 import ProductCard from "../../../components/Product/ProductCard";
 import ProductCardModal from "../../../components/modal/ProductCardModal";
 import SeeMore from "../../../components/Product/SeeMore";
 import Breadcrumb from "../../../components/layout/Breadcrumb";
+import { fetchCollection } from "../../../lib/api";
 
 import { IoCaretDownOutline } from "react-icons/io5";
 import "../../../styles/Product/SeeMore.css";
 import "../../../styles/Product/Fad.css";
-import aoKhoacData from "../../../data/Product/product-ao/ao-khoac";
-// <<<<<<< HEAD
-// import aoThunData from "../../../data/Product/product-ao/ao-thun"; 
-// import poloData from "../../../data/Product/product-ao/ao-polo";
-// import hoodieData from "../../../data/Product/product-ao/hoodie";
-// import somiData from "../../../data/Product/product-ao/so-mi";
-// import tanktopData from "../../../data/Product/product-ao/tank-top";
-// import setdoData from "../../../data/Product/product-ao/set-do";
-
-
-// =======
-import aoThunData from "../../../data/Product/product-ao/ao-thun";
-import aoSoMiData from "../../../data/Product/product-ao/so-mi";
-import aoPoloData from "../../../data/Product/product-ao/ao-polo";
-import setDoData from "../../../data/Product/product-ao/set-do";
-import hoodieData from "../../../data/Product/product-ao/hoodie";
-import tankTopData from "../../../data/Product/product-ao/tank-top";
-import jeanData from "../../../data/product-quan/jean";
-import shortData from "../../../data/product-quan/short";
-import kakiData from "../../../data/product-quan/kaki";
-import boxerData from "../../../data/product-quan/boxer";
-import joggerData from "../../../data/product-quan/jogger";
-import tayData from "../../../data/product-quan/tay";
-import sanPhamMoiData from "../../../data/Product/San-pham-moi/productsNew";
-import outletData from "../../../data/Product/San-pham-moi/productsOutLet";
-// Khai báo Interface (Kiểu dữ liệu) cho TSX
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 interface PageProps {
   params: Promise<{ category: string }>;
 }
@@ -87,24 +61,38 @@ export default function Page({ params }: PageProps) {
   const resolvedParams = use(params);
   const category = resolvedParams.category;
 
-  const categoryDataMap: Record<string, any> = {
-    "ao-khoac": aoKhoacData,
-    "ao-thun": aoThunData,
-    "quan-jean": jeanData,
-    "quan-short": shortData,
-    "quan-kaki": kakiData,
-    "quan-boxer": boxerData,
-    "quan-jogger": joggerData,
-    "quan-tay": tayData,
-    "san-pham-moi": sanPhamMoiData,
-    "ao-polo":aoPoloData,
-    "ao-so-mi": aoSoMiData,
-    "hoodie":hoodieData,
-    "tank-top":tankTopData,
-    "set-do":setDoData,
-    new: sanPhamMoiData,
-    outlet: outletData,
-    sale: outletData,
+  const categoryCollectionMap: Record<string, string> = {
+    "ao-khoac": "ao-khoac",
+    "ao-thun": "ao-thun",
+    "ao-polo": "ao-polo",
+    "ao-so-mi": "so-mi",
+    hoodie: "hoodie",
+    "tank-top": "tank-top",
+    "set-do": "set-do",
+    "quan-jean": "jean",
+    "quan-short": "short",
+    "quan-kaki": "kaki",
+    "quan-boxer": "boxer",
+    "quan-jogger": "jogger",
+    "quan-tay": "tay",
+    "san-pham-moi": "productsNew",
+    new: "productsNew",
+    "best-seller": "productsAll",
+    outlet: "productsOutLet",
+    sale: "productsOutLet",
+  };
+
+  const normalizeCategoryData = (payload: any) => {
+    if (!Array.isArray(payload)) return {};
+    if (payload.length === 0) return [];
+
+    const first = payload[0];
+    if (first && typeof first === "object") {
+      if (Array.isArray(first.productsAll)) return first.productsAll;
+      if (Array.isArray(first.products)) return first;
+    }
+
+    return payload;
   };
 
   // 3. Bản đồ tên hiển thị cho Breadcrumb
@@ -119,20 +107,58 @@ export default function Page({ params }: PageProps) {
     "quan-tay": "Quần tây nam",
     "san-pham-moi": "Sản phẩm mới",
     new: "Sản phẩm mới",
+    "best-seller": "Bán chạy nhất",
     outlet: "Hàng Outlet - Sale up to 50%",
     sale: "Hàng Outlet - Sale up to 50%", // Thêm tên cho outlet
   };
 
-  // Lấy data dựa trên category
-  const currentCategoryData = categoryDataMap[category] || {};
+  const categoryBannerFallbacks: Record<string, string> = {
+    "ao-thun": "/images/banners/banner_nhom_sp_ao_thunjpg.jpg",
+    "ao-polo": "/images/banners/2000x900_-_banner_nhom_sp_-_ao_polo.png",
+    "ao-khoac": "/images/banners/2000x900_-_banner_nhom_sp_-_ao_khoac.jpg",
+    hoodie: "/images/banners/2000x900_banner_nhom_sp_-_ao_hoodie.png",
+    "ao-so-mi": "/images/banners/2000x900_-_banner_nhom_sp_-_ao_somi.png",
+    "tank-top": "/images/banners/2000x900_banner_nhom_sp_ao_tank_top.png",
+  };
+
+  const [currentCategoryData, setCurrentCategoryData] = useState<any>({});
+
+  useEffect(() => {
+    const loadCategoryData = async () => {
+      try {
+        const collectionName = categoryCollectionMap[category];
+        if (!collectionName) {
+          setCurrentCategoryData({});
+          return;
+        }
+
+        const data = await fetchCollection<any[]>(collectionName);
+        const source = normalizeCategoryData(data);
+        setCurrentCategoryData(source);
+      } catch (error) {
+        console.error("Failed to load category data:", error);
+        setCurrentCategoryData({});
+      }
+    };
+
+    loadCategoryData();
+  }, [category]);
 
   // HỖ TRỢ CẢ 2 KIỂU DỮ LIỆU (ARRAY HOẶC OBJECT) ĐỂ KHÔNG BỊ TRẮNG TRANG
   const products: any[] = Array.isArray(currentCategoryData)
     ? currentCategoryData // Nếu file data chỉ là mảng [ ... ]
-    : currentCategoryData.products || []; // Nếu file data là object { products: [ ... ] }
+    : currentCategoryData.products || currentCategoryData.productsAll || []; // Nếu data là object
 
-  const content: any = currentCategoryData.pageDetails || null;
-  const currentFaqs: any[] = currentCategoryData.faqs || [];
+  const content: any =
+    currentCategoryData.pageDetails ||
+    currentCategoryData.contentSeeMoreSetDo ||
+    currentCategoryData.contentSeeMoreAll ||
+    null;
+
+  const currentFaqs: any[] =
+    currentCategoryData.faqs ||
+    currentCategoryData.setdoFAQ ||
+    [];
 // >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
 
   // Thêm dòng này để kiểm tra xem "category" đang là gì trong Console
@@ -468,7 +494,9 @@ export default function Page({ params }: PageProps) {
         <div className="w-full overflow-hidden shadow-lg">
           <CollectionBanner
             backgroundImage={
-              content?.bannerImage || "/images/banners/default-banner.jpg"
+              content?.bannerImage ||
+              categoryBannerFallbacks[category] ||
+              "/images/banners/2000x900_-_banner_nhom_sp_-_tat_ca_san_pham.jpg"
             }
           />
         </div>
@@ -489,26 +517,11 @@ export default function Page({ params }: PageProps) {
             {filteredProducts.map((product, index) => (
               <div
                 key={`${product.category}-${product.id}-${index}`}
-                className="cursor-pointer transition-transform duration-200 hover:scale-105"
-                onClick={() => {
-                  // Chuẩn hóa dữ liệu ảnh trước khi mở Modal
-                  const normalizedProduct = {
-                    ...product,
-                    // Nếu đã có mảng images thì giữ nguyên, nếu không thì lấy image chính bỏ vào mảng
-                    images:
-                      product.images && product.images.length > 0
-                        ? product.images
-                        : [product.image],
-                  };
-                  setSelectedProduct(normalizedProduct);
-                }}
+                className="transition-transform duration-200 hover:scale-105"
               >
                 <ProductCard
-                  image={product.image}
-                  name={product.name}
-                  price={product.price}
-                  salePrice={product.salePrice}
-                  status={product.status}
+                  product={product}
+                  onOpenModal={setSelectedProduct}
                 />
               </div>
             ))}

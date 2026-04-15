@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import "../../styles/Cart.css";
-import { CartProvider, useCart } from "../../components/Cart/CartContext";
+import { useCart } from "../../components/Cart/CartContext";
 import CartItem from "../../components/Cart/CartItem";
 import OrderSummary from "../../components/Cart/OrderSumary";
 import CheckoutForm from "../../components/Cart/CheckoutForm";
@@ -12,12 +12,15 @@ import OrderTracker from "../../components/Cart/Ordertracker";
 type View = "cart" | "checkout" | "success" | "orders";
 
 function CartApp() {
-  const { state, totalItems } = useCart() as any;
+  const { state, totalItems, dispatch } = useCart() as any;
   const [view, setView] = useState<View>("cart");
   const [placedOrder, setPlacedOrder] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"cart" | "orders">("cart");
 
   const ordersCount = state.orders?.length ?? 0;
+  const selectedItemKeys: string[] = Array.isArray(state.selectedItemKeys) ? state.selectedItemKeys : [];
+  const selectedCount = state.items.filter((item: any) => selectedItemKeys.includes(item.key)).length;
+  const allSelected = state.items.length > 0 && selectedCount === state.items.length;
   const OrderSuccessAny = OrderSuccess as any;
 
   const handleOrderSuccess = (order: any) => {
@@ -114,8 +117,33 @@ function CartApp() {
                 </div>
               ) : (
                 <div className="cart-items-list">
+                  <div className="cart-selection-bar">
+                    <label className="cart-select-all">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={(e) =>
+                          dispatch({
+                            type: "TOGGLE_ALL_SELECTION",
+                            payload: {
+                              checked: e.target.checked,
+                              itemKeys: state.items.map((item: any) => item.key),
+                            },
+                          })
+                        }
+                      />
+                      <span>Chọn tất cả</span>
+                    </label>
+                    <span className="cart-selection-meta">Đã chọn {selectedCount}/{state.items.length} sản phẩm</span>
+                  </div>
+
                   {state.items.map((item: any) => (
-                    <CartItem key={item.key} item={item} />
+                    <CartItem
+                      key={item.key}
+                      item={item}
+                      isSelected={selectedItemKeys.includes(item.key)}
+                      onToggleSelect={(key: string) => dispatch({ type: "TOGGLE_ITEM_SELECTION", payload: key })}
+                    />
                   ))}
                 </div>
               )}
@@ -152,9 +180,5 @@ function CartApp() {
 }
 
 export default function CartPage() {
-  return (
-    <CartProvider>
-      <CartApp />
-    </CartProvider>
-  );
+  return <CartApp />;
 }

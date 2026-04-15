@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import bcrypt from "bcryptjs";
 import toast from "react-hot-toast";
-
 const API_URL = "http://localhost:5000/users";
+import { chooseLatestUserByPhone, normalizePhone } from "../../lib/userSchema";
+import { USERS_API_URL } from "../../lib/api";
 
 export default function LoginForm({ onSwitchTab }) {
   const [formData, setFormData] = useState({ phone: "", password: "" });
@@ -32,19 +33,17 @@ export default function LoginForm({ onSwitchTab }) {
     }
 
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(USERS_API_URL);
       const allUsers = await response.json();
 
-      const user = allUsers.find(
-        (u) => u.phone.trim() === formData.phone.trim()
-      );
+      const user = chooseLatestUserByPhone(allUsers, normalizePhone(formData.phone));
 
       if (!user) {
         setError("Số điện thoại này chưa được đăng ký.");
         return;
       }
 
-      const isMatch = await bcrypt.compare(formData.password, user.password);
+      const isMatch = await bcrypt.compare(formData.password, user.passwordHash);
 
       if (!isMatch) {
         setError("Mật khẩu không chính xác.");

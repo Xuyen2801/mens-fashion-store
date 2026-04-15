@@ -4,7 +4,7 @@ import { useCart } from "../../components/Cart/CartContext";
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
 
-export default function CartItem({ item }) {
+export default function CartItem({ item, isSelected = true, onToggleSelect }) {
   const { dispatch } = useCart();
   const { product, selectedSize, selectedColor, quantity, key } = item;
   const price = product.salePrice ?? product.price;
@@ -21,6 +21,15 @@ export default function CartItem({ item }) {
 
   return (
     <div className="cart-item">
+      <div className="cart-item__select">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onToggleSelect?.(item.key)}
+          aria-label={`Chọn sản phẩm ${product.name}`}
+        />
+      </div>
+
       <div className="cart-item__img-wrap">
         <img src={product.image} alt={product.name} className="cart-item__img" />
         {product.status && (

@@ -1,57 +1,82 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import styles from "./CategorySection.module.css";
+import { fetchCollection } from "../../../lib/api";
 
 interface Props {
   bannerImage: string;
-  onFilterClick: (type: string) => void;
+  onFilterClick: (type: string, banner: string) => void;
 }
 
-function CategorySection({bannerImage, onFilterClick}: Props) {
+type JeansFilter = {
+  id: string;
+  label: string;
+  banner: string;
+};
+
+type FilterItem = {
+  value: string;
+  on: string;
+  off: string;
+};
+
+function CategorySection({ bannerImage, onFilterClick }: Props) {
   const [active, setActive] = useState("all");
-  const router = useRouter();
+  const [jeansFilters, setJeansFilters] = useState<JeansFilter[]>([]);
+  const [filterItems, setFilterItems] = useState<FilterItem[]>([]);
+
+  useEffect(() => {
+    fetchCollection("filter_quan")
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.jeansFilters ?? data : [];
+        setJeansFilters(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error("Failed to load jeans filters:", error));
+
+    fetchCollection("filterItems")
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.filterItems ?? data : [];
+        setFilterItems(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error("Failed to load filter icons:", error));
+  }, []);
+
+  const currentBanner =
+    jeansFilters.find((f) => f.id === active)?.banner || bannerImage;
 
   const handleClick = (type: string) => {
     setActive(type);
-    onFilterClick(type); 
-  };
-
-  const handleBannerClick = () => {
-    router.push("/products"); 
+    const selectedFilter = jeansFilters.find((f) => f.id === type);
+    onFilterClick(type, selectedFilter?.banner || "");
   };
 
   return (
-    <section className={styles.section}>
-      
-      {/* Sự kiện chuyển trang khi click banner */}
-      <img
-        src={bannerImage}
-        alt="Smart Jeans"
-        className={styles.banner}
-        onClick={handleBannerClick}
-      />
+    <section className={styles.container}>
+      <div className={styles.bannerWrapper}>
+        <div className={styles.imageFrame}>
+          <img
+            src={currentBanner}
+            alt="Smart Jeans Banner"
+            className={styles.banner}
+          />
+        </div>
 
-      {/* Filter bar */}
-      <div className={styles.filterBar}>
-        {[
-          { label: "TẤT CẢ JEANS", value: "all" },
-          { label: "SIÊU GỌN NHẸ", value: "skinny" },
-          { label: "SIÊU MÁT", value: "cool" },
-          { label: "SIÊU NHẸ", value: "light" },
-          { label: "SIÊU CO DÃN", value: "stretch" },
-        ].map((item) => (
-          <button
-            key={item.value}
-            className={`${styles.filterButton} ${
-              active === item.value ? styles.active : ""
-            }`}
-            onClick={() => handleClick(item.value)}
-          >
-            {item.label}
-          </button>
-        ))}
+        <div className={styles.filterBar}>
+          {filterItems.map((item) => (
+            <div
+              key={item.value}
+              className={styles.filterItem}
+              onClick={() => handleClick(item.value)}
+            >
+              <img 
+                src={active === item.value ? item.on : item.off} 
+                alt={item.value}
+                className={styles.filterIcon}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

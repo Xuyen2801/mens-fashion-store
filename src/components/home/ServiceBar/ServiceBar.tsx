@@ -3,22 +3,22 @@ import styles from "./ServiceBar.module.css";
 
 const services = [
     {
-        icon: "/icons/shipping.svg",
+        icon: "/icons/shipping.png",
         title: "Miễn phí vẫn chuyển",
         desc: "Đơn từ 32k",
     },
     {
-        icon: "/icons/return.svg",
+        icon: "/icons/return.png",
         title: "Đổi trả tận nhà",
         desc: "Trong vòng 15 ngày",
     },
     {
-        icon: "/icons/cod.svg",
-        title: "Hỗ trợ tận nhà",
+        icon: "/icons/cod.png",
+        title: "Thanh toán COD",
         desc: "Yên tâm mua sắm"
     },
     {
-        icon: "/icons/hotline.svg",
+        icon: "/icons/hotline.png",
         title: "Hotline: 028.73066.060",
         desc: "Hỗ trợ 8h30-24h00",
     },

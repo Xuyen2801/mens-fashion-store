@@ -4,6 +4,28 @@ import { useState } from 'react';
 export default function ProductDescriptionTabs({ product }) {
   const [activeTab, setActiveTab] = useState('mota');
 
+  const displayImages = Array.isArray(product?.images) && product.images.length > 0
+    ? product.images
+    : product?.image
+      ? [product.image]
+      : [];
+
+  const detailRows = [
+    { label: 'Mã sản phẩm', value: product.id },
+    { label: 'Danh mục', value: product.category },
+    { label: 'Giá bán', value: product.salePrice ? `${product.salePrice.toLocaleString('vi-VN')}đ` : undefined },
+    { label: 'Giá gốc', value: product.price ? `${product.price.toLocaleString('vi-VN')}đ` : undefined },
+    { label: 'Form dáng', value: product.fit },
+    { label: 'Chất liệu', value: product.material },
+    { label: 'Xuất xứ', value: product.origin },
+    { label: 'Thương hiệu', value: product.brand },
+    { label: 'Đánh giá', value: product.rating ? `${product.rating}/5 (${product.reviewCount || 0} lượt)` : undefined },
+    { label: 'Tồn kho', value: typeof product.totalStock === 'number' ? `${product.totalStock}` : undefined },
+    { label: 'Màu sắc', value: Array.isArray(product.colors) ? `${product.colors.length}` : undefined },
+    { label: 'Kích thước', value: Array.isArray(product.sizes) ? product.sizes.join(', ') : undefined },
+    { label: 'Tags', value: Array.isArray(product.tags) ? product.tags.join(', ') : undefined },
+  ].filter((item) => item.value !== undefined && item.value !== null && item.value !== '');
+
   const tabs = [
     { id: 'mota', label: 'MÔ TẢ' },
     { id: 'giaohang', label: 'CHÍNH SÁCH GIAO HÀNG' },
@@ -47,9 +69,24 @@ export default function ProductDescriptionTabs({ product }) {
               </div>
             </div>
 
+            {detailRows.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+                {detailRows.map((item) => (
+                  <div key={item.label} className="rounded-lg border border-gray-200 bg-white p-4">
+                    <div className="text-[11px] uppercase tracking-widest text-gray-400 mb-1">
+                      {item.label}
+                    </div>
+                    <div className="text-sm font-medium text-gray-800">
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-               <img src={product.images?.[1] || product.image} className="rounded-lg border w-full h-auto" alt="detail 1" />
-               <img src={product.images?.[2] || product.image} className="rounded-lg border w-full h-auto" alt="detail 2" />
+               <img src={displayImages[1] || displayImages[0]} className="rounded-lg border w-full h-auto" alt="detail 1" />
+               <img src={displayImages[2] || displayImages[0]} className="rounded-lg border w-full h-auto" alt="detail 2" />
             </div>
           </div>
         )}

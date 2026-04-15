@@ -1,15 +1,79 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { SEASONAL_PROMOTIONS } from '../../data/configs';
 import { useCart } from '../Cart/CartContext';
 import { useRouter } from 'next/navigation';
+import { fetchCollection } from '../../lib/api';
+import toast from 'react-hot-toast';
 
-export default function ProductInfo({ product, onColorChange }) {
+const INFO_FALLBACK_IMAGES = [
+  "/images/productcart/2.jpg",
+  "/images/productcart/3.jpg",
+  "/images/productcart/4.jpg",
+  "/images/productcart/5.jpg",
+  "/images/productcart/6.jpg",
+  "/images/productcart/7.jpg",
+  "/images/productcart/8.jpg",
+  "/images/productcart/9.jpg",
+  "/images/productcart/10.jpg",
+  "/images/productcart/11.jpg",
+];
+
+const pickInfoFallback = (seed) => {
+  const text = String(seed || "variant");
+  let hash = 0;
+
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
+  }
+
+  return INFO_FALLBACK_IMAGES[hash % INFO_FALLBACK_IMAGES.length];
+};
+
+const resolveVariantImage = (url, seed) => {
+  const value = String(url || "").trim();
+  if (!value || value.startsWith("/images/products/ao-thun/")) {
+    return pickInfoFallback(seed);
+  }
+
+  return value;
+};
+
+export default function ProductInfo({ product, onColorChange, showDetailButton = false }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
+  const [seasonalPromotions, setSeasonalPromotions] = useState([]);
   const { addToCart } = useCart();
   const router = useRouter();
+
+  const normalizeText = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+
+  const categoryMap = {
+    "ao-khoac": "ao-khoac",
+    "ao-thun": "ao-thun",
+    "ao-polo": "ao-polo",
+    "ao-so-mi": "ao-so-mi",
+    "so-mi": "ao-so-mi",
+    "set-do": "set-do",
+    "tank-top": "tank-top",
+    hoodie: "hoodie",
+    "quan-jeans": "quan-jean",
+    "quan-jean": "quan-jean",
+    "quan-short": "quan-short",
+    "quan-kaki-chino": "quan-kaki",
+    "quan-kaki": "quan-kaki",
+    "quan-boxer": "quan-boxer",
+    "quan-jogger": "quan-jogger",
+    "quan-tay": "quan-tay",
+  };
 
   const PRODUCT_VOUCHERS = [
     { id: "V01", title: "GIẢM 20K", code: "MAR20", desc: "Đơn từ 299K" },
@@ -17,11 +81,39 @@ export default function ProductInfo({ product, onColorChange }) {
     { id: "V03", title: "FREE SHIP", code: "FREESHIP", desc: "Đơn từ 199K" }
   ];
 
+  const colorVariants =
+    Array.isArray(product?.variants) && product.variants.length > 0
+      ? product.variants
+      : Array.isArray(product?.colors)
+        ? product.colors.map((color, index) => ({
+            color:
+              (typeof color === 'string' && color.trim()) ||
+              color?.name ||
+              color?.color ||
+              `Mau-${index + 1}`,
+            image:
+              (typeof color === 'object' && (color?.thumbnail || color?.image)) ||
+              product?.images?.[0],
+            sizes: product?.sizes || [],
+          }))
+        : [];
+
   useEffect(() => {
-    if (product?.variants && product.variants.length > 0) {
-      setSelectedVariant(product.variants[0]);
+    if (colorVariants.length > 0) {
+      setSelectedVariant(colorVariants[0]);
+    } else {
+      setSelectedVariant(null);
     }
-  }, [product]);
+  }, [colorVariants]);
+
+  useEffect(() => {
+    fetchCollection('configs')
+      .then((data) => {
+        const list = Array.isArray(data) ? data[0]?.SEASONAL_PROMOTIONS ?? data : [];
+        setSeasonalPromotions(Array.isArray(list) ? list : []);
+      })
+      .catch((error) => console.error('Failed to load seasonal promotions:', error));
+  }, []);
 
 
   useEffect(() => {
@@ -39,11 +131,19 @@ export default function ProductInfo({ product, onColorChange }) {
 
   const handleGoToDetail = (e) => {
     e.preventDefault();
-    if (!product?.slug) return;
-    const safeCategory = product.category 
-      ? product.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
-      : 'ao-polo';
-    router.push(`/Product/${safeCategory}/${product.slug}`);
+    const targetSlug = product?.slug || product?.id || product?.sku;
+    if (!targetSlug) return;
+
+    const normalizedCategory = normalizeText(product?.category || "ao-polo");
+    const safeCategory = categoryMap[normalizedCategory] || normalizedCategory || "ao-polo";
+
+    try {
+      sessionStorage.setItem(`product-detail:${targetSlug}`, JSON.stringify(product));
+    } catch {
+      // Ignore storage errors and continue navigation.
+    }
+
+    router.push(`/Product/${safeCategory}/${targetSlug}`);
   };
   
   const handleAddToCart = (e) => {
@@ -63,13 +163,34 @@ export default function ProductInfo({ product, onColorChange }) {
       isValidUser = false;
     }
     if (!isValidUser) {
-      alert("Hãy đăng nhập để thêm vào giỏ hàng!");
-      window.location.href = "/login"; 
+      toast.error("Hãy đăng nhập để thêm sản phẩm vào giỏ hàng!", {
+        style: {
+          border: '1px solid #ff4b4b',
+          padding: '16px',
+          color: '#ff4b4b',
+          fontSize: '14px',
+          fontWeight: 'bold'
+        },
+        iconTheme: {
+          primary: '#ff4b4b',
+          secondary: '#FFFAEE',
+        },
+      });
+
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
       return; 
     }
 
+    const selectedColor =
+      selectedVariant?.color ||
+      selectedVariant?.name ||
+      (typeof product?.colors?.[0] === 'string' ? product.colors[0] : product?.colors?.[0]?.name) ||
+      "Tieu chuan";
+
     addToCart(product, selectedSize, selectedColor, quantity);
-    alert(`Đã thêm ${product.name} vào giỏ hàng!`);
+    toast.success('Đã thêm vào giỏ hàng!');
 
   };
 
@@ -78,7 +199,9 @@ export default function ProductInfo({ product, onColorChange }) {
     alert(`Đã sao chép mã: ${code}`);
   };
 
-  if (!product || !selectedVariant) return null;
+  const availableVariant = selectedVariant || colorVariants[0] || null;
+
+  if (!product) return null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -120,7 +243,7 @@ export default function ProductInfo({ product, onColorChange }) {
            <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span> Ưu đãi Online
         </p>
         <ul className="space-y-2">
-          {SEASONAL_PROMOTIONS.map((promo, i) => (
+          {seasonalPromotions.map((promo, i) => (
             <li key={i} className="text-[12px] text-gray-600 flex items-start gap-2 italic">
               <span className="text-red-400">•</span> {promo.text}
             </li>
@@ -129,19 +252,26 @@ export default function ProductInfo({ product, onColorChange }) {
       </div>
 
       <div>
-        <p className="text-sm font-bold">Màu sắc: <span className="text-gray-500 font-normal ml-1">{selectedVariant.color}</span></p>
+        <p className="text-sm font-bold">Màu sắc: <span className="text-gray-500 font-normal ml-1">{availableVariant?.color || (typeof product?.colors?.[0] === 'string' ? product.colors[0] : product?.colors?.[0]?.name) || 'Tieu chuan'}</span></p>
         <div className="flex gap-3 mt-3">
-          {product.variants?.map((variant, index) => (
+          {colorVariants.map((variant, index) => (
             <button
               key={index}
               onClick={() => handleColorChange(variant)}
               className={`w-11 h-11 rounded-full border-2 p-0.5 transition-all duration-300 ${
-                selectedVariant.color === variant.color 
+                availableVariant?.color === variant.color 
                 ? 'border-black scale-110 shadow-lg' 
                 : 'border-gray-200 hover:border-gray-400'
               }`}
             >
-              <img src={variant.image} className="w-full h-full rounded-full object-cover" alt={variant.color} />
+              <img
+                src={resolveVariantImage(variant.image, `${product?.id || product?.name}-${variant.color || index}`)}
+                className="w-full h-full rounded-full object-cover"
+                alt={variant.color}
+                onError={(event) => {
+                  event.currentTarget.src = pickInfoFallback(`${product?.id || product?.name}-variant-${index}`);
+                }}
+              />
             </button>
           ))}
         </div>
@@ -151,7 +281,7 @@ export default function ProductInfo({ product, onColorChange }) {
       <div>
         <p className="text-sm font-bold mb-3 tracking-wide">Kích thước: <span className="text-gray-500 font-normal ml-1">{selectedSize}</span></p>
         <div className="flex flex-wrap gap-2">
-          {selectedVariant.sizes?.map((size) => (
+          {(availableVariant?.sizes || product.sizes || []).map((size) => (
             <button
               key={size}
               onClick={() => setSelectedSize(size)}
@@ -181,6 +311,7 @@ export default function ProductInfo({ product, onColorChange }) {
         </button>
       </div>
 
+      {showDetailButton && (
       <div className='flex justify-start mt-2'>
         <button 
           onClick={handleGoToDetail} 
@@ -189,6 +320,7 @@ export default function ProductInfo({ product, onColorChange }) {
           Xem chi tiết sản phẩm
         </button>
       </div>
+      )}
     </div>
   );
 }

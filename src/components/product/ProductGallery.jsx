@@ -3,9 +3,66 @@
 import { useState, useEffect } from 'react';
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 
+const GALLERY_FALLBACK_IMAGES = [
+  "/images/productcart/2.jpg",
+  "/images/productcart/3.jpg",
+  "/images/productcart/4.jpg",
+  "/images/productcart/5.jpg",
+  "/images/productcart/6.jpg",
+  "/images/productcart/7.jpg",
+  "/images/productcart/8.jpg",
+  "/images/productcart/9.jpg",
+  "/images/productcart/10.jpg",
+  "/images/productcart/11.jpg",
+];
+
+const pickFallbackImage = (seed) => {
+  const text = String(seed || "gallery");
+  let hash = 0;
+
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
+  }
+
+  return GALLERY_FALLBACK_IMAGES[hash % GALLERY_FALLBACK_IMAGES.length];
+};
+
+const sanitizeImageUrl = (url, seed) => {
+  const value = String(url || "").trim();
+  if (!value) {
+    return pickFallbackImage(seed);
+  }
+
+  // Legacy ao-thun links point to a folder that is not present in public assets.
+  if (value.startsWith("/images/products/ao-thun/")) {
+    return pickFallbackImage(seed);
+  }
+
+  return value;
+};
+
+const buildImageList = (input, seed) => {
+  const raw = Array.isArray(input) ? input : [];
+  const normalized = raw
+    .map((url, index) => sanitizeImageUrl(url, `${seed}-${index}`))
+    .filter(Boolean);
+
+  if (normalized.length === 0) {
+    return [pickFallbackImage(seed)];
+  }
+
+  return Array.from(new Set(normalized));
+};
+
 export default function ProductGallery({ images = [], product, selectedColor, hoverColor }) {
+  const productSeed = product?.id || product?.sku || product?.name || "product";
+  const initialImageList = buildImageList(
+    images.length > 0 ? images : product?.image ? [product.image] : [],
+    productSeed
+  );
+
   const [active, setActive] = useState(0);
-  const [displayImages, setDisplayImages] = useState(images);
+  const [displayImages, setDisplayImages] = useState(initialImageList);
 
   useEffect(() => {
     const activeColor = hoverColor || selectedColor;
@@ -15,18 +72,27 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
     const foundColor = product.colors?.find(c => c.name === activeColor);
 
     if (foundVariant && foundVariant.image) {
-      setDisplayImages([foundVariant.image, ...images.filter(img => img !== foundVariant.image)]);
+      const nextList = buildImageList(
+        [foundVariant.image, ...images.filter(img => img !== foundVariant.image)],
+        `${productSeed}-${activeColor}`
+      );
+      setDisplayImages(nextList);
       setActive(0);
     } 
     else if (foundColor && foundColor.images) {
-      setDisplayImages(foundColor.images);
+      const nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
+      setDisplayImages(nextList);
       setActive(0);
     }
-  }, [product, selectedColor, hoverColor, images]);
+  }, [product, selectedColor, hoverColor, images, productSeed]);
 
   useEffect(() => {
-    setDisplayImages(images);
-  }, [images]);
+    const nextList = buildImageList(
+      images.length > 0 ? images : product?.image ? [product.image] : [],
+      productSeed
+    );
+    setDisplayImages(nextList);
+  }, [images, product?.image, productSeed]);
 
   if (!displayImages || displayImages.length === 0) {
     return <div className="w-full aspect-[3/4] bg-gray-100 animate-pulse rounded-xl"></div>;
@@ -44,6 +110,9 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
           src={displayImages[active]} 
           className="h-full w-full object-cover transition-all duration-500" 
           alt="Main product" 
+          onError={(event) => {
+            event.currentTarget.src = pickFallbackImage(`${productSeed}-main-${active}`);
+          }}
         />
         <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"><IoChevronBackOutline size={20}/></button>
         <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"><IoChevronForwardOutline size={20}/></button>
@@ -62,7 +131,14 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
               active === index ? 'border-black shadow-sm' : 'border-transparent hover:border-gray-300'
             }`}
           >
-            <img src={img} alt="" className="w-full h-full object-cover" />
+            <img
+              src={img}
+              alt=""
+              className="w-full h-full object-cover"
+              onError={(event) => {
+                event.currentTarget.src = pickFallbackImage(`${productSeed}-thumb-${index}`);
+              }}
+            />
           </div>
         ))}
       </div>

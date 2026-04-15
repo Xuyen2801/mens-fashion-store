@@ -1,17 +1,36 @@
 // src/components/cart/OrderSummary.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
-import { shippingMethods } from "../../data/Product/product-ao/ao-thun";
+import { loadAoThunMeta } from "../../lib/aoThunMeta";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
 
 export default function OrderSummary({ onCheckout }) {
-  const { state, dispatch, subtotal } = useCart();
+  const { state, dispatch } = useCart();
   const [voucherInput, setVoucherInput] = useState("");
+  const [shippingMethods, setShippingMethods] = useState([]);
+
+  const selectedItemKeys = Array.isArray(state.selectedItemKeys) ? state.selectedItemKeys : [];
+  const selectedItems = state.items.filter((item) => selectedItemKeys.includes(item.key));
+  const subtotal = selectedItems.reduce(
+    (sum, item) => sum + (item.product.salePrice ?? item.product.price) * item.quantity,
+    0
+  );
+
+  useEffect(() => {
+    loadAoThunMeta()
+      .then(({ shippingMethods }) => {
+        setShippingMethods(shippingMethods);
+        if (!state.shippingMethod && shippingMethods.length > 0) {
+          dispatch({ type: "SET_SHIPPING", payload: shippingMethods[0].id });
+        }
+      })
+      .catch((error) => console.error("Failed to load shipping methods:", error));
+  }, [dispatch, state.shippingMethod]);
 
   const selectedShipping =
-    shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0];
+    shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0] || { price: 0, name: "" };
 
   // Calculate discount
   let discount = 0;
@@ -32,6 +51,7 @@ export default function OrderSummary({ onCheckout }) {
   return (
     <div className="order-summary">
       <h3 className="summary-title">Tóm tắt đơn hàng</h3>
+      <p className="summary-selected-note">Đang thanh toán {selectedItems.length} sản phẩm đã chọn</p>
 
       {/* Shipping method */}
       <div className="summary-section">
@@ -117,7 +137,7 @@ export default function OrderSummary({ onCheckout }) {
       <button
         className="checkout-btn"
         onClick={onCheckout}
-        disabled={!state.items.length}
+        disabled={!selectedItems.length}
       >
         Tiến hành thanh toán
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
