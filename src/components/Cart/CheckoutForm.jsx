@@ -55,12 +55,12 @@ export default function CheckoutForm({ onBack, onSuccess }) {
 
   const selectedShipping =
     shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0] || { price: 0, name: "" };
-  
+
   // 💰 TÍnh giá: subtotal -> áp voucher -> + shipping fee = total
   const v = state.appliedVoucher; // voucher đã áp dụng
   let discount = 0;
   let shippingFee = selectedShipping.price;
-  
+
   // Kiểm tra voucher có hợp lệ (không có error)
   if (v && !v.error) {
     // 3 loại voucher: percent (%), fixed (cố định), shipping (miễn phí vận chuyển)
@@ -76,7 +76,7 @@ export default function CheckoutForm({ onBack, onSuccess }) {
       shippingFee = 0;
     }
   }
-  
+
   // Tổng tiền cuối cùng
   const total = subtotal - discount + shippingFee;
 
@@ -133,6 +133,13 @@ export default function CheckoutForm({ onBack, onSuccess }) {
     // Simulate network delay
     await new Promise((r) => setTimeout(r, 1200));
 
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.id) {
+      toast.error("Vui lòng đăng nhập để đặt hàng!");
+      setIsPlacing(false);
+      return;
+    }
+
     const pendingStatus = ORDER_STATUS?.PENDING || {
       key: "PENDING",
       label: "Chờ xác nhận",
@@ -140,6 +147,7 @@ export default function CheckoutForm({ onBack, onSuccess }) {
 
     const order = {
       id: genOrderId(),
+      userId: user.id,
       items: selectedItems,
       shippingInfo: form,
       shippingMethod: selectedShipping,
@@ -163,10 +171,29 @@ export default function CheckoutForm({ onBack, onSuccess }) {
       ],
     };
 
-    dispatch({ type: "PLACE_ORDER", payload: { order, itemKeys: selectedItemKeys } });
-    setIsPlacing(false);
-    onSuccess(order);
-  };
+    try {
+      // GỬI DỮ LIỆU LÊN MONGODB
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+
+      if (res.ok) {
+        // Nếu lưu DB thành công mới xóa giỏ hàng và chuyển trang
+        dispatch({ type: "PLACE_ORDER", payload: { order, itemKeys: selectedItemKeys } });
+        toast.success("Đặt hàng thành công!");
+        onSuccess(order);
+      } else {
+        throw new Error("Không thể lưu đơn hàng vào Database");
+      }
+    } catch (error) {
+      console.error("Lỗi đặt hàng:", error);
+      toast.error("Lỗi kết nối Server. Vui lòng thử lại!");
+    } finally {
+      setIsPlacing(false);
+    }
+  }
 
   const fields = [
     { id: "fullName", label: "Họ và tên *", type: "text", placeholder: "Nguyễn Văn A" },

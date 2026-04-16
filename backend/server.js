@@ -61,6 +61,63 @@ app.post('/api/auth/send-otp', async (req, res) => {
   }
 });
 
+const CART_COLLECTION = "carts";
+
+app.get("/api/cart/:userId", async (req, res) => {
+  try {
+    const cartCol = mongoose.connection.db.collection(CART_COLLECTION);
+    const cart = await cartCol.findOne({ userId: req.params.userId });
+    if (cart) {
+      res.json(cart); 
+    } else {
+      res.json({ items: [], selectedItemKeys: [] });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi lấy giỏ hàng" });
+  }
+});
+
+app.post("/api/cart/sync", async (req, res) => {
+  const { userId, cartState } = req.body;
+  if (!userId) {
+    return res.status(400).json({ message: "Thiếu userId" });
+  }
+  try {
+    const cartCol = mongoose.connection.db.collection(CART_COLLECTION);
+    await cartCol.updateOne(
+      { userId: userId },
+      { 
+        $set: { 
+          items: cartState.items, 
+          selectedItemKeys: cartState.selectedItemKeys,
+          updatedAt: new Date() 
+        } 
+      },
+      { upsert: true }
+    );
+    console.log(`Đã đồng bộ giỏ hàng cho user: ${userId}`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Lỗi cập nhật giỏ hàng:", err);
+    res.status(500).json({ message: "Lỗi cập nhật giỏ hàng" });
+  }
+});
+
+app.post("/api/orders", async (req, res) => {
+  try {
+    const orderCol = mongoose.connection.db.collection("orders");
+    const newOrder = {
+      ...req.body,
+      orderDate: new Date().toISOString(),
+      status: "Processing" // Mặc định đơn mới là đang xử lý
+    };
+    const result = await orderCol.insertOne(newOrder);
+    res.status(201).json({ success: true, orderId: result.insertedId });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi tạo đơn hàng" });
+  }
+});
+
 function toText(value) {
   return typeof value === "string" ? value.trim() : "";
 }

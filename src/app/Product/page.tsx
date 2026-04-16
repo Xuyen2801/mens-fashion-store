@@ -97,6 +97,7 @@ export default function Home() {
 
         const dedupedMap = new Map<string, any>();
         merged.forEach((product, index) => {
+          if (!product) return;
           const key = buildProductKey(product, index);
           if (!dedupedMap.has(key)) {
             dedupedMap.set(key, product);
@@ -278,9 +279,9 @@ export default function Home() {
 
           {/* Product grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 pb-10 lg:pb-16">
-            {visibleProducts.map((product) => (
+            {visibleProducts.map((product, index) => (
               <div
-                key={product.id}
+                key={`${product.id || 'prod'}-${index}`}
                 className="transition-transform duration-200 hover:scale-105"
               >
                 <ProductCard

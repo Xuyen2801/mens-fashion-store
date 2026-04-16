@@ -29,12 +29,12 @@ function StatusBadge({ statusKey, orderStatus }) {
 function OrderDetail({ order, onClose, onCancel, onReturnRequest, orderStatus }) {
   const flowSteps = orderStatus
     ? [
-        orderStatus.PENDING,
-        orderStatus.CONFIRMED,
-        orderStatus.PROCESSING,
-        orderStatus.SHIPPING,
-        orderStatus.DELIVERED,
-      ]
+      orderStatus.PENDING,
+      orderStatus.CONFIRMED,
+      orderStatus.PROCESSING,
+      orderStatus.SHIPPING,
+      orderStatus.DELIVERED,
+    ]
     : [];
 
   const isCancellable = ["PENDING", "CONFIRMED"].includes(order.status);
@@ -154,8 +154,9 @@ function OrderDetail({ order, onClose, onCancel, onReturnRequest, orderStatus })
         ) : null}
       </div>
     </div>
-  );
+  )
 }
+
 
 export default function OrderTracker() {
   const { state, dispatch } = useCart();
@@ -163,11 +164,33 @@ export default function OrderTracker() {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [orderStatus, setOrderStatus] = useState(null);
 
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     loadAoThunMeta()
       .then(({ ORDER_STATUS }) => setOrderStatus(ORDER_STATUS))
       .catch((error) => console.error("Failed to load order status meta:", error));
   }, []);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user && user.id) {
+        try {
+          const res = await fetch(`http://localhost:5000/api/orders/user/${user.id}`);
+          if (res.ok) {
+            const data = await res.json();
+            setOrders(data); // Lưu đơn hàng vào state cục bộ
+          }
+        } catch (error) {
+          console.error("Lỗi lấy đơn hàng từ server:", error);
+        }
+      }
+      setLoading(false);
+    };
+    fetchOrders();
+  }, [state.orders]);
 
   const statusFilters = [
     { key: "ALL", label: "Tất cả" },
@@ -178,33 +201,59 @@ export default function OrderTracker() {
     { key: "RETURNED", label: "Hoàn hàng" },
   ];
 
-  const filtered = ( state.orders ?? []).filter(
+  const filtered = orders.filter(
     (o) => filterStatus === "ALL" || o.status === filterStatus
   );
 
-  const handleCancel = (orderId) => {
+  const handleCancel = async (orderId) => {
     if (window.confirm("Bạn có chắc muốn hủy đơn hàng này?")) {
-      dispatch({
-        type: "UPDATE_ORDER_STATUS",
-        payload: { orderId, status: orderStatus?.CANCELLED?.key || "CANCELLED" },
-      });
-      setSelected(null);
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "CANCELLED" }),
+        });
+
+        if (res.ok) {
+          dispatch({
+            type: "UPDATE_ORDER_STATUS",
+            payload: { orderId, status: "CANCELLED" },
+          });
+          setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "CANCELLED" } : o));
+          setSelected(null);
+        }
+      } catch (err) {
+        console.error("Lỗi khi hủy đơn:", err);
+      }
     }
   };
 
-  const handleReturnRequest = (orderId) => {
-    dispatch({
-      type: "UPDATE_ORDER_STATUS",
-      payload: { orderId, status: orderStatus?.RETURN_REQUESTED?.key || "RETURN_REQUESTED" },
-    });
-    setSelected(null);
+  const handleReturnRequest = async (orderId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: orderStatus?.RETURN_REQUESTED?.key || "RETURN_REQUESTED" }),
+      });
+
+      if (res.ok) {
+        dispatch({
+          type: "UPDATE_ORDER_STATUS",
+          payload: { orderId, status: orderStatus?.RETURN_REQUESTED?.key || "RETURN_REQUESTED" },
+        });
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: orderStatus?.RETURN_REQUESTED?.key || "RETURN_REQUESTED" } : o));
+        setSelected(null);
+      }
+    } catch (err) {
+      console.error("Lỗi khi yêu cầu hoàn hàng:", err);
+    }
   };
 
   if (selected) {
-    const order = (state.orders ?? []).find((o) => o.id === selected);
+    const order = orders.find((o) => o.id === selected);
     if (order) {
       return (
-          <OrderDetail
+        <OrderDetail
           order={order}
           onClose={() => setSelected(null)}
           onCancel={() => handleCancel(order.id)}
@@ -229,7 +278,7 @@ export default function OrderTracker() {
             {f.label}
             {f.key !== "ALL" && (
               <span className="filter-count">
-                {( state.orders ?? []).filter((o) => o.status === f.key).length || ""}
+                {(state.orders ?? []).filter((o) => o.status === f.key).length || ""}
               </span>
             )}
           </button>

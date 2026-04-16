@@ -77,23 +77,23 @@ function cartReducer(state, action) {
       // - Kiểm tra items & selectedItemKeys có phải array
       // - Filter selectedItemKeys để chỉ giữ những key có trong items (prevent invalid data)
       {
-      const hydratedItems = Array.isArray(action.payload?.items) ? action.payload.items : [];
-      const hydratedItemKeys = hydratedItems.map((item) => item.key);
-      // Chỉ giữ những selected key nếu item tương ứng vẫn tồn tại
-      const hydratedSelectedKeys = Array.isArray(action.payload?.selectedItemKeys)
-        ? action.payload.selectedItemKeys.filter((key) => hydratedItemKeys.includes(key))
-        : hydratedItemKeys;
+        const hydratedItems = Array.isArray(action.payload?.items) ? action.payload.items : [];
+        const hydratedItemKeys = hydratedItems.map((item) => item.key);
+        // Chỉ giữ những selected key nếu item tương ứng vẫn tồn tại
+        const hydratedSelectedKeys = Array.isArray(action.payload?.selectedItemKeys)
+          ? action.payload.selectedItemKeys.filter((key) => hydratedItemKeys.includes(key))
+          : hydratedItemKeys;
 
-      return {
-        ...state,
-        items: hydratedItems,
-        orders: Array.isArray(action.payload?.orders) ? action.payload.orders : [],
-        selectedItemKeys: hydratedSelectedKeys,
-        shippingMethod: action.payload?.shippingMethod || "",
-        paymentMethod: action.payload?.paymentMethod || "cod",
-        appliedVoucher: action.payload?.appliedVoucher || null,
-        note: action.payload?.note || "",
-      };
+        return {
+          ...state,
+          items: hydratedItems,
+          orders: Array.isArray(action.payload?.orders) ? action.payload.orders : [],
+          selectedItemKeys: hydratedSelectedKeys,
+          shippingMethod: action.payload?.shippingMethod || "",
+          paymentMethod: action.payload?.paymentMethod || "cod",
+          appliedVoucher: action.payload?.appliedVoucher || null,
+          note: action.payload?.note || "",
+        };
       }
 
     case "ADD_ITEM": {
@@ -101,7 +101,7 @@ function cartReducer(state, action) {
       // Nếu sản phẩm cùng size/color đã có -> cộng quantity
       // Nếu chưa có -> thêm mới
       const { product, selectedSize, selectedColor, quantity = 1 } = action.payload;
-      
+
       // Tạo unique key từ product ID + size + color (để phân biệt sản phẩm khác nhau)
       const key = `${product.id || product.sku || product.name}_${selectedSize}_${selectedColor}`;
       const existing = state.items.find((i) => i.key === key);
@@ -227,19 +227,19 @@ function cartReducer(state, action) {
 
     case "PLACE_ORDER":
       {
-      const orderPayload = action.payload?.order ?? action.payload;
-      const orderedItemKeys = Array.isArray(action.payload?.itemKeys)
-        ? action.payload.itemKeys
-        : state.items.map((item) => item.key);
+        const orderPayload = action.payload?.order ?? action.payload;
+        const orderedItemKeys = Array.isArray(action.payload?.itemKeys)
+          ? action.payload.itemKeys
+          : state.items.map((item) => item.key);
 
-      return {
-        ...state,
-        orders: [orderPayload, ...state.orders],
-        items: state.items.filter((item) => !orderedItemKeys.includes(item.key)),
-        selectedItemKeys: state.selectedItemKeys.filter((key) => !orderedItemKeys.includes(key)),
-        appliedVoucher: null,
-        note: "",
-      };
+        return {
+          ...state,
+          orders: [orderPayload, ...state.orders],
+          items: state.items.filter((item) => !orderedItemKeys.includes(item.key)),
+          selectedItemKeys: state.selectedItemKeys.filter((key) => !orderedItemKeys.includes(key)),
+          appliedVoucher: null,
+          note: "",
+        };
       }
 
     case "UPDATE_ORDER_STATUS":
@@ -264,32 +264,7 @@ function cartReducer(state, action) {
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, DEFAULT_STATE);
   const [hasHydrated, setHasHydrated] = useState(false);
-
   const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // 💾 useEffect #1: Load cart từ localStorage khi component mount
-  // Cần setup "hasHydrated" flag để tránh lưu state trước khi hydrate xong
-  // Try-catch để xử lý nếu localStorage bị corrupt
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("dusk_cart_v2");
-      if (saved) {
-        dispatch({ type: "HYDRATE_STATE", payload: JSON.parse(saved) });
-      }
-    } catch {
-      // Ignore invalid localStorage payload and keep default state.
-    } finally {
-      setHasHydrated(true); // Flag này ngăn việc lưu state ngay lập tức (trước khi hydrate xong)
-    }
-  }, []);
-
-  // 💾 useEffect #2: Lưu cart vào localStorage mỗi khi state thay đổi
-  // Chỉ lưu sau khi hydrate xong (hasHydrated=true) để tránh overwrite data gốc
-  useEffect(() => {
-    if (!hasHydrated) return; // Bỏ qua nếu chưa hydrate xong
-    localStorage.setItem("dusk_cart_v2", JSON.stringify(state));
-  }, [state, hasHydrated]);
-
   const totalItems = state.items.reduce((s, i) => s + i.quantity, 0);
 
   const subtotal = state.items.reduce(
@@ -297,12 +272,74 @@ export function CartProvider({ children }) {
     0
   );
 
+  // 💾 useEffect #1: Load cart từ localStorage khi component mount
+  // Cần setup "hasHydrated" flag để tránh lưu state trước khi hydrate xong
+  // Try-catch để xử lý nếu localStorage bị corrupt
+  useEffect(() => {
+    const syncFromDB = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (user && user.id) {
+        try {
+          const res = await fetch(`http://localhost:5000/api/cart/${user.id}`);
+          if (res.ok) {
+            const dbData = await res.json();
+            if (dbData.items && dbData.items.length > 0) {
+              dispatch({ type: "HYDRATE_STATE", payload: dbData });
+            }
+          }
+        } catch (error) {
+          // Ignore invalid localStorage payload and keep default state.
+          console.error("Lỗi đồng bộ giỏ hàng từ DB:", error);
+        }
+      } else {
+        // Nếu khách chưa login, có thể dùng lại localStorage hoặc để trống
+        const saved = localStorage.getItem("dusk_cart_v2");
+        if (saved) dispatch({ type: "HYDRATE_STATE", payload: JSON.parse(saved) });
+      }
+      setHasHydrated(true);
+    };
+
+    syncFromDB();
+  }, []);
+  // 💾 useEffect #2: Lưu cart vào localStorage mỗi khi state thay đổi
+  // Chỉ lưu sau khi hydrate xong (hasHydrated=true) để tránh overwrite data gốc
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    const saveToDB = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      // Nếu có user -> Lưu vào MongoDB
+      if (user && user.id) {
+        try {
+          await fetch("http://localhost:5000/api/cart/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: user.id,
+              cartState: { items: state.items, selectedItemKeys: state.selectedItemKeys }
+            }),
+          });
+        } catch (error) {
+          console.warn("Tạm thời không thể lưu vào DB, vẫn lưu local dự phòng.");
+        }
+      }
+
+      // Luôn lưu local dự phòng (để trải nghiệm mượt mà hơn)
+      localStorage.setItem("dusk_cart_v2", JSON.stringify(state));
+    };
+
+    const timeoutId = setTimeout(saveToDB, 1000); // Debounce 1s để tránh gọi API quá nhiều
+    return () => clearTimeout(timeoutId);
+  }, [state, hasHydrated]);
+
   const addToCart = (product, size, color, quantity = 1) => {
     // 🔐 Kiểm tra user đã login chưa
     // Nếu chưa login (localStorage không có "user") -> không thêm vào giỏ hàng
     if (typeof window !== 'undefined' && !localStorage.getItem("user")) {
       // TODO: Có thể redirect sang trang login thay vì chỉ return
-      return; 
+      return;
     }
     dispatch({
       type: "ADD_ITEM",

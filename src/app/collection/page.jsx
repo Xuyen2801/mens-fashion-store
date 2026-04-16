@@ -63,12 +63,12 @@ const CollectionPage = () => {
 
         <div className={styles.collectionsGrid}>
           {collections.map((item) => (
-            
-              <Link
-                href={`/collection/${item.slug}`}
-                key={item.id}
-                className={styles.collectionItem}
-              >
+
+            <Link
+              href={`/collection/${item.slug}`}
+              key={item._id}
+              className={styles.collectionItem}
+            >
               <div className={styles.imgContainer}>
                 <Image
                   src={item.image}
