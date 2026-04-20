@@ -28,16 +28,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         />
 
-        {/*
-          AppShell là "use client" — bọc CartProvider + Header + CartDrawer.
-          Header nằm BÊN TRONG CartProvider nên useCart() hoạt động đúng.
-        */}
         <AppShell>
-          <main>{children}</main>
+          {children}
         </AppShell>
 
         {/* Footer là Server Component */}
-        <Footer />
       </body>
     </html>
   );

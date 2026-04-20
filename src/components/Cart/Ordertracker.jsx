@@ -1,7 +1,8 @@
-// src/components/cart/OrderTracker.jsx
 import { useEffect, useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
 import { loadAoThunMeta } from "../../lib/aoThunMeta";
+import OrderDetail from "@/app/account/orders/[id]/page";
+import { useRouter } from "next/navigation";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -26,144 +27,13 @@ function StatusBadge({ statusKey, orderStatus }) {
   );
 }
 
-function OrderDetail({ order, onClose, onCancel, onReturnRequest, orderStatus }) {
-  const flowSteps = orderStatus
-    ? [
-      orderStatus.PENDING,
-      orderStatus.CONFIRMED,
-      orderStatus.PROCESSING,
-      orderStatus.SHIPPING,
-      orderStatus.DELIVERED,
-    ]
-    : [];
-
-  const isCancellable = ["PENDING", "CONFIRMED"].includes(order.status);
-  const isReturnable = ["DELIVERED", "PAID"].includes(order.status);
-  const isTerminal = ["CANCELLED", "RETURNED", "REFUNDED"].includes(order.status);
-
-  const currentStep = flowSteps.findIndex((s) => s.key === order.status);
-
-  return (
-    <div className="order-detail">
-      <div className="od-header">
-        <div>
-          <h3 className="od-id">#{order.id}</h3>
-          <p className="od-date">Đặt lúc: {fmtDate(order.createdAt)}</p>
-        </div>
-        <div className="od-header-right">
-          <StatusBadge statusKey={order.status} orderStatus={orderStatus} />
-          <button className="icon-btn" onClick={onClose} aria-label="Đóng">✕</button>
-        </div>
-      </div>
-
-      {/* Progress tracker */}
-      {!isTerminal && (
-        <div className="progress-tracker">
-          {flowSteps.map((step, idx) => {
-            const done = currentStep >= idx;
-            const active = currentStep === idx;
-            return (
-              <div key={step.key} className={`prog-step ${done ? "done" : ""} ${active ? "active" : ""}`}>
-                <div className="prog-circle">
-                  {done ? (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  ) : (
-                    <span>{idx + 1}</span>
-                  )}
-                </div>
-                <p className="prog-label">{step.label}</p>
-                {idx < flowSteps.length - 1 && (
-                  <div className={`prog-line ${currentStep > idx ? "done" : ""}`} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {isTerminal && (
-        <div className="terminal-banner" data-status={order.status}>
-          {order.status === "CANCELLED" && "❌ Đơn hàng đã bị hủy"}
-          {order.status === "RETURN_REQUESTED" && "🔄 Yêu cầu hoàn hàng đang được xử lý"}
-          {order.status === "RETURNED" && "📦 Hàng đã được hoàn trả"}
-          {order.status === "REFUNDED" && "💰 Đã hoàn tiền thành công"}
-        </div>
-      )}
-
-      {/* Items */}
-      <div className="od-items">
-        <p className="od-section-label">Sản phẩm ({order.items.length})</p>
-        {order.items.map((item) => (
-          <div key={item.key} className="od-item">
-            <img src={item.product.image} alt={item.product.name} className="od-item-img" />
-            <div className="od-item-info">
-              <p className="od-item-name">{item.product.name}</p>
-              <p className="od-item-meta">
-                Size {item.selectedSize} · {item.selectedColor} · ×{item.quantity}
-              </p>
-            </div>
-            <span className="od-item-price">
-              {fmt((item.product.salePrice ?? item.product.price) * item.quantity)}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Shipping & payment info */}
-      <div className="od-meta-grid">
-        <div>
-          <p className="od-section-label">Giao hàng</p>
-          <p>{order.shippingInfo.fullName}</p>
-          <p>{order.shippingInfo.phone}</p>
-          <p>{[order.shippingInfo.address, order.shippingInfo.district, order.shippingInfo.city].filter(Boolean).join(", ")}</p>
-          <p className="od-ship-method">🚚 {order.shippingMethod.name}</p>
-        </div>
-        <div>
-          <p className="od-section-label">Thanh toán</p>
-          <p>{order.paymentMethod.toUpperCase()}</p>
-          {order.note && <p className="od-note">📝 {order.note}</p>}
-        </div>
-      </div>
-
-      {/* Totals */}
-      <div className="od-totals">
-        <div className="total-row"><span>Tạm tính</span><span>{fmt(order.subtotal)}</span></div>
-        <div className="total-row"><span>Vận chuyển</span><span>{order.shippingFee === 0 ? "Miễn phí" : fmt(order.shippingFee)}</span></div>
-        {order.discount > 0 && (
-          <div className="total-row discount-row"><span>Giảm giá</span><span>−{fmt(order.discount)}</span></div>
-        )}
-        <div className="total-row grand-total"><span>Tổng cộng</span><span>{fmt(order.total)}</span></div>
-      </div>
-
-      {/* Actions */}
-      <div className="od-actions">
-        {isCancellable && (
-          <button className="action-btn cancel-btn" onClick={onCancel}>
-            Hủy đơn hàng
-          </button>
-        )}
-        {isReturnable && (
-          <button className="action-btn return-btn" onClick={onReturnRequest}>
-            Yêu cầu hoàn hàng
-          </button>
-        )}
-        {order.status === "DELIVERED" || order.status === "PAID" ? (
-          <button className="action-btn rebuy-btn">Mua lại</button>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
 
 export default function OrderTracker() {
   const { state, dispatch } = useCart();
+  const router = useRouter();
   const [selected, setSelected] = useState(null);
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [orderStatus, setOrderStatus] = useState(null);
-
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -176,12 +46,13 @@ export default function OrderTracker() {
   useEffect(() => {
     const fetchOrders = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
-      if (user && user.id) {
+      const userId = user?.userId || user?.id;
+      if (userId) {
         try {
-          const res = await fetch(`http://localhost:5000/api/orders/user/${user.id}`);
+          const res = await fetch(`http://localhost:5000/api/orders/user/${userId}`);
           if (res.ok) {
             const data = await res.json();
-            setOrders(data); // Lưu đơn hàng vào state cục bộ
+            setOrders(data);
           }
         } catch (error) {
           console.error("Lỗi lấy đơn hàng từ server:", error);
@@ -190,15 +61,15 @@ export default function OrderTracker() {
       setLoading(false);
     };
     fetchOrders();
-  }, [state.orders]);
+  }, []);
 
   const statusFilters = [
     { key: "ALL", label: "Tất cả" },
-    { key: "PENDING", label: "Chờ xác nhận" },
-    { key: "SHIPPING", label: "Đang giao" },
-    { key: "DELIVERED", label: "Đã giao" },
-    { key: "CANCELLED", label: "Đã hủy" },
-    { key: "RETURNED", label: "Hoàn hàng" },
+    { key: "Processing", label: "Chờ xác nhận" },
+    { key: "Shipping", label: "Đang giao" },
+    { key: "Delivered", label: "Đã giao" },
+    { key: "Cancelled", label: "Đã hủy" },
+    { key: "Returned", label: "Hoàn hàng" },
   ];
 
   const filtered = orders.filter(
@@ -249,40 +120,33 @@ export default function OrderTracker() {
     }
   };
 
-  if (selected) {
-    const order = orders.find((o) => o.id === selected);
-    if (order) {
-      return (
-        <OrderDetail
-          order={order}
-          onClose={() => setSelected(null)}
-          onCancel={() => handleCancel(order.id)}
-          onReturnRequest={() => handleReturnRequest(order.id)}
-          orderStatus={orderStatus}
-        />
-      );
-    }
-  }
-
   return (
     <div className="order-tracker">
       <h2 className="section-heading">Đơn hàng của tôi</h2>
 
       <div className="status-filter-tabs">
-        {statusFilters.map((f) => (
-          <button
-            key={f.key}
-            className={`filter-tab ${filterStatus === f.key ? "active" : ""}`}
-            onClick={() => setFilterStatus(f.key)}
-          >
-            {f.label}
-            {f.key !== "ALL" && (
+        {statusFilters.map((f) => {
+          // 1. Tính toán số lượng dựa trên danh sách orders đã fetch từ API
+          const count = orders.filter((o) => {
+            if (f.key === "ALL") return true;
+            // Đảm bảo so sánh chính xác Key (Ví dụ: "Processing" hoặc "PENDING")
+            return o.status === f.key;
+          }).length;
+
+          // 2. Trả về giao diện nút bấm
+          return (
+            <button
+              key={f.key}
+              className={`filter-tab ${filterStatus === f.key ? "active" : ""}`}
+              onClick={() => setFilterStatus(f.key)}
+            >
+              {f.label}
               <span className="filter-count">
-                {(state.orders ?? []).filter((o) => o.status === f.key).length || ""}
+                {count > 0 ? `(${count})` : "(0)"}
               </span>
-            )}
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
 
       {filtered.length === 0 ? (
@@ -291,27 +155,80 @@ export default function OrderTracker() {
           <p>Không có đơn hàng nào</p>
         </div>
       ) : (
-        <div className="orders-list">
+        <div className="orders-list space-y-6">
           {filtered.map((order) => (
-            <div key={order.id} className="order-card" onClick={() => setSelected(order.id)}>
-              <div className="oc-top">
-                <span className="oc-id">#{order.id}</span>
+            <div
+              key={order._id || order.id}
+              className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            >
+              {/* 1. Header Đơn hàng */}
+              <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50" style={{margin:"20px"}}>
+                <div>
+                  <h3 className="text-[14px] font-bold uppercase tracking-tight text-gray-900">
+                    Mã đơn hàng: <span className="text-blue-700 ml-1">#{order.id}</span>
+                  </h3>
+                  <p className="text-gray-400 text-[11px] mt-0.5 tracking-wider">
+                    Ngày đặt: {fmtDate(order.createdAt)}
+                  </p>
+                </div>
                 <StatusBadge statusKey={order.status} orderStatus={orderStatus} />
               </div>
-              <div className="oc-items-preview">
-                {order.items.slice(0, 3).map((item) => (
-                  <img key={item.key} src={item.product.image} alt={item.product.name} className="oc-thumb" />
+
+              {/* 2. Danh sách sản phẩm chi tiết */}
+              <div className="px-6 py-4 divide-y divide-gray-50" style={{margin:"20px"}}>
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="py-4 flex gap-6 items-center first:pt-0 last:pb-0" style={{margin:"10px"}}>
+                    {/* Ảnh sản phẩm */}
+                    <div className="w-[80px] h-[100px] flex-shrink-0 bg-gray-50">
+                      <img
+                        src={item.product.image}
+                        alt={item.product.name}
+                        className="w-full h-full object-cover border border-gray-100"
+                      />
+                    </div>
+
+                    {/* Thông tin sản phẩm */}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[13px] font-bold text-gray-800 uppercase truncate">
+                        {item.product.name}
+                      </h4>
+                      <p className="text-[12px] text-gray-600 mt-2 font-medium">
+                        Số lượng: <span className="text-black font-bold ml-1">{item.quantity}</span>
+                      </p>
+                      <p className="text-[11px] text-gray-400 italic mt-1">
+                        Phân loại: {item.selectedSize || 'Free'} - {item.selectedColor || 'N/A'}
+                      </p>
+                    </div>
+
+                    {/* Giá của từng sản phẩm */}
+                    <div className="text-[14px] font-bold text-gray-900 text-right">
+                      {fmt((item.product.salePrice ?? item.product.price) * item.quantity)}
+                    </div>
+                  </div>
                 ))}
-                {order.items.length > 3 && (
-                  <span className="oc-more">+{order.items.length - 3}</span>
-                )}
-                <span className="oc-summary">
-                  {order.items.length} sản phẩm
-                </span>
               </div>
-              <div className="oc-bottom">
-                <span className="oc-date">{fmtDate(order.createdAt)}</span>
-                <span className="oc-total">{fmt(order.total)}</span>
+
+              {/* 3. Footer: Tổng tiền và Nút xem chi tiết */}
+              <div className="px-6 py-5 border-t border-gray-100 flex justify-between items-end bg-white" style={{margin:"20px"}}>
+                <div>
+                  <p className="text-[11px] text-gray-500 uppercase font-bold tracking-[0.1em] mb-1">
+                    Tổng tiền thanh toán:
+                  </p>
+                  <p className="text-[20px] font-black text-red-600 leading-none">
+                    {fmt(order.total)}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const idToNav = order.id || order._id;
+                    router.push(`/account/orders/${idToNav}`);
+                  }}
+                  style={{padding:"5px"}}
+                  className="bg-black text-white px-6 py-2 text-[12px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors rounded-md"
+                >
+                  Xem chi tiết
+                </button>
               </div>
             </div>
           ))}

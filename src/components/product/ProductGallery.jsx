@@ -78,7 +78,7 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
       );
       setDisplayImages(nextList);
       setActive(0);
-    } 
+    }
     else if (foundColor && foundColor.images) {
       const nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
       setDisplayImages(nextList);
@@ -87,12 +87,15 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
   }, [product, selectedColor, hoverColor, images, productSeed]);
 
   useEffect(() => {
-    const nextList = buildImageList(
-      images.length > 0 ? images : product?.image ? [product.image] : [],
-      productSeed
-    );
-    setDisplayImages(nextList);
-  }, [images, product?.image, productSeed]);
+    // Thay vì gọi hàm bên ngoài, ta lấy trực tiếp danh sách ảnh
+    const nextList = images || product?.images || [];
+
+    // Chỉ cập nhật nếu danh sách ảnh thực sự thay đổi nội dung
+    // Dùng JSON.stringify để so sánh giá trị mảng thay vì tham chiếu địa chỉ
+    if (JSON.stringify(nextList) !== JSON.stringify(displayImages)) {
+      setDisplayImages(nextList);
+    }
+  }, [images, product?.images, displayImages]);
 
   if (!displayImages || displayImages.length === 0) {
     return <div className="w-full aspect-[3/4] bg-gray-100 animate-pulse rounded-xl"></div>;
@@ -105,17 +108,17 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
     <div className="flex flex-row-reverse gap-3 group h-fit">
 
       <div className="flex-1 relative bg-[#f9f9f9] rounded-xl overflow-hidden flex items-center justify-center aspect-[3/4]">
-        <img 
-          key={displayImages[active]} 
-          src={displayImages[active]} 
-          className="h-full w-full object-cover transition-all duration-500" 
-          alt="Main product" 
+        <img
+          key={displayImages[active]}
+          src={displayImages[active]}
+          className="h-full w-full object-cover transition-all duration-500"
+          alt="Main product"
           onError={(event) => {
             event.currentTarget.src = pickFallbackImage(`${productSeed}-main-${active}`);
           }}
         />
-        <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"><IoChevronBackOutline size={20}/></button>
-        <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"><IoChevronForwardOutline size={20}/></button>
+        <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"><IoChevronBackOutline size={20} /></button>
+        <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"><IoChevronForwardOutline size={20} /></button>
         <div className="absolute bottom-4 right-4 bg-black/50 text-white text-[10px] px-2 py-1 rounded">
           {active + 1} / {displayImages.length}
         </div>
@@ -123,13 +126,12 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
 
       <div className="w-16 md:w-20 flex flex-col gap-2 overflow-y-auto max-h-[500px] pr-1 custom-scrollbar">
         {displayImages?.map((img, index) => (
-          <div 
+          <div
             key={index}
-            onMouseEnter={() => setActive(index)} 
+            onMouseEnter={() => setActive(index)}
             onClick={() => setActive(index)}
-            className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 aspect-[3/4] ${
-              active === index ? 'border-black shadow-sm' : 'border-transparent hover:border-gray-300'
-            }`}
+            className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 aspect-[3/4] ${active === index ? 'border-black shadow-sm' : 'border-transparent hover:border-gray-300'
+              }`}
           >
             <img
               src={img}
@@ -143,7 +145,7 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
         ))}
       </div>
 
-     
+
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 2px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }

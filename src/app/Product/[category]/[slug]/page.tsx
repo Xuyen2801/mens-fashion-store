@@ -30,6 +30,8 @@ export default function Page() {
   const [cachedProduct, setCachedProduct] = useState<any | null>(null);
   const [productFaqBundles, setProductFaqBundles] = useState<Array<{ products: any[]; faqs: FAQItem[] }>>([]);
 
+  console.log("🔍 [DEBUG] URL Slug hiện tại:", slug);
+
   // 🔤 normalizeText: Convert Vietnamese text với dấu -> URL-friendly slug
   // VD: "Áo Thun Nam" -> "ao-thun-nam" (dùng để match với URL slug parameter)
   // 
@@ -80,16 +82,6 @@ export default function Page() {
       "productsNew",
       "productsOutLet",
       "productsAll",
-      "ao-khoac",
-      "ao-thun",
-      "jean",
-      "short",
-      "kaki",
-      "boxer",
-      "jogger",
-      "tay",
-      "productsNew",
-      "productsOutLet",
     ];
 
     const loadProducts = async () => {

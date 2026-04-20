@@ -38,45 +38,6 @@ export default function Header() {
   const [headerData, setHeaderData] = useState(DEFAULT_HEADER_DATA);
 
   const { topbar, logo, mainMenu, icons } = headerData;
-  // <<<<<<< HEAD
-  // =======
-  //   const { totalItems, setIsCartOpen } = useCart();
-  // >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
-
-
-// <<<<<<< HEAD
-// =======
-//   const { totalItems, setIsCartOpen } = useCart();
-// >>>>>>> 0d68f9c0895bf05a23d565e611982d87e0a89eef
-
-
-
-  /*
-  useEffect(() => {
-<<<<<<< HEAD
-    setIsMounted(true);
-=======
-    setIsMounted(true); 
-  }, []);
-
-  useEffect(() => {
-    fetchCollection("headerData")
-      .then((data) => {
-        const source = Array.isArray(data)
-          ? data[0]?.headerData ?? data[0] ?? null
-          : data?.headerData ?? data ?? null;
-
-        if (source) {
-          setHeaderData({
-            ...DEFAULT_HEADER_DATA,
-            ...source,
-          });
-        }
-      })
-      .catch((error) => console.error("Failed to load header data:", error));
->>>>>>> 5590c5476d81527a09c5102380c96c2140abb5fd
-  }, []);
-  */
 
   //code mới chỉnh sửa kiểm tra login ngay khi component lên trình duyệt
   useEffect(() => {
@@ -198,22 +159,22 @@ export default function Header() {
     };
 
     const SEARCH_COLLECTIONS = [
-      "productsAll",
-      "productsNew",
-      "productsOutLet",
-      "ao-polo",
-      "ao-thun",
       "ao-khoac",
-      "so-mi",
-      "set-do",
-      "tank-top",
-      "hoodie",
-      "jean",
-      "short",
-      "kaki",
-      "boxer",
-      "jogger",
-      "tay",
+  "ao-thun",
+  "ao-polo",
+  "so-mi",
+  "hoodie",
+  "tank-top",
+  "jean",
+  "short",
+  "kaki",
+  "boxer",
+  "jogger",
+  "tay",
+  "set-do",
+  "productsNew",
+  "productsOutLet",
+  "productsAll"
     ];
 
     const dedupeProducts = (items) => {

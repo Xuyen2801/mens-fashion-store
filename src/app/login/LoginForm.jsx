@@ -50,22 +50,28 @@ export default function LoginForm({ onSwitchTab }) {
         toast.error("Mật khẩu không chính xác!");
         return;
       }
+      localStorage.removeItem("cart");
+      localStorage.removeItem("dusk_cart_v2");
 
       toast.success(`Chào mừng ${user.fullName} đã quay trở lại!`, {
         duration: 3000
       });
 
       localStorage.setItem("user", JSON.stringify({
-        id: user.id,
+        userId: user.userId,
         fullName: user.fullName,
         phone: user.phone,
-        role: user.role
+        role: user.role,
+        addresses: user.addresses || []
       }));
-
-      // setTimeout(() => {
-      //     window.location.href = "/account";
-      // }, 1000);
-
+      const cartRes = await fetch(`http://localhost:5000/api/cart/${user.id || user.userId}`);
+      if (cartRes.ok) {
+        const userCart = await cartRes.json();
+        localStorage.setItem("dusk_cart_v2", JSON.stringify({
+          items: userCart.items || [],
+          selectedItemKeys: userCart.selectedItemKeys || []
+        }));
+      }
       setTimeout(() => {
         if (user.role === "admin") {
           toast.success("Chào mừng Admin quay trở lại!");

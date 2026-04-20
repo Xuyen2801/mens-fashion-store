@@ -32,9 +32,12 @@ type NormalizedCollectionItem = {
 };
 
 type MixMatchItem = {
-  id: number;
-  image: string;
-  link: string;
+  slug: string;      
+  mainImage: string; 
+  title: string;     
+  link: string;      
+  id?: number;       
+  image?: string;
 };
 
 

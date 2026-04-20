@@ -11,7 +11,7 @@ type Props = {
 
 export default function CollectionCard({ title, image, link, name }: Props) {
   return (
-    <Link href={link}>
+    <Link href={link || "#"}>
       <div className="relative h-[500px] md:h-[600px] overflow-hidden group cursor-pointer">
 
         <Image

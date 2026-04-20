@@ -29,7 +29,22 @@ export default function Page({ params }) {
       setCachedProduct(null);
     }
 
-    const collections = ["ao-khoac", "ao-thun", "ao-polo", "hoodie", "so-mi", "set-do", "tank-top", "jean", "short", "kaki", "boxer", "jogger", "tay", "productsNew", "productsOutLet", "productsAll"];
+    const collections = ["ao-khoac",
+  "ao-thun",
+  "ao-polo",
+  "so-mi",
+  "hoodie",
+  "tank-top",
+  "jean",
+  "short",
+  "kaki",
+  "boxer",
+  "jogger",
+  "tay",
+  "set-do",
+  "productsNew",
+  "productsOutLet",
+  "productsAll"];
 
     const loadProducts = async () => {
       try {

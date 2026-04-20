@@ -32,6 +32,16 @@ export default function CheckoutForm({ onBack, onSuccess }) {
     (sum, item) => sum + (item.product.salePrice ?? item.product.price) * item.quantity,
     0
   );
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [vouchers, setVouchers] = useState([]);
+  const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/vouchers")
+      .then(res => res.json())
+      .then(data => setVouchers(data))
+      .catch(err => console.error("Lỗi load voucher:", err));
+  }, []);
 
   useEffect(() => {
     loadAoThunMeta()
@@ -53,10 +63,35 @@ export default function CheckoutForm({ onBack, onSuccess }) {
       .catch((error) => console.error("Failed to load ao-thun meta:", error));
   }, [dispatch, state.paymentMethod, state.shippingMethod]);
 
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    if (loggedInUser?.addresses) {
+      setSavedAddresses(loggedInUser.addresses);
+    }
+  }, []);
+
+  const handleSelectSavedAddress = (e) => {
+    const addrId = e.target.value;
+    const selected = savedAddresses.find(a => a.id === addrId);
+
+    if (selected) {
+      setForm({
+        ...form,
+        fullName: selected.receiverName || "",
+        phone: selected.phone || "",
+        address: selected.detail || "",
+        city: selected.province || "",
+        district: selected.district || "",
+        ward: selected.ward || ""
+      });
+      setErrors({});
+      toast.success("Đã áp dụng địa chỉ!");
+    }
+  };
+
   const selectedShipping =
     shippingMethods.find((s) => s.id === state.shippingMethod) || shippingMethods[0] || { price: 0, name: "" };
 
-  // 💰 TÍnh giá: subtotal -> áp voucher -> + shipping fee = total
   const v = state.appliedVoucher; // voucher đã áp dụng
   let discount = 0;
   let shippingFee = selectedShipping.price;
@@ -147,7 +182,7 @@ export default function CheckoutForm({ onBack, onSuccess }) {
 
     const order = {
       id: genOrderId(),
-      userId: user.id,
+      userId: user.userId,
       items: selectedItems,
       shippingInfo: form,
       shippingMethod: selectedShipping,
@@ -180,9 +215,19 @@ export default function CheckoutForm({ onBack, onSuccess }) {
       });
 
       if (res.ok) {
-        // Nếu lưu DB thành công mới xóa giỏ hàng và chuyển trang
         dispatch({ type: "PLACE_ORDER", payload: { order, itemKeys: selectedItemKeys } });
         toast.success("Đặt hàng thành công!");
+
+        if (form.email) {
+          fetch("http://localhost:5000/api/auth/send-order-success", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: form.email,
+              order: order
+            }),
+          }).catch(err => console.error("Lỗi gửi mail đơn hàng:", err));
+        }
         onSuccess(order);
       } else {
         throw new Error("Không thể lưu đơn hàng vào Database");
@@ -193,6 +238,7 @@ export default function CheckoutForm({ onBack, onSuccess }) {
     } finally {
       setIsPlacing(false);
     }
+    onSuccess(order);
   }
 
   const fields = [
@@ -218,6 +264,39 @@ export default function CheckoutForm({ onBack, onSuccess }) {
             <h3 className="cf-section-title">
               <span className="step-num">1</span> Thông tin giao hàng
             </h3>
+            {savedAddresses.length > 0 && (
+              <div >
+                <label className="block text-[13px] text-gray-500">
+                  Chọn nhanh từ sổ địa chỉ của bạn:
+                </label>
+                <select
+                  className="cf-input cursor-pointer"
+                  onChange={handleSelectSavedAddress}
+                  defaultValue=""
+                  style={{ marginTop: '8px' }}
+                >
+                  <option value="" disabled>-- Nhấp để chọn địa chỉ đã lưu --</option>
+                  {savedAddresses.map(addr => (
+                    <option key={addr.id} value={addr.id}>
+                      {addr.receiverName} - {addr.phone} ({addr.province})
+                    </option>
+                  ))}
+                </select>
+                <div className="flex items-center" style={{ marginTop: '20px' }}>
+                  <div className="flex-1 h-[1px] bg-gray-100"></div>
+                  <span className="text-[11px] text-gray-400 uppercase" style={{
+                    padding: '0 15px',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
+                    lineHeight: '1'
+                  }}>Hoặc nhập địa chỉ mới</span>
+                  <div className="flex-1 h-[1px] bg-gray-100"></div>
+                </div>
+              </div>
+
+            )}
             {errors.items && <p className="cf-error">{errors.items}</p>}
             <div className="cf-fields">
               {fields.map((f) => (
@@ -340,5 +419,6 @@ export default function CheckoutForm({ onBack, onSuccess }) {
         </div>
       </div>
     </div>
+    
   );
 }

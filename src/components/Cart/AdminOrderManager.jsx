@@ -10,30 +10,32 @@ const fmt = (n) =>
 
 // 5 trạng thái admin
 const ADMIN_STATUSES = [
-  { key: "ALL", label: "Tất cả" },
-  { key: "PENDING", label: "Chờ xác nhận" },
-  { key: "CONFIRMED", label: "Đã xác nhận" },
+  { key: "ALL", label: "Tất cả đơn hàng" },
+  { key: "PROCESSING", label: "Chờ xử lý" },
+  { key: "CONFIRMED", label: "Chờ lấy hàng" },
   { key: "SHIPPING", label: "Đang giao" },
   { key: "DELIVERED", label: "Đã giao" },
   { key: "CANCELLED", label: "Đã hủy" },
+  { key: "RETURNED", label: "Đã trả hàng" },
 ];
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "PENDING": return "#f39c12";
-    case "CONFIRMED": return "#3498db";
-    case "SHIPPING": return "#9b59b6";
-    case "DELIVERED": return "#2ecc71";
-    case "CANCELLED": return "#e74c3c";
-    default: return "#7f8c8d";
+    case "PROCESSING": return "#f59e0b"; // Màu cam (Amber)
+    case "CONFIRMED": return "#3b82f6";  // Màu xanh dương
+    case "SHIPPING": return "#8b5cf6";   // Màu tím
+    case "DELIVERED": return "#10b981";  // Màu xanh lá
+    case "CANCELLED": return "#ef4444";  // Màu đỏ
+    case "RETURNED": return "#64748b";   // Màu xám
+    default: return "#94a3b8";
   }
 };
 
 // validate flow
 const canUpdate = (current, next) => {
-  const flow = ["PENDING", "CONFIRMED", "SHIPPING", "DELIVERED"];
+  const flow = ["PROCESSING", "CONFIRMED", "SHIPPING", "DELIVERED"];
 
-  if (current === "CANCELLED") return false;
+  if (current === "CANCELLED" || current === "RETURNED") return false;
 
   if (next === "CANCELLED") {
     return current !== "DELIVERED";
@@ -49,19 +51,20 @@ export default function AdminOrderManager() {
   const { state, dispatch } = useCart();
   const [filter, setFilter] = useState("ALL");
 
-  // const updateStatus = (orderId, status) => {
-  //   dispatch({
-  //     type: "UPDATE_ORDER_STATUS",
-  //     payload: { orderId, status },
-  //   });
-  // };
-
   const updateStatus = async (orderId, newStatus) => {
+    if (newStatus === "CONFIRMED") {
+      const order = state.orders.find(o => o.id === orderId);
+      // Tại đây bạn có thể gọi API kiểm tra kho một lần nữa trước khi CONFIRMED
+    }
     try {
       const response = await fetch(`http://localhost:5000/orders/${orderId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({
+          status: newStatus,
+          updatedBy: "Admin_Operator",
+          updatedAt: new Date().toISOString()
+        }),
       });
 
       if (response.ok) {
@@ -69,6 +72,9 @@ export default function AdminOrderManager() {
           type: "UPDATE_ORDER_STATUS",
           payload: { orderId, status: newStatus },
         });
+        if (newStatus === "CONFIRMED") {
+          console.log("Hệ thống: Đã trừ tồn kho cho đơn hàng này.");
+        }
         alert("Cập nhật trạng thái thành công!");
       } else {
         alert("Lỗi server: Không thể cập nhật đơn hàng.");
@@ -78,17 +84,14 @@ export default function AdminOrderManager() {
     }
   };
 
-  // lọc đơn hàng
-  const filteredOrders =
-    filter === "ALL"
-      ? state.orders
-      : state.orders.filter((o) => o.status === filter);
+  const filteredOrders = filter === "ALL"
+    ? state.orders
+    : state.orders.filter((o) => o.status?.toUpperCase() === filter.toUpperCase());
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>Quản lý đơn hàng (Admin)</h2>
 
-      {/* 🔥 Tabs filter */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
         {ADMIN_STATUSES.map((s) => (
           <button
@@ -131,11 +134,6 @@ export default function AdminOrderManager() {
             <p>Khách: {order.shippingInfo.fullName}</p>
             <p>Tổng tiền: {fmt(order.total)}</p>
 
-            {/* <p>
-              Trạng thái:
-              <strong style={{ marginLeft: 5 }}>{order.status}</strong>
-            </p> */}
-
             <p>
               Trạng thái:
               <span style={{
@@ -147,7 +145,7 @@ export default function AdminOrderManager() {
                 color: "#fff",
                 backgroundColor: getStatusColor(order.status) // Áp dụng hàm màu của bạn
               }}>
-                {ADMIN_STATUSES.find(s => s.key === order.status)?.label}
+                {ADMIN_STATUSES.find(s => s.key === order.status)?.label || order.status}
               </span>
             </p>
 
@@ -181,6 +179,31 @@ export default function AdminOrderManager() {
           </div>
         ))
       )}
+    </div>
+  );
+}
+
+function AdminDashboard({ orders }) {
+  const totalRevenue = orders
+    .filter(o => o.status === "DELIVERED")
+    .reduce((sum, o) => sum + o.total, 0);
+
+  const pendingCount = orders.filter(o => o.status === "PENDING").length;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div className="bg-white p-6 rounded shadow border-l-4 border-blue-500">
+        <p className="text-gray-500 text-sm uppercase">Doanh thu thực tế</p>
+        <p className="text-2xl font-bold">{fmt(totalRevenue)}</p>
+      </div>
+      <div className="bg-white p-6 rounded shadow border-l-4 border-orange-500">
+        <p className="text-gray-500 text-sm uppercase">Đơn chờ duyệt</p>
+        <p className="text-2xl font-bold">{pendingCount} đơn</p>
+      </div>
+      <div className="bg-white p-6 rounded shadow border-l-4 border-green-500">
+        <p className="text-gray-500 text-sm uppercase">Đơn thành công</p>
+        <p className="text-2xl font-bold">{orders.filter(o => o.status === "DELIVERED").length} đơn</p>
+      </div>
     </div>
   );
 }

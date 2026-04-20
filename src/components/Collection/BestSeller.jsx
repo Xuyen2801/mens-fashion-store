@@ -130,7 +130,7 @@ export default function BestSeller() {
 
       {/* BREADCRUMB */}
       <div className="breadcrumb">
-        Trang chủ / Danh mục / <span>Sản phẩm mới</span>
+        Trang chủ / Danh mục / <span>Hàng bán chạy</span>
       </div>
 
       {/* BANNER */}

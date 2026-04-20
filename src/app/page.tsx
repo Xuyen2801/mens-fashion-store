@@ -32,9 +32,12 @@ type NormalizedCollectionItem = {
 };
 
 type MixMatchItem = {
-  id: number;
-  image: string;
-  link: string;
+  slug: string;      // Dùng slug làm định danh chính
+  mainImage: string; // Tên trường ảnh chính xác từ Mongo
+  title: string;     // Tên bộ phối
+  link: string;      // Link dẫn tới /mix-match/[slug]
+  id?: number;       // (Tùy chọn) Để không lỗi nếu còn sót dữ liệu cũ
+  image?: string;
 };
 
 
@@ -110,36 +113,44 @@ export default function HomePage() {
           ...(Array.isArray(collectionJson) ? collectionJson : []),
         ];
 
-        const normalizedCollections: NormalizedCollectionItem[] = mergedCollections
-          .filter((item: CollectionItem) => item?.image && item?.name)
-          .map((item: CollectionItem) => ({
-            ...item,
-            slug: item.slug || toSlug(item.name),
-            title: item.title || item.name,
-            link: normalizeCollectionLink(item.link, item.slug || toSlug(item.name)),
-          }))
-          .filter(
-            (item, index, arr) =>
-              index ===
-              arr.findIndex((x) =>
-                x.slug
-                  ? x.slug === item.slug
-                  : `${x.name}-${x.image}` === `${item.name}-${item.image}`
-              )
-          );
-
-        const normalizedMixMatch = Array.isArray(mixmatchJson)
-          ? (() => {
-              const first = mixmatchJson[0] as { mixmatchData?: MixMatchItem[] } | undefined;
-              if (Array.isArray(first?.mixmatchData)) {
-                return first.mixmatchData;
-              }
-              return mixmatchJson as MixMatchItem[];
-            })()
+        const normalizedCollections: NormalizedCollectionItem[] = Array.isArray(collectionsJson)
+          ? collectionsJson
+              .filter((item: CollectionItem) => item?.image && (item?.name || item?.title))
+              .map((item: CollectionItem) => {
+                const itemSlug = item.slug || toSlug(item.name || item.title);
+                return {
+                  ...item,
+                  slug: itemSlug,
+                  title: item.title || item.name || "Bộ sưu tập",
+                  link: item.link || `/collection/${itemSlug}` || "/collection"
+                };
+              })
           : [];
 
-        setHomeStore(homeImages);
-        setCollections(normalizedCollections);
+        const normalizedMixMatch = Array.isArray(mixmatchJson)
+          ? mixmatchJson.map((item: any) => {
+              // Nếu là dữ liệu object đơn (Cấu trúc mới Vy vừa nạp)
+              if (item.slug) {
+                return {
+                  slug: item.slug,
+                  mainImage: item.mainImage || item.image || "",
+                  title: item.title || "Mix & Match",
+                  link: `/mix-match/${item.slug}`
+                };
+              }
+              // Nếu vẫn còn dữ liệu cũ lọt vào (mảng mixmatchData)
+              return {
+                slug: item.id?.toString() || Math.random().toString(),
+                mainImage: item.image || "",
+                title: item.title || "Mix & Match",
+                link: item.link || "#"
+              };
+            }).slice(0,4)
+          : [];
+
+        setHomeStore(homeStoreJson.map((i: any) => i.image).filter(Boolean));
+        setCollections(normalizedCollections); 
+
         setMixmatchData(normalizedMixMatch);
       } catch (error) {
         console.error("Failed to load homepage data:", error);

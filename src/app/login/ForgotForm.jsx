@@ -1,72 +1,80 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { auth } from "../../lib/firebase";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import bcrypt from "bcryptjs";
 import toast from "react-hot-toast";
 import { chooseLatestUserByPhone, normalizePhone } from "../../lib/userSchema";
 import { USERS_API_URL } from "../../lib/api";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function ForgotPassword({ onSwitchTab }) {
   const [step, setStep] = useState(1);
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  useEffect(() => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
-    }
-  }, []);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
+    if (!email) {
+      setError("Vui lòng nhập email.");
+      return;
+    }
 
     try {
-      const res = await fetch(USERS_API_URL); 
-      const allUsers = await res.json();
-      const normalizedPhone = normalizePhone(phone);
+      // 1. Kiểm tra xem email có tồn tại trong hệ thống không
+      const resUsers = await fetch(USERS_API_URL);
+      const allUsers = await resUsers.json();
+      const validUser = allUsers.find(u => u.email?.toLowerCase() === email.toLowerCase());
 
-      console.log("Tất cả User trong DB:", allUsers);
-
-      const validUser = chooseLatestUserByPhone(allUsers, normalizedPhone);
-
-      if (!validUser || !validUser.password) {
-        setError("Số điện thoại này chưa được đăng ký hệ thống.");
+      if (!validUser) {
+        setError("Email này chưa được đăng ký trong hệ thống.");
         return;
       }
 
-      console.log("Tìm thấy:", validUser.fullName);
+      // 2. Tạo mã OTP ngẫu nhiên 6 số
+      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      const rawPhone = normalizedPhone;
-      const formattedPhone = `+84${rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone}`;
-      
-      const appVerifier = window.recaptchaVerifier;
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
-      
-      window.confirmationResult = confirmationResult;
-      setSuccess("Mã khôi phục đã được gửi!");
-      setStep(2);
+      // Lưu OTP vào localStorage tạm thời để kiểm tra (giống logic đăng ký của Vy)
+      localStorage.setItem("otp_reset", generatedOtp);
+
+      // 3. Gọi API gửi mail của Vy
+      const resMail = await fetch("http://localhost:5000/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, otp: generatedOtp }),
+      });
+
+      if (resMail.ok) {
+        setSuccess("Mã khôi phục đã được gửi vào Email của bạn!");
+        setStep(2);
+      } else {
+        throw new Error("Gửi mail thất bại");
+      }
 
     } catch (err) {
-      console.error("Lỗi chi tiết:", err);
-      setError("Lỗi hệ thống");
+      console.error("Lỗi gửi OTP:", err);
+      setError("Không thể gửi mã. Vui lòng thử lại sau.");
     }
   };
-  const handleVerifyOTP = async (e) => {
+
+  const handleVerifyOTP = (e) => {
     e.preventDefault();
-    try {
-      await window.confirmationResult.confirm(otp);
-      setStep(3);
+    setError("");
+
+    const savedOtp = localStorage.getItem("otp_reset");
+    if (otp === savedOtp) {
       setSuccess("Xác thực thành công. Hãy đặt mật khẩu mới.");
-    } catch (err) {
-      setError("Mã OTP không đúng.");
+      localStorage.removeItem("otp_reset"); // Xóa sau khi dùng xong
+      setStep(3);
+    } else {
+      setError("Mã OTP không chính xác.");
     }
   };
 
@@ -74,83 +82,149 @@ export default function ForgotPassword({ onSwitchTab }) {
     e.preventDefault();
     setError("");
 
+    if (newPassword.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       setError("Mật khẩu xác nhận không trùng khớp.");
       return;
     }
 
     try {
-      const res = await fetch(USERS_API_URL); 
-      const allUsers = await res.json();
-      const normalizedPhone = normalizePhone(phone);
-      
-      const validUser = chooseLatestUserByPhone(allUsers, normalizedPhone);
+      // 1. Tìm lại user để lấy đúng ID
+      const resUsers = await fetch(USERS_API_URL);
+      const allUsers = await resUsers.json();
+      const validUser = allUsers.find(u => u.email?.toLowerCase() === email.toLowerCase());
 
       if (!validUser) {
-        setError("Lỗi: Không tìm thấy tài khoản để cập nhật.");
+        setError("Lỗi: Không tìm thấy tài khoản.");
         return;
       }
 
-      console.log("Đang cập nhật mật khẩu cho ID:", validUser.id);
-
+      // 2. Hash mật khẩu mới
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-      const patchRes = await fetch(`${USERS_API_URL}/${validUser.id}`, {
+      // 3. Cập nhật vào DB (PATCH)
+      const patchRes = await fetch(`${USERS_API_URL}/${validUser.id || validUser._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          password: hashedPassword,
+          passwordHash: hashedPassword,
           updatedAt: new Date().toISOString(),
         }),
       });
 
       if (patchRes.ok) {
-        toast.success("Mật khẩu mới đã được cập nhật! Đăng nhập thôi Vy ơi.", {
-        duration: 4000
-        });
-
+        toast.success("Mật khẩu mới đã được cập nhật thành công!");
         setTimeout(() => {
-        onSwitchTab("login"); 
+          onSwitchTab("login");
         }, 1500);
       } else {
-        setError("Lỗi: Server từ chối cập nhật mật khẩu.");
+        setError("Lỗi từ server khi cập nhật mật khẩu.");
       }
     } catch (err) {
-      console.error("Lỗi cập nhật Bước 3:", err);
-      setError("Lỗi cập nhật mật khẩu.");
+      console.error("Lỗi cập nhật mật khẩu:", err);
+      setError("Lỗi hệ thống.");
     }
   };
 
   return (
-    <div className="space-y-5">
-      <div id="recaptcha-container"></div>
-      {error && <p className="text-red-500 text-sm italic">{error}</p>}
-      {success && <p className="text-green-600 text-sm italic">{success}</p>}
+    <div className="space-y-5 animate-fadeIn">
+      {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs italic rounded">{error}</div>}
+      {success && <div className="p-3 bg-green-50 border border-green-200 text-green-700 text-xs italic rounded">{success}</div>}
 
       {step === 1 && (
         <form onSubmit={handleSendOTP} className="space-y-4">
-          <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Nhập SĐT đã đăng ký" className="w-full border-b py-2 focus:outline-none" />
-          <button type="submit" className="w-full bg-black text-white py-2 font-bold text-xs">GỬI MÃ KHÔI PHỤC</button>
+          <p className="text-gray-500 text-[11px] uppercase font-bold">Nhập Email khôi phục</p>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="example@gmail.com"
+            className="w-full border-b py-2 focus:outline-none focus:border-black transition-all"
+            required
+          />
+          <button type="submit" className="w-full bg-black text-white py-3 font-bold text-[11px] uppercase tracking-widest hover:bg-gray-800 transition-all">
+            Gửi mã qua Email
+          </button>
         </form>
       )}
 
       {step === 2 && (
         <form onSubmit={handleVerifyOTP} className="space-y-4">
-          <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="Nhập mã OTP" className="w-full border-b py-2 focus:outline-none text-center tracking-widest" />
-          <button type="submit" className="w-full bg-black text-white py-2 font-bold text-xs">XÁC MINH</button>
+          <div className="text-center">
+            <p className="text-gray-400 text-[10px]">Mã đã gửi đến: <span className="text-black font-bold">{email}</span></p>
+          </div>
+          <input
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            placeholder="------"
+            className="w-full border-b py-3 focus:outline-none text-center text-2xl font-bold tracking-[10px]"
+            required
+          />
+          <button type="submit" className="w-full bg-black text-white py-3 font-bold text-[11px] uppercase tracking-widest hover:bg-gray-800 transition-all">
+            Xác minh mã OTP
+          </button>
         </form>
       )}
 
       {step === 3 && (
         <form onSubmit={handleResetPassword} className="space-y-4">
-          <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Mật khẩu mới" className="w-full border-b py-2 focus:outline-none" />
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Xác nhận mật khẩu" className="w-full border-b py-2 focus:outline-none" />
-          <button type="submit" className="w-full bg-black text-white py-2 font-bold text-xs">ĐẶT LẠI MẬT KHẨU</button>
+          <p className="text-gray-500 text-[11px] uppercase font-bold">Thiết lập mật khẩu mới</p>
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Mật khẩu mới"
+              className="w-full border-b py-2 pr-10 focus:outline-none focus:border-black transition-all"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-2 text-gray-400 hover:text-black transition-colors"
+            >
+              {showPassword ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+            </button>
+          </div>
+
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Xác nhận mật khẩu mới"
+              className="w-full border-b py-2 pr-10 focus:outline-none focus:border-black transition-all"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-0 top-2 text-gray-400 hover:text-black transition-colors"
+            >
+              {showConfirmPassword ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+            </button>
+          </div>
+
+          <button type="submit" className="w-full bg-black text-white py-3 font-bold text-[11px] uppercase tracking-widest hover:bg-gray-800 transition-all mt-4">
+            Đặt lại mật khẩu
+          </button>
         </form>
       )}
 
-      <button onClick={() => onSwitchTab("login")} className="w-full text-center text-gray-500 text-xs hover:underline">Quay lại đăng nhập</button>
+      <button
+        type="button"
+        onClick={() => onSwitchTab("login")}
+        className="w-full text-center text-gray-400 text-[10px] uppercase hover:text-black transition-colors"
+      >
+        ← Quay lại đăng nhập
+      </button>
     </div>
   );
 }

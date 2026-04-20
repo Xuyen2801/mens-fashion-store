@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useReducer, useEffect, useState } from "react";
-
+import toast from "react-hot-toast";
 const CartContext = createContext(null);
 
 const DEFAULT_STATE = {
@@ -9,60 +9,17 @@ const DEFAULT_STATE = {
   selectedItemKeys: [],
   shippingMethod: "",
   paymentMethod: "cod",
-  appliedVoucher: null,
+  appliedShipVoucher: null,
+  appliedProdVoucher: null,
   note: "",
 };
 
-// ✨ VOUCHER_DEFINITIONS: Định nghĩa tất cả các mã giảm giá
-// - type: "fixed" = giảm số tiền cố định (VD: 20k), "shipping" = miễn phí vận chuyển
-// - minSubtotal: giá trị tối thiểu của đơn hàng để dùng được voucher
-// - value: số tiền/phần trăm giảm giá
-// VD: SALE20K chỉ áp dụng khi tổng hàng >= 499.000đ
-const VOUCHER_DEFINITIONS = {
-  SALE20K: { code: "SALE20K", type: "fixed", value: 20000, minSubtotal: 499000, label: "Giảm 20.000đ cho đơn từ 499.000đ" },
-  SALE60K: { code: "SALE60K", type: "fixed", value: 60000, minSubtotal: 749000, label: "Giảm 60.000đ cho đơn từ 749.000đ" },
-  SALE90K: { code: "SALE90K", type: "fixed", value: 90000, minSubtotal: 999000, label: "Giảm 90.000đ cho đơn từ 999.000đ" },
-  SALE150K: { code: "SALE150K", type: "fixed", value: 150000, minSubtotal: 1599000, label: "Giảm 150.000đ cho đơn từ 1.599.000đ" },
-  FREESHIP: { code: "FREESHIP", type: "shipping", value: 100, minSubtotal: 399000, label: "Miễn phí vận chuyển cho đơn từ 399.000đ" },
-};
 
-// 🔄 VOUCHER_ALIASES: Cho phép dùng code ngắn thay vì code dài
-// VD: User nhập "20K" hoặc "SALE20K" đều có thể (sẽ map thành "SALE20K")
-const VOUCHER_ALIASES = {
-  "20K": "SALE20K",
-  "60K": "SALE60K",
-  "90K": "SALE90K",
-  "150K": "SALE150K",
-};
-
-// 🎟️ resolveVoucher: Kiểm tra & validate mã voucher
-// Logic:
-// 1. Normalize code (trim + uppercase) để tránh lỗi cách nhập
-// 2. Check alias mapping ("20K" -> "SALE20K")
-// 3. Verify mã có trong VOUCHER_DEFINITIONS không
-// 4. Kiểm tra subtotal >= minSubtotal yêu cầu
-// Return: object voucher nếu hợp lệ, hoặc {error: ...} nếu không
-const resolveVoucher = (rawCode, subtotal) => {
-  const normalized = String(rawCode || "").trim().toUpperCase();
-  if (!normalized) {
-    return { error: "Vui lòng nhập mã voucher" };
-  }
-
-  // Thử ánh xạ alias trước, nếu không có thì dùng code gốc
-  const canonicalCode = VOUCHER_ALIASES[normalized] || normalized;
-  const voucher = VOUCHER_DEFINITIONS[canonicalCode];
-
-  if (!voucher) {
-    return { error: "Mã voucher không hợp lệ" };
-  }
-
-  // Kiểm tra ghi chú: Tổng tiền phải >= minSubtotal thì mới được dùng voucher này
+const validateVoucher = (voucher, subtotal) => {
+  if (!voucher) return { error: "Voucher không tồn tại" };
   if (subtotal < voucher.minSubtotal) {
-    return {
-      error: `Đơn hàng cần tối thiểu ${new Intl.NumberFormat("vi-VN").format(voucher.minSubtotal)}đ để áp dụng ${voucher.code}`,
-    };
+    return { error: `Đơn hàng tối thiểu ${new Intl.NumberFormat("vi-VN").format(voucher.minSubtotal)}đ` };
   }
-
   return voucher;
 };
 
@@ -91,7 +48,8 @@ function cartReducer(state, action) {
           selectedItemKeys: hydratedSelectedKeys,
           shippingMethod: action.payload?.shippingMethod || "",
           paymentMethod: action.payload?.paymentMethod || "cod",
-          appliedVoucher: action.payload?.appliedVoucher || null,
+          appliedShipVoucher: action.payload?.appliedShipVoucher || null,
+          appliedProdVoucher: action.payload?.appliedProdVoucher || null,
           note: action.payload?.note || "",
         };
       }
@@ -150,12 +108,25 @@ function cartReducer(state, action) {
       };
     }
 
+    case "SET_SHIP_VOUCHER":
+      return { ...state, appliedShipVoucher: action.payload };
+
+    case "REMOVE_SHIP_VOUCHER":
+      return { ...state, appliedShipVoucher: null };
+
+    case "SET_PROD_VOUCHER":
+      return { ...state, appliedProdVoucher: action.payload };
+
+    case "REMOVE_PROD_VOUCHER":
+      return { ...state, appliedProdVoucher: null };
+
     case "CLEAR_CART":
       return {
         ...state,
         items: [],
         selectedItemKeys: [],
-        appliedVoucher: null,
+        appliedShipVoucher: null,
+        appliedProdVoucher: null,
         note: "",
       };
 
@@ -200,29 +171,21 @@ function cartReducer(state, action) {
       };
 
     case "APPLY_VOUCHER": {
-      // 🎟️ APPLY_VOUCHER: Áp dụng mã voucher
-      // - Tính subtotal của những items được chọn (selected items)
-      // - Gọi resolveVoucher để validate code & kiểm tra điều kiện
-      // - Lưu kết quả (voucher object hoặc error) vào state
-      const selectedSet = new Set(state.selectedItemKeys);
-      // Tính tổng tiền chỉ của những sản phẩm được chọn
-      const subtotal = state.items.reduce(
-        (sum, item) => selectedSet.has(item.key)
-          ? sum + (item.product.salePrice ?? item.product.price) * item.quantity
-          : sum,
-        0
-      );
+      const { voucher, subtotal } = action.payload;
+      const result = validateVoucher(voucher, subtotal);
 
-      return {
-        ...state,
-        appliedVoucher: resolveVoucher(action.payload, subtotal), // Validate & resolve voucher
-      };
+      if (result.error) {
+        return { ...state, appliedShipVoucher: result };
+      }
+
+      return { ...state, appliedShipVoucher: result };
     }
 
     case "REMOVE_VOUCHER":
       return {
         ...state,
-        appliedVoucher: null,
+        appliedShipVoucher: null,
+        appliedProdVoucher: null,
       };
 
     case "PLACE_ORDER":
@@ -237,7 +200,8 @@ function cartReducer(state, action) {
           orders: [orderPayload, ...state.orders],
           items: state.items.filter((item) => !orderedItemKeys.includes(item.key)),
           selectedItemKeys: state.selectedItemKeys.filter((key) => !orderedItemKeys.includes(key)),
-          appliedVoucher: null,
+          appliedShipVoucher: null,
+          appliedProdVoucher: null,
           note: "",
         };
       }
@@ -272,6 +236,7 @@ export function CartProvider({ children }) {
     0
   );
 
+
   // 💾 useEffect #1: Load cart từ localStorage khi component mount
   // Cần setup "hasHydrated" flag để tránh lưu state trước khi hydrate xong
   // Try-catch để xử lý nếu localStorage bị corrupt
@@ -285,7 +250,10 @@ export function CartProvider({ children }) {
           if (res.ok) {
             const dbData = await res.json();
             if (dbData.items && dbData.items.length > 0) {
-              dispatch({ type: "HYDRATE_STATE", payload: dbData });
+              dispatch({
+                type: "HYDRATE_STATE",
+                payload: dbData.items ? dbData : { items: [], selectedItemKeys: [] }
+              });
             }
           }
         } catch (error) {
@@ -318,7 +286,10 @@ export function CartProvider({ children }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               userId: user.id,
-              cartState: { items: state.items, selectedItemKeys: state.selectedItemKeys }
+              cartState: {
+                items: state.items, selectedItemKeys: state.selectedItemKeys, appliedShipVoucher: state.appliedShipVoucher,
+                appliedProdVoucher: state.appliedProdVoucher
+              }
             }),
           });
         } catch (error) {

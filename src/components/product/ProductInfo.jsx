@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { fetchCollection } from '../../lib/api';
 import toast from 'react-hot-toast';
 
+const fmt = (n) =>
+  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
+
 const INFO_FALLBACK_IMAGES = [
   "/images/productcart/2.jpg",
   "/images/productcart/3.jpg",
@@ -43,6 +46,7 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
   const [seasonalPromotions, setSeasonalPromotions] = useState([]);
+  const [randomVouchers, setRandomVouchers] = useState([]);
   const { addToCart } = useCart();
   const router = useRouter();
 
@@ -56,47 +60,60 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
 
-  const categoryMap = {
-    "ao-khoac": "ao-khoac",
-    "ao-thun": "ao-thun",
-    "ao-polo": "ao-polo",
-    "ao-so-mi": "ao-so-mi",
-    "so-mi": "ao-so-mi",
-    "set-do": "set-do",
-    "tank-top": "tank-top",
-    hoodie: "hoodie",
-    "quan-jeans": "quan-jean",
-    "quan-jean": "quan-jean",
-    "quan-short": "quan-short",
-    "quan-kaki-chino": "quan-kaki",
-    "quan-kaki": "quan-kaki",
-    "quan-boxer": "quan-boxer",
-    "quan-jogger": "quan-jogger",
-    "quan-tay": "quan-tay",
+  const categoryLabels = {
+    // Áo
+    "ao-khoac": "Áo khoác nam",
+    "ao-thun": "Áo thun nam",
+    "ao-polo": "Áo polo nam",
+    "so-mi": "Áo sơ mi nam",
+    "hoodie": "Áo Hoodie",
+    "tank-top": "Áo Tank top",
+
+    // Quần
+    "jean": "Quần jean nam",
+    "short": "Quần short nam",
+    "kaki": "Quần kaki nam",
+    "boxer": "Quần boxer nam",
+    "jogger": "Quần jogger nam",
+    "tay": "Quần tây nam",
+
+    // Khác
+    "set-do": "Set đồ nam",
+    "productsNew": "Sản phẩm mới",
+    "productsOutLet": "Hàng Outlet",
+    "productsAll": "Tất cả sản phẩm"
   };
 
-  const PRODUCT_VOUCHERS = [
-    { id: "V01", title: "GIẢM 20K", code: "MAR20", desc: "Đơn từ 299K" },
-    { id: "V02", title: "GIẢM 50K", code: "MAR50", desc: "Đơn từ 699K" },
-    { id: "V03", title: "FREE SHIP", code: "FREESHIP", desc: "Đơn từ 199K" }
-  ];
 
   const colorVariants =
     Array.isArray(product?.variants) && product.variants.length > 0
       ? product.variants
       : Array.isArray(product?.colors)
         ? product.colors.map((color, index) => ({
-            color:
-              (typeof color === 'string' && color.trim()) ||
-              color?.name ||
-              color?.color ||
-              `Mau-${index + 1}`,
-            image:
-              (typeof color === 'object' && (color?.thumbnail || color?.image)) ||
-              product?.images?.[0],
-            sizes: product?.sizes || [],
-          }))
+          color:
+            (typeof color === 'string' && color.trim()) ||
+            color?.name ||
+            color?.color ||
+            `Mau-${index + 1}`,
+          image:
+            (typeof color === 'object' && (color?.thumbnail || color?.image)) ||
+            product?.images?.[0],
+          sizes: product?.sizes || [],
+        }))
         : [];
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/vouchers")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Xáo trộn mảng và lấy 3 phần tử đầu tiên
+          const shuffled = [...data].sort(() => 0.5 - Math.random());
+          setRandomVouchers(shuffled.slice(0, 3));
+        }
+      })
+      .catch((err) => console.error("Lỗi lấy voucher ngẫu nhiên:", err));
+  }, []);
 
   useEffect(() => {
     if (colorVariants.length > 0) {
@@ -117,35 +134,35 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
 
 
   useEffect(() => {
-  if (!selectedVariant?.color) return; 
-  
-  console.log("Click chọn màu mới:", selectedVariant.color);
-  setQuantity(1);
+    if (!selectedVariant?.color) return;
 
-}, [selectedVariant?.color]);
+    console.log("Click chọn màu mới:", selectedVariant.color);
+    setQuantity(1);
+
+  }, [selectedVariant?.color]);
 
   const handleColorChange = (variant) => {
     setSelectedVariant(variant);
-    if (onColorChange) onColorChange(variant); 
+    if (onColorChange) onColorChange(variant);
   };
 
   const handleGoToDetail = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const targetSlug = product?.slug || product?.id || product?.sku;
     if (!targetSlug) return;
 
-    const normalizedCategory = normalizeText(product?.category || "ao-polo");
-    const safeCategory = categoryMap[normalizedCategory] || normalizedCategory || "ao-polo";
+    // Sử dụng dữ liệu thực tế từ object product đang click
+    const realCategory = product.category || "tat-ca";
 
     try {
       sessionStorage.setItem(`product-detail:${targetSlug}`, JSON.stringify(product));
-    } catch {
-      // Ignore storage errors and continue navigation.
+    } catch (err) {
+      console.error("Lỗi lưu cache:", err);
     }
 
-    router.push(`/Product/${safeCategory}/${targetSlug}`);
+    router.push(`/Product/${realCategory}/${targetSlug}`);
   };
-  
+
   const handleAddToCart = (e) => {
     if (e) e.stopPropagation();
 
@@ -180,7 +197,7 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
       setTimeout(() => {
         router.push('/login');
       }, 1500);
-      return; 
+      return;
     }
 
     const selectedColor =
@@ -196,51 +213,73 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
 
   const copyToClipboard = (code) => {
     navigator.clipboard.writeText(code);
-    alert(`Đã sao chép mã: ${code}`);
+    toast.success(`Đã sao chép mã: ${code}`, {
+      style: {
+        border: '1px solid #1e3a8a',
+        padding: '12px',
+        color: '#1e3a8a',
+        fontSize: '12px',
+        fontWeight: 'bold'
+      },
+      iconTheme: {
+        primary: '#1e3a8a',
+        secondary: '#fff',
+      },
+    });
   };
-
   const availableVariant = selectedVariant || colorVariants[0] || null;
 
   if (!product) return null;
 
   return (
+
     <div className="flex flex-col gap-5">
-   
+
       <div>
         <h2 className="text-2xl font-bold uppercase leading-tight tracking-tight">{product.name}</h2>
         <p className="text-[10px] text-gray-400 uppercase mt-1 tracking-[0.2em]">Mã SP: {product.id}</p>
       </div>
 
-      
+
       <div className="flex items-baseline gap-4">
         <span className="text-[#1e3a8a] font-extrabold text-3xl">{product.salePrice?.toLocaleString('vi-VN')}đ</span>
         <span className="text-gray-400 line-through text-lg">{product.price?.toLocaleString('vi-VN')}đ</span>
-        <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded italic">-{Math.round((1 - product.salePrice/product.price)*100)}%</span>
+        <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded italic">-{Math.round((1 - product.salePrice / product.price) * 100)}%</span>
       </div>
 
 
       <div className="py-2">
-        <p className="text-[12px] font-bold text-gray-500 uppercase mb-3 tracking-widest">Mã giảm giá</p>
+        <p className="text-[12px] font-bold text-gray-500 uppercase mb-3 tracking-widest">Mã giảm giá dành cho bạn</p>
         <div className="flex flex-wrap gap-3">
-          {PRODUCT_VOUCHERS.map((v) => (
-            <div 
-              key={v.id} 
-              onClick={() => copyToClipboard(v.code)}
-              className="relative flex flex-col items-center justify-center bg-[#f0f4ff] border border-[#d6e4ff] px-4 py-2 cursor-pointer hover:bg-[#e6efff] transition-all group min-w-[100px]"
-            >
-              <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border border-[#d6e4ff]"></div>
-              <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border border-[#d6e4ff]"></div>
-              <span className="text-[11px] font-bold text-[#1e3a8a]">{v.title}</span>
-              <span className="text-[8px] text-blue-400 mt-0.5 uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">Copy mã</span>
-            </div>
-          ))}
+          {randomVouchers.length > 0 ? (
+            randomVouchers.map((v) => (
+              <div
+                key={v.voucherId || v.code}
+                onClick={() => copyToClipboard(v.code)}
+                className="relative flex flex-col items-center justify-center bg-[#f0f4ff] border border-[#d6e4ff] px-4 py-2 cursor-pointer hover:bg-[#e6efff] transition-all group min-w-[110px] rounded-sm"
+              >
+                {/* Hiệu ứng đục lỗ 2 bên của vé */}
+                <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border border-[#d6e4ff]"></div>
+                <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border border-[#d6e4ff]"></div>
+
+                <span className="text-[11px] font-bold text-[#1e3a8a] uppercase">{v.code}</span>
+                <span className="text-[9px] text-[#4b6bfb] font-medium mt-0.5">
+                  {v.category === 'shipping' ? 'Freeship' : `Giảm ${v.type === 'percent' ? v.value + '%' : fmt(v.value)}`}
+                </span>
+                <span className="text-[8px] text-blue-400 mt-1 uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">Copy mã</span>
+              </div>
+            ))
+          ) : (
+            /* Fallback nếu API chưa trả về kịp */
+            <div className="text-[11px] text-gray-400 italic">Đang tải mã giảm giá...</div>
+          )}
         </div>
       </div>
 
-      
+
       <div className="border border-dashed border-red-200 rounded-lg p-4 bg-red-50/20">
         <p className="text-red-700 font-bold text-[11px] uppercase italic mb-3 flex items-center gap-2">
-           <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span> Ưu đãi Online
+          <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span> Ưu đãi Online
         </p>
         <ul className="space-y-2">
           {seasonalPromotions.map((promo, i) => (
@@ -258,11 +297,10 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
             <button
               key={index}
               onClick={() => handleColorChange(variant)}
-              className={`w-11 h-11 rounded-full border-2 p-0.5 transition-all duration-300 ${
-                availableVariant?.color === variant.color 
-                ? 'border-black scale-110 shadow-lg' 
+              className={`w-11 h-11 rounded-full border-2 p-0.5 transition-all duration-300 ${availableVariant?.color === variant.color
+                ? 'border-black scale-110 shadow-lg'
                 : 'border-gray-200 hover:border-gray-400'
-              }`}
+                }`}
             >
               <img
                 src={resolveVariantImage(variant.image, `${product?.id || product?.name}-${variant.color || index}`)}
@@ -286,8 +324,8 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
               key={size}
               onClick={() => setSelectedSize(size)}
               className={`w-14 h-11 border text-sm font-bold transition-all 
-                ${selectedSize === size 
-                  ? 'bg-black text-white border-black shadow-md' 
+                ${selectedSize === size
+                  ? 'bg-black text-white border-black shadow-md'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-black'}`}
             >
               {size}
@@ -312,14 +350,14 @@ export default function ProductInfo({ product, onColorChange, showDetailButton =
       </div>
 
       {showDetailButton && (
-      <div className='flex justify-start mt-2'>
-        <button 
-          onClick={handleGoToDetail} 
-          className='text-[13px] text-gray-400 hover:text-black transition-all underline underline-offset-8 decoration-gray-200 hover:decoration-black uppercase tracking-wider'
-        >
-          Xem chi tiết sản phẩm
-        </button>
-      </div>
+        <div className='flex justify-start mt-2'>
+          <button
+            onClick={handleGoToDetail}
+            className='text-[13px] text-gray-400 hover:text-black transition-all underline underline-offset-8 decoration-gray-200 hover:decoration-black uppercase tracking-wider'
+          >
+            Xem chi tiết sản phẩm
+          </button>
+        </div>
       )}
     </div>
   );

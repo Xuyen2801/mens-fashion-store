@@ -29,12 +29,12 @@ function StatusBadge({ statusKey, orderStatus }) {
 function OrderDetail({ order, onClose, onCancel, onReturnRequest, orderStatus }) {
   const flowSteps = orderStatus
     ? [
-        orderStatus.PENDING,
-        orderStatus.CONFIRMED,
-        orderStatus.PROCESSING,
-        orderStatus.SHIPPING,
-        orderStatus.DELIVERED,
-      ]
+      orderStatus.PENDING,
+      orderStatus.CONFIRMED,
+      orderStatus.PROCESSING,
+      orderStatus.SHIPPING,
+      orderStatus.DELIVERED,
+    ]
     : [];
 
   const isCancellable = ["PENDING", "CONFIRMED"].includes(order.status);
@@ -63,7 +63,7 @@ function OrderDetail({ order, onClose, onCancel, onReturnRequest, orderStatus })
             const done = currentStep >= idx;
             const active = currentStep === idx;
             return (
-              <div key={step.key} className={`prog-step ${done ? "done" : ""} ${active ? "active" : ""}`}>
+              <div key={`${step.key || 'step'}-${idx}`} className={`prog-step ${done ? "done" : ""} ${active ? "active" : ""}`}>
                 <div className="prog-circle">
                   {done ? (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
