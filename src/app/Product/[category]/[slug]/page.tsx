@@ -32,28 +32,12 @@ export default function Page() {
 
   console.log("🔍 [DEBUG] URL Slug hiện tại:", slug);
 
-  // 🔤 normalizeText: Convert Vietnamese text với dấu -> URL-friendly slug
-  // VD: "Áo Thun Nam" -> "ao-thun-nam" (dùng để match với URL slug parameter)
-  // 
-  // Kỳ thuựt Unicode NFD (Normalization Form Decomposed):
-  // 1. .normalize("NFD"): Phá dấu ra riêng
-  //    - "á" (single char) -> "a" + combining acute accent (mark)
-  // 2. .replace(/[\u0300-\u036f]/g, ""): Xóa combining marks
-  //    - Unicode range \u0300-\u036f là khoảng "Combining Diacritical Marks"
-  //    - Xóa hết: "a" + mark -> "a"
-  // 3. .replace(/[^a-z0-9\s-]/g, " "): Xóa special characters
-  // 4. .replace(/\s+/g, "-"): Thế space = dash
-  // 5. .replace(/-+/g, "-"): Multiple dash -> single dash
-  // 6. .replace(/^-|-$/g, ""): Xóa leading/trailing dash
-  const normalizeText = (value: string) =>
-    String(value || "")
-      .toLowerCase()
-      .normalize("NFD") // Decompose dấu
-      .replace(/[\u0300-\u036f]/g, "") // Xóa combining marks
-      .replace(/[^a-z0-9\s-]/g, " ") // Xóa special chars
-      .replace(/\s+/g, "-") // Space -> dash
-      .replace(/-+/g, "-") // Multiple dash -> single
-      .replace(/^-|-$/g, ""); // Remove leading/trailing dash
+  const normalizeText = (value: any) =>
+  String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
 
   useEffect(() => {
     try {
@@ -124,15 +108,18 @@ export default function Page() {
     loadProducts();
   }, []);
 
-  const product = useMemo(() => {
-    const normalizedSlug = normalizeText(slug);
+const product = useMemo(() => {
+  if (!slug) return null;
+  const target = normalizeText(slug); // Ví dụ: "qjdan04"
 
-    return allProducts.find((p) => {
-      const productSlug = normalizeText(p.slug || "");
-      const productId = normalizeText(p.id?.toString?.() || p.id || "");
-      return productSlug === normalizedSlug || productId === normalizedSlug;
-    });
-  }, [allProducts, slug]);
+  return allProducts.find((p) => {
+    const pSlug = normalizeText(p.slug || "");
+    const pId = normalizeText(String(p.id || ""));
+    const pSku = normalizeText(p.sku || "");
+
+    return pSlug === target || pId === target || pSku === target;
+  });
+}, [allProducts, slug]);
 
   const displayProduct = product || cachedProduct;
 

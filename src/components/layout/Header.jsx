@@ -107,7 +107,7 @@ export default function Header() {
   const searchInputRef = useRef(null);
   const searchToggleButtonRef = useRef(null);
   // ─── Cart state from context ───────────────────────────────────────────────
-  
+
 
 
   const openSearchPanel = () => {
@@ -125,10 +125,10 @@ export default function Header() {
 
   useEffect(() => {
 
-  //   setOpenSearch(false); // 🔥 đóng search khi đổi trang
-  // }, [pathname]);
+    //   setOpenSearch(false); // 🔥 đóng search khi đổi trang
+    // }, [pathname]);
 
-  // if (!isMounted) return null;
+    // if (!isMounted) return null;
 
     closeSearchPanel();
   }, [pathname]);
@@ -137,182 +137,182 @@ export default function Header() {
     setOpenDropdown(null);
   }, [pathname]);
 
-    const normalizeText = (value) =>
-      String(value || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+  const normalizeText = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-    const normalizeProductsPayload = (payload) => {
-      if (!Array.isArray(payload) || payload.length === 0) return [];
+  const normalizeProductsPayload = (payload) => {
+    if (!Array.isArray(payload) || payload.length === 0) return [];
 
-      const first = payload[0];
-      if (first && typeof first === "object") {
-        if (Array.isArray(first.productsAll)) return first.productsAll;
-        if (Array.isArray(first.products)) return first.products;
-      }
+    const first = payload[0];
+    if (first && typeof first === "object") {
+      if (Array.isArray(first.productsAll)) return first.productsAll;
+      if (Array.isArray(first.products)) return first.products;
+    }
 
-      return payload;
-    };
+    return payload;
+  };
 
-    const SEARCH_COLLECTIONS = [
-      "ao-khoac",
-  "ao-thun",
-  "ao-polo",
-  "so-mi",
-  "hoodie",
-  "tank-top",
-  "jean",
-  "short",
-  "kaki",
-  "boxer",
-  "jogger",
-  "tay",
-  "set-do",
-  "productsNew",
-  "productsOutLet",
-  "productsAll"
-    ];
+  const SEARCH_COLLECTIONS = [
+    "ao-khoac",
+    "ao-thun",
+    "ao-polo",
+    "so-mi",
+    "hoodie",
+    "tank-top",
+    "jean",
+    "short",
+    "kaki",
+    "boxer",
+    "jogger",
+    "tay",
+    "set-do",
+    "productsNew",
+    "productsOutLet",
+    "productsAll"
+  ];
 
-    const dedupeProducts = (items) => {
-      const seen = new Set();
+  const dedupeProducts = (items) => {
+    const seen = new Set();
 
-      return items.filter((product) => {
-        const key = String(product?.slug || product?.id || product?.sku || product?.name || "").trim().toLowerCase();
-        if (!key) return false;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-    };
+    return items.filter((product) => {
+      const key = String(product?.slug || product?.id || product?.sku || product?.name || "").trim().toLowerCase();
+      if (!key) return false;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
 
-    useEffect(() => {
-      if (!openSearch || searchProducts.length > 0) return;
+  useEffect(() => {
+    if (!openSearch || searchProducts.length > 0) return;
 
-      let isCancelled = false;
+    let isCancelled = false;
 
-      const loadSearchProducts = async () => {
-        try {
-          setIsSearchLoading(true);
-          const responses = await Promise.allSettled(
-            SEARCH_COLLECTIONS.map((collectionName) => fetchCollection(collectionName))
-          );
-
-          const mergedProducts = responses.flatMap((response) => {
-            if (response.status !== "fulfilled") return [];
-            return normalizeProductsPayload(response.value);
-          });
-
-          if (isCancelled) return;
-          setSearchProducts(dedupeProducts(mergedProducts));
-        } catch (error) {
-          if (!isCancelled) {
-            console.error("Failed to load search products:", error);
-            setSearchProducts([]);
-          }
-        } finally {
-          if (!isCancelled) {
-            setIsSearchLoading(false);
-          }
-        }
-      };
-
-      loadSearchProducts();
-
-      return () => {
-        isCancelled = true;
-      };
-    }, [openSearch, searchProducts.length]);
-
-    useEffect(() => {
-      if (!openSearch) return;
-
-      const handleClickOutside = (event) => {
-        if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target)) {
-          closeSearchPanel();
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [openSearch]);
-
-    useEffect(() => {
-      if (!openSearch) return;
-
-      const handleEscToClose = (event) => {
-        if (event.key === "Escape") {
-          event.preventDefault();
-          closeSearchPanel();
-        }
-      };
-
-      document.addEventListener("keydown", handleEscToClose);
-      return () => document.removeEventListener("keydown", handleEscToClose);
-    }, [openSearch]);
-
-    useEffect(() => {
-      if (!openSearch) return;
-
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }, [openSearch]);
-
-    const searchResults = useMemo(() => {
-      // 🔍 useMemo: Cache search results để optimize render performance
-      // Chỉ tính toán lại khi dependencies thay đổi (searchQuery, searchProducts)
-      // Nếu user chỉ gõ đôi xong (render liên tiếp) -> reuse kết quả cũ để avoid lag
-      const keyword = normalizeText(searchQuery);
-
-      if (!keyword) {
-        return searchProducts.slice(0, 12); // Nếu không search gì -> hiện thị 12 sản phẩm đầu
-      }
-
-      return searchProducts
-        .filter((product) => {
-          const name = normalizeText(product?.name);
-          const category = normalizeText(product?.category);
-          const sku = normalizeText(product?.sku || product?.id);
-
-          // Tìm kiếm trong cả 3 field: name, category, sku
-          return name.includes(keyword) || category.includes(keyword) || sku.includes(keyword);
-        })
-        .slice(0, 24); // Giới hạn 24 kết quả
-    }, [searchProducts, searchQuery]);
-
-    const getProductDetailPath = (product) => {
-      const targetSlug = String(product?.slug || product?.id || "").trim();
-      if (!targetSlug) return null;
-      return `/Product/best-seller/${targetSlug}`;
-    };
-
-    const handleSearchResultClick = (product) => {
-      const path = getProductDetailPath(product);
-      if (!path) return;
-
-      const targetSlug = String(product?.slug || product?.id || "").trim();
-
+    const loadSearchProducts = async () => {
       try {
-        sessionStorage.setItem(`product-detail:${targetSlug}`, JSON.stringify(product));
-      } catch {
-        // Ignore browser storage errors to avoid blocking navigation.
+        setIsSearchLoading(true);
+        const responses = await Promise.allSettled(
+          SEARCH_COLLECTIONS.map((collectionName) => fetchCollection(collectionName))
+        );
+
+        const mergedProducts = responses.flatMap((response) => {
+          if (response.status !== "fulfilled") return [];
+          return normalizeProductsPayload(response.value);
+        });
+
+        if (isCancelled) return;
+        setSearchProducts(dedupeProducts(mergedProducts));
+      } catch (error) {
+        if (!isCancelled) {
+          console.error("Failed to load search products:", error);
+          setSearchProducts([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsSearchLoading(false);
+        }
       }
-
-      closeSearchPanel({ keepQuery: false });
-      router.push(path);
     };
 
-    const handleSearchSubmit = () => {
-      if (searchResults.length === 0) return;
-      handleSearchResultClick(searchResults[0]);
+    loadSearchProducts();
+
+    return () => {
+      isCancelled = true;
     };
+  }, [openSearch, searchProducts.length]);
+
+  useEffect(() => {
+    if (!openSearch) return;
+
+    const handleClickOutside = (event) => {
+      if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target)) {
+        closeSearchPanel();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openSearch]);
+
+  useEffect(() => {
+    if (!openSearch) return;
+
+    const handleEscToClose = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeSearchPanel();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscToClose);
+    return () => document.removeEventListener("keydown", handleEscToClose);
+  }, [openSearch]);
+
+  useEffect(() => {
+    if (!openSearch) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [openSearch]);
+
+  const searchResults = useMemo(() => {
+    // 🔍 useMemo: Cache search results để optimize render performance
+    // Chỉ tính toán lại khi dependencies thay đổi (searchQuery, searchProducts)
+    // Nếu user chỉ gõ đôi xong (render liên tiếp) -> reuse kết quả cũ để avoid lag
+    const keyword = normalizeText(searchQuery);
+
+    if (!keyword) {
+      return searchProducts.slice(0, 12); // Nếu không search gì -> hiện thị 12 sản phẩm đầu
+    }
+
+    return searchProducts
+      .filter((product) => {
+        const name = normalizeText(product?.name);
+        const category = normalizeText(product?.category);
+        const sku = normalizeText(product?.sku || product?.id);
+
+        // Tìm kiếm trong cả 3 field: name, category, sku
+        return name.includes(keyword) || category.includes(keyword) || sku.includes(keyword);
+      })
+      .slice(0, 24); // Giới hạn 24 kết quả
+  }, [searchProducts, searchQuery]);
+
+  const getProductDetailPath = (product) => {
+    const targetSlug = String(product?.slug || product?.id || "").trim();
+    if (!targetSlug) return null;
+    return `/Product/best-seller/${targetSlug}`;
+  };
+
+  const handleSearchResultClick = (product) => {
+    const path = getProductDetailPath(product);
+    if (!path) return;
+
+    const targetSlug = String(product?.slug || product?.id || "").trim();
+
+    try {
+      sessionStorage.setItem(`product-detail:${targetSlug}`, JSON.stringify(product));
+    } catch {
+      // Ignore browser storage errors to avoid blocking navigation.
+    }
+
+    closeSearchPanel({ keepQuery: false });
+    router.push(path);
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchResults.length === 0) return;
+    handleSearchResultClick(searchResults[0]);
+  };
 
   const resolveDenimCardPath = (card) => {
     // 🧭 Chuyển card text thành URL path
@@ -542,22 +542,22 @@ export default function Header() {
               //   </button>
               // )}
 
-// <<<<<<< HEAD
-//               //             {icons.user && (
-//               //               <button
-//               //                 onClick={handleUserClick}
-//               //                 className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
-//               //                 aria-label="Tài khoản của tôi"
-//               // =======
-//               <button className="icon-btn">
-//                 <FiSearch />
-// =======
-//             {icons.user && (
-//               <button
-//                 onClick={handleUserClick}
-//                 className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
-//                 aria-label="Tài khoản của tôi"
-// =======
+              // <<<<<<< HEAD
+              //               //             {icons.user && (
+              //               //               <button
+              //               //                 onClick={handleUserClick}
+              //               //                 className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
+              //               //                 aria-label="Tài khoản của tôi"
+              //               // =======
+              //               <button className="icon-btn">
+              //                 <FiSearch />
+              // =======
+              //             {icons.user && (
+              //               <button
+              //                 onClick={handleUserClick}
+              //                 className="cursor-pointer hover:text-blue-600 transition-colors bg-transparent border-none p-0 flex items-center"
+              //                 aria-label="Tài khoản của tôi"
+              // =======
               <button
                 type="button"
                 className="icon-btn"
@@ -641,91 +641,91 @@ export default function Header() {
         </div>
       </header>
       {openSearch && (
-// <<<<<<< HEAD
-//         <div className="search-dropdown">
-//           <div className="search-box">
-//             <input
-//               type="text"
-//               placeholder="Tìm kiếm sản phẩm..."
-//             />
-//             <FiSearch className="search-icon" />
-//           </div>
+        // <<<<<<< HEAD
+        //         <div className="search-dropdown">
+        //           <div className="search-box">
+        //             <input
+        //               type="text"
+        //               placeholder="Tìm kiếm sản phẩm..."
+        //             />
+        //             <FiSearch className="search-icon" />
+        //           </div>
 
-//           <div className="search-suggestions">
-//             <p>Từ khóa nổi bật hôm nay</p>
+        //           <div className="search-suggestions">
+        //             <p>Từ khóa nổi bật hôm nay</p>
 
-//             <div className="tags">
-//               {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
-//                 <span key={tag}>{tag}</span>
-//               ))}
-//             </div>
-//           </div>
-//         </div>
-//       )}
-// =======
-  <div className="search-dropdown">
-    <div className="search-dropdown-inner" ref={searchWrapperRef}>
-      <div className="search-toolbar">
-        <p>Tìm kiếm sản phẩm</p>
-        <button type="button" className="search-close-btn" onClick={() => closeSearchPanel()} aria-label="Đóng tìm kiếm">
-          <FiX />
-        </button>
-      </div>
-
-    <div className="search-box">
-      <input
-        type="text"
-        ref={searchInputRef}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleSearchSubmit();
-          }
-        }}
-        placeholder="Tìm kiếm tên sản phẩm, SKU, danh mục..."
-      />
-      <button type="button" className="search-submit-btn" onClick={handleSearchSubmit}>
-        <FiSearch className="search-icon" />
-      </button>
-    </div>
-
-    {!searchQuery.trim() && (
-      <div className="search-suggestions">
-        <p>Từ khóa nổi bật hôm nay</p>
-
-        <div className="tags">
-          {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
-            <button key={tag} type="button" onClick={() => setSearchQuery(tag)}>
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
-    )}
-
-    <div className="search-result-list">
-      {isSearchLoading && <p className="search-state">Đang tải dữ liệu sản phẩm...</p>}
-
-      {!isSearchLoading && searchResults.length === 0 && (
-        <p className="search-state">Không tìm thấy sản phẩm phù hợp.</p>
-      )}
-
-      {!isSearchLoading &&
-        searchResults.map((product) => {
-          const path = getProductDetailPath(product);
-
-          return (
-            <div key={`${product?.id || product?.name}-${path || "unknown"}`} className="search-result-card">
-              <ProductCard product={product} />
+        //             <div className="tags">
+        //               {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
+        //                 <span key={tag}>{tag}</span>
+        //               ))}
+        //             </div>
+        //           </div>
+        //         </div>
+        //       )}
+        // =======
+        <div className="search-dropdown">
+          <div className="search-dropdown-inner" ref={searchWrapperRef}>
+            <div className="search-toolbar">
+              <p>Tìm kiếm sản phẩm</p>
+              <button type="button" className="search-close-btn" onClick={() => closeSearchPanel()} aria-label="Đóng tìm kiếm">
+                <FiX />
+              </button>
             </div>
-          );
-        })}
-    </div>
-    </div>
-  </div>
-)}
+
+            <div className="search-box">
+              <input
+                type="text"
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSearchSubmit();
+                  }
+                }}
+                placeholder="Tìm kiếm tên sản phẩm, SKU, danh mục..."
+              />
+              <button type="button" className="search-submit-btn" onClick={handleSearchSubmit}>
+                <FiSearch className="search-icon" />
+              </button>
+            </div>
+
+            {!searchQuery.trim() && (
+              <div className="search-suggestions">
+                <p>Từ khóa nổi bật hôm nay</p>
+
+                <div className="tags">
+                  {["smartjean", "áo thun", "áo polo", "quần short", "áo khoác", "quần tây"].map((tag) => (
+                    <button key={tag} type="button" onClick={() => setSearchQuery(tag)}>
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="search-result-list">
+              {isSearchLoading && <p className="search-state">Đang tải dữ liệu sản phẩm...</p>}
+
+              {!isSearchLoading && searchResults.length === 0 && (
+                <p className="search-state">Không tìm thấy sản phẩm phù hợp.</p>
+              )}
+
+              {!isSearchLoading &&
+                searchResults.map((product) => {
+                  const path = getProductDetailPath(product);
+
+                  return (
+                    <div key={`${product?.id || product?.name}-${path || "unknown"}`} className="search-result-card">
+                      <ProductCard product={product} />
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

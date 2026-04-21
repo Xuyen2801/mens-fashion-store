@@ -33,7 +33,6 @@ const sanitizeImageUrl = (url, seed) => {
     return pickFallbackImage(seed);
   }
 
-  // Legacy ao-thun links point to a folder that is not present in public assets.
   if (value.startsWith("/images/products/ao-thun/")) {
     return pickFallbackImage(seed);
   }
@@ -66,40 +65,44 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
 
   useEffect(() => {
     const activeColor = hoverColor || selectedColor;
-    if (!product || !activeColor) return;
+    let nextList = [];
 
-    const foundVariant = product.variants?.find(v => v.color === activeColor);
-    const foundColor = product.colors?.find(c => c.name === activeColor);
+    if (product && activeColor) {
+      const foundVariant = product.variants?.find(v => v.color === activeColor);
+      const foundColor = product.colors?.find(c => c.name === activeColor);
 
-    if (foundVariant && foundVariant.image) {
-      const nextList = buildImageList(
-        [foundVariant.image, ...images.filter(img => img !== foundVariant.image)],
-        `${productSeed}-${activeColor}`
+      if (foundVariant && foundVariant.image) {
+        nextList = buildImageList(
+          [foundVariant.image, ...images.filter(img => img !== foundVariant.image)],
+          `${productSeed}-${activeColor}`
+        );
+      } else if (foundColor && foundColor.images) {
+        nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
+      }
+    }
+
+    if (nextList.length === 0) {
+      nextList = buildImageList(
+        images.length > 0 ? images : product?.image ? [product.image] : [],
+        productSeed
       );
+    }
+
+    const currentListStr = JSON.stringify(displayImages);
+    const nextListStr = JSON.stringify(nextList);
+
+    if (currentListStr !== nextListStr) {
       setDisplayImages(nextList);
       setActive(0);
     }
-    else if (foundColor && foundColor.images) {
-      const nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
-      setDisplayImages(nextList);
-      setActive(0);
-    }
-  }, [product, selectedColor, hoverColor, images, productSeed]);
 
-  useEffect(() => {
-    // Thay vì gọi hàm bên ngoài, ta lấy trực tiếp danh sách ảnh
-    const nextList = images || product?.images || [];
-
-    // Chỉ cập nhật nếu danh sách ảnh thực sự thay đổi nội dung
-    // Dùng JSON.stringify để so sánh giá trị mảng thay vì tham chiếu địa chỉ
-    if (JSON.stringify(nextList) !== JSON.stringify(displayImages)) {
-      setDisplayImages(nextList);
-    }
-  }, [images, product?.images, displayImages]);
-
-  if (!displayImages || displayImages.length === 0) {
-    return <div className="w-full aspect-[3/4] bg-gray-100 animate-pulse rounded-xl"></div>;
-  }
+  }, [
+    product,
+    selectedColor,
+    hoverColor,
+    productSeed,
+    JSON.stringify(images)
+  ]);
 
   const nextSlide = () => setActive((p) => (p === displayImages.length - 1 ? 0 : p + 1));
   const prevSlide = () => setActive((p) => (p === 0 ? displayImages.length - 1 : p - 1));

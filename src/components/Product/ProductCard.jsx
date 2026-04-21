@@ -1,4 +1,4 @@
-// src/components/product/ProductCard.jsx
+
 "use client";
 import React, { useState } from "react";
 import { useCart } from "../Cart/CartContext";
@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AddToCartButton from "./AddToCartButton";
 import ProductCardModal from "../modal/ProductCardModal";
 import toast from 'react-hot-toast';
+import ClientPortal from "../Common/ClientPortal";
 
 
 
@@ -36,15 +37,6 @@ const pickFallbackImage = (seed) => {
   return PRODUCTCARD_FALLBACK_IMAGES[hash % PRODUCTCARD_FALLBACK_IMAGES.length];
 };
 
-/**
- * Backward-compatible: hoạt động với CẢ HAI cách gọi:
- *
- *   Cách cũ (props rời):
- *     <ProductCard image={...} name={...} price={...} salePrice={...} status={...} />
- *
- *   Cách mới (object):
- *     <ProductCard product={productObj} onOpenModal={fn} />
- */
 const ProductCard = (props) => {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
@@ -53,25 +45,25 @@ const ProductCard = (props) => {
 
   const categoryMap = {
     "ao-khoac": "Áo khoác nam",
-  "ao-thun": "Áo thun nam",
-  "ao-polo": "Áo polo nam",
-  "so-mi": "Áo sơ mi nam",
-  "hoodie": "Áo Hoodie",
-  "tank-top": "Áo Tank top",
+    "ao-thun": "Áo thun nam",
+    "ao-polo": "Áo polo nam",
+    "so-mi": "Áo sơ mi nam",
+    "hoodie": "Áo Hoodie",
+    "tank-top": "Áo Tank top",
 
-  // Nhóm Quần
-  "jean": "Quần jean nam",
-  "short": "Quần short nam",
-  "kaki": "Quần kaki nam",
-  "boxer": "Quần boxer nam",
-  "jogger": "Quần jogger nam",
-  "tay": "Quần tây nam",
+    // Nhóm Quần
+    "jean": "Quần jean nam",
+    "short": "Quần short nam",
+    "kaki": "Quần kaki nam",
+    "boxer": "Quần boxer nam",
+    "jogger": "Quần jogger nam",
+    "tay": "Quần tây nam",
 
-  // Nhóm khác
-  "set-do": "Set đồ nam",
-  "productsNew": "Sản phẩm mới",
-  "productsOutLet": "Hàng Outlet",
-  "productsAll": "Tất cả sản phẩm"
+    // Nhóm khác
+    "set-do": "Set đồ nam",
+    "productsNew": "Sản phẩm mới",
+    "productsOutLet": "Hàng Outlet",
+    "productsAll": "Tất cả sản phẩm"
   };
 
   const normalizeText = (value) =>
@@ -84,9 +76,6 @@ const ProductCard = (props) => {
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
 
-  // ── Normalize props ────────────────────────────────────────────────────────
-  // Nếu `product` được truyền vào là object đầy đủ thì dùng luôn.
-  // Nếu không thì tổng hợp từ các props rời (cách gọi cũ).
   const product = props.product && typeof props.product === "object"
     ? props.product
     : {
@@ -103,7 +92,6 @@ const ProductCard = (props) => {
 
   const { onOpenModal } = props;
 
-  // Destructure từ object đã normalize
   const {
     id,
     sku,
@@ -133,7 +121,6 @@ const ProductCard = (props) => {
     (typeof thumbnail === "string" && thumbnail.trim()) ||
     fallbackImage;
 
-  // Guard: không render nếu thiếu dữ liệu tối thiểu
   if (!name && !image) return null;
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -171,7 +158,7 @@ const ProductCard = (props) => {
     toast.success("Đã thêm vào giỏ hàng!");
 
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+    setTimeout(() => setAdded(false), 2000);
   };
 
   const handleOpenQuickView = (e) => {
@@ -187,13 +174,17 @@ const ProductCard = (props) => {
       e.preventDefault();
       e.stopPropagation();
     }
-    const targetSlug = product?.slug || product?.id || product?.sku;
-    if (!targetSlug) return;
+    const targetId = props.product?.id || props.id;
+
+    if (!targetId) {
+      console.error("❌ Lỗi: Không tìm thấy ID sản phẩm", props.product);
+      return;
+    }
 
     const normalizedCategory = normalizeText(product?.category || "ao-polo");
     const safeCategory = categoryMap[normalizedCategory] || normalizedCategory || "ao-polo";
 
-    router.push(`/Product/${safeCategory}/${targetSlug}`);
+    router.push(`/Product/${safeCategory}/${targetId}`);
   };
 
   const handleOpenModal = (e) => {
@@ -213,7 +204,6 @@ const ProductCard = (props) => {
   const handleCardClick = () => {
     handleOpenModal();
   };
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
       <div
@@ -258,7 +248,6 @@ const ProductCard = (props) => {
           )}
         </div>
 
-        {/* INFO */}
         <div className="flex flex-col flex-grow mt-2 px-1">
           <h3 className="text-[clamp(12px,1vw,14px)] leading-tight font-medium text-gray-700 line-clamp-2 hover:text-blue-600">
             {name}
@@ -266,7 +255,7 @@ const ProductCard = (props) => {
 
           <div className="flex items-end justify-between mb-1 mt-auto">
             <div className="flex flex-col">
-              {/* price */}
+
               <div className="flex items-center gap-2">
                 <span className="text-[clamp(13px,1vw,15px)] font-bold text-[#1F2937]">
                   {fmt(salePrice || price)}
@@ -278,7 +267,6 @@ const ProductCard = (props) => {
                 )}
               </div>
 
-              {/* color swatches */}
               {colors.length > 0 && (
                 <div className="flex gap-1 mt-1">
                   {colors.slice(0, 4).map((c, i) => (
@@ -304,12 +292,14 @@ const ProductCard = (props) => {
         </div>
       </div>
 
-      {!onOpenModal && isModalOpen && (
-        <ProductCardModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          product={product}
-        />
+      {isModalOpen && (
+        <ClientPortal>
+          <ProductCardModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            product={product}
+          />
+        </ClientPortal>
       )}
     </>
   );

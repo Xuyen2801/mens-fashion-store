@@ -86,17 +86,19 @@ export default function Page({ params }) {
     loadProducts();
   }, []);
 
-  const product = useMemo(
-    () => {
-      const normalizedSlug = normalizeText(slug);
-      return allProducts.find((p) => {
-        const productSlug = normalizeText(p.slug || "");
-        const productId = normalizeText(p.id?.toString?.() || p.id || "");
-        return productSlug === normalizedSlug || productId === normalizedSlug;
-      });
-    },
-    [allProducts, slug]
-  );
+const product = useMemo(() => {
+  if (!slug || allProducts.length === 0) return null;
+
+  const target = normalizeText(slug); 
+
+  return allProducts.find((p) => {
+    const productId = normalizeText(String(p.id || ""));
+    const productSlug = normalizeText(p.slug || "");
+    const productSku = normalizeText(p.sku || "");
+
+    return productId === target || productSlug === target || productSku === target;
+  });
+}, [allProducts, slug]);
 
   const displayProduct = product || cachedProduct;
 
