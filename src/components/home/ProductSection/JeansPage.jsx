@@ -6,15 +6,25 @@ import ProductSection from "./ProductSection"
 
 export default function JeansPage() {
   const [filter, setFilter] = useState("all")
+  const [currentBanner, setCurrentBanner] = useState("/images/banners/homepage/banner-all.png")
+
+  const handleFilterChange = (type, banner) => {
+    setFilter(type)
+    if (banner) setCurrentBanner(banner)
+  }
 
   return (
     <>
       <CategorySection
-        bannerImage="/images/banner.jpg"
-        onFilterClick={setFilter}
+        onFilterChange={handleFilterChange}
       />
 
-      <ProductSection filter={filter} tag="all" />
+
+      <h2 style={{ textAlign: 'center', margin: '40px 0' }}>
+        {filter === 'all' ? 'TẤT CẢ SẢN PHẨM' : filter.toUpperCase().replace(/-/g, ' ')}
+      </h2>
+
+      <ProductSection filter={filter} />
     </>
   )
 }
