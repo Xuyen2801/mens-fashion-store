@@ -1,31 +1,41 @@
-import Link from "next/link"
-import Image from "next/image"
-import styles from "./mixmatch.module.css"
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import styles from "./mixmatch.module.css";
 
 interface Item {
-  id: number
-  image: string
-  link: string
+  slug: string;
+  mainImage: string;
+  title: string;
+  link: string;
 }
 
 interface Props {
-  items: Item[]
+  items: Item[];
+  title?: string;
 }
 
 export default function MixMatchSection({ items }: Props) {
-  return (
-    <section className={styles.section}>
-      <h2 className={styles.heading}>Mix & Match Đón Tết</h2>
+  if (!items || items.length === 0) return null;
 
-      <div className={styles.grid}>
-        {items.map(item => (
-          <Link href={item.link} key={item.id} className={styles.card}>
+  return (
+    <section className={styles.section} >
+      <h2 className={styles.heading}>Mix & Match</h2>
+
+      <div className={styles.grid} style={{margin:"50px"}}>
+        {items.map((item) => (
+          <Link 
+            href={item.link || "#"} 
+            key={item.slug} 
+            className={styles.card}
+          >
             <div className={styles.imageWrapper}>
               <Image
-                src={item.image}
-                alt="mix-match"
+                src={item.mainImage}
+                alt={item.title}
                 fill
                 className={styles.image}
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
             </div>
           </Link>
@@ -33,10 +43,11 @@ export default function MixMatchSection({ items }: Props) {
       </div>
 
       <div className={styles.btnWrapper}>
-        <Link href="/collection/tet" className="btn-see-more-unified">
+        {/* Sửa link dẫn vào trang Hình 1 (Danh sách tất cả bộ phối) */}
+        <Link href="/mix-match" className="btn-see-more-unified">
           Xem thêm
         </Link>
       </div>
     </section>
-  )
+  );
 }
