@@ -51,7 +51,7 @@ export default function RegisterForm() {
   }, [resendCountdown]);
 
   const handleResendOTP = async () => {
-    if (resendCountdown > 0) return; // Chặn nếu vẫn đang trong thời gian chờ
+    if (resendCountdown > 0) return; 
 
     setError("");
     setSuccess("Đang gửi lại mã xác nhận mới...");
@@ -68,7 +68,7 @@ export default function RegisterForm() {
 
       if (res.ok) {
         setSuccess("Mã OTP mới đã được gửi thành công!");
-        setResendCountdown(60); // Bắt đầu đếm ngược 60 giây
+        setResendCountdown(60); 
       } else {
         throw new Error("Gửi mail thất bại");
       }
@@ -289,7 +289,6 @@ export default function RegisterForm() {
             XÁC THỰC MÃ
           </button>
 
-          {/* PHẦN GỬI LẠI MÃ OTP */}
           <div className="text-center mt-4">
             {resendCountdown > 0 ? (
               <p className="text-xs text-gray-400">
@@ -322,7 +321,6 @@ export default function RegisterForm() {
 
           <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="Số điện thoại" className="w-full border-b py-3 focus:outline-none" required />
 
-          {/* --- PHẦN ĐỊA CHỈ DROP DOWN --- */}
           <div className="space-y-3 pt-2">
             <p className="text-xs text-gray-400 font-bold uppercase">Địa chỉ giao hàng</p>
 
@@ -343,7 +341,6 @@ export default function RegisterForm() {
 
             <input type="text" placeholder="Số nhà, tên đường..." className="w-full border-b py-3 focus:outline-none text-sm" value={detailAddress} onChange={(e) => setDetailAddress(e.target.value)} required />
           </div>
-          {/* ------------------------------ */}
 
           <div className="relative">
             <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleInputChange} placeholder="Mật khẩu" className="w-full border-b py-3 focus:outline-none" required />

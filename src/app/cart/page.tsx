@@ -1,4 +1,4 @@
-// src/app/Cart/page.tsx
+
 "use client";
 import { useState, useEffect } from "react";
 import "../../styles/Cart.css";

@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/lib/api";
 import { useCart } from "../../../components/Cart/CartContext";
-import AddToCartButton from "../../../components/Product/AddToCartButton"; 
 import MixMatchSection from "../../../components/home/MixMatchSection/MixMatchSection";
 
 export default function MixMatchDetail() {
@@ -17,22 +16,19 @@ export default function MixMatchDetail() {
   useEffect(() => {
     const loadData = async () => {
   try {
-    // 1. Gọi song song 2 API để tối ưu tốc độ
     const [detailRes, listRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/mixmatch/${slug}`), // API chi tiết (có fullProducts)
-      fetch(`${API_BASE_URL}/api/mixmatch`)          // API tổng (để lấy otherMixes)
+      fetch(`${API_BASE_URL}/api/mixmatch/${slug}`), 
+      fetch(`${API_BASE_URL}/api/mixmatch`)          
     ]);
 
     const detailResult = await detailRes.json();
     const allMixes = await listRes.json();
 
-    // 2. Set dữ liệu chi tiết cho trang
     if (detailResult) {
       setData(detailResult);
       setActiveImg(detailResult.mainImage || "");
     }
 
-    // 3. Lọc 4 bộ khác từ danh sách tổng
     const filtered = allMixes
       .filter((m: any) => m.slug !== slug)
       .slice(0, 4);
@@ -116,7 +112,6 @@ export default function MixMatchDetail() {
   );
 }
 
-// --- COMPONENT CON ĐỂ XỬ LÝ CHỌN MÀU/SIZE VÀ THÊM GIỎ HÀNG ---
 function ProductItem({ product }: { product: any }) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -127,17 +122,13 @@ function ProductItem({ product }: { product: any }) {
 
   const handleButtonClick = () => {
     if (!isReady) {
-      // Nếu chưa chọn màu/size thì có thể cuộn nhẹ lên hoặc báo lỗi
       alert("Vui lòng chọn màu sắc và kích thước!");
       return;
     }
 
     if (isAdded) return;
-
-    // Gọi hàm thêm vào giỏ hàng
     addToCart(product, selectedSize, selectedColor, 1);
     
-    // Hiệu ứng phản hồi
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };

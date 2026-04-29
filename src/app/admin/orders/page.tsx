@@ -15,12 +15,12 @@ const ADMIN_STATUSES = [
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "PROCESSING": return "#f59e0b"; // Orange
-    case "CONFIRMED": return "#f59e0b"; // Orange
-    case "SHIPPING": return "#3b82f6"; // Blue
-    case "DELIVERED": return "#10b981"; // Green
-    case "CANCELLED": return "#ef4444"; // Red
-    case "RETURNED": return "#8b5cf6"; // Purple
+    case "PROCESSING": return "#f59e0b"; 
+    case "CONFIRMED": return "#f59e0b"; 
+    case "SHIPPING": return "#3b82f6"; 
+    case "DELIVERED": return "#10b981"; 
+    case "CANCELLED": return "#ef4444"; 
+    case "RETURNED": return "#8b5cf6"; 
     default: return "#64748b";
   }
 };
@@ -43,7 +43,6 @@ interface Order {
 }
 
 export default function AdminOrders() {
-  // Sửa dòng này
 const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { state, dispatch } = useCart() as { state: any; dispatch: any };
@@ -99,12 +98,11 @@ const [customReason, setCustomReason] = useState("");
     });
 
     if (res.ok) {
-      // ✅ CẬP NHẬT STATE Ở ĐÂY ĐỂ UI THAY ĐỔI NGAY
       setOrders((prev) => prev.map(o => o.id === selectedOrder.id ? { ...o, status: "CANCELLED" } : o));
       toast.success("Đã hủy đơn và gửi mail!");
       setIsModalOpen(false);
       setCancelReason("");
-      setCustomReason(""); // Reset lý do nhập tay
+      setCustomReason(""); 
     } else {
       toast.error("Lỗi 404: Không tìm thấy đường dẫn API trên Server!");
     }
@@ -116,7 +114,6 @@ const [customReason, setCustomReason] = useState("");
   useEffect(() => {
     const fetchAllOrders = async () => {
       try {
-        // Gọi API lấy TẤT CẢ đơn hàng (không phải theo userId)
         const res = await fetch(`http://localhost:5000/api/orders`); 
         if (res.ok) {
           const data = await res.json();
@@ -131,7 +128,6 @@ const [customReason, setCustomReason] = useState("");
     fetchAllOrders();
   }, []);
 
-  // Sửa dòng này
 const filteredOrders = filter === "ALL" 
   ? orders 
   : orders.filter((o) => o.status?.toString().trim().toUpperCase() === filter.toUpperCase());

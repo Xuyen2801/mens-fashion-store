@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { loadAoThunMeta } from "@/lib/aoThunMeta";
 import toast from "react-hot-toast";
+import { useCart } from "@/components/Cart/CartContext";
 
 function StatusBadge({ statusKey, orderStatus }) {
     const s = orderStatus?.[statusKey] || orderStatus?.PENDING || {
@@ -40,6 +41,7 @@ const fmtDate = (iso) => {
 function OrderDetail() {
     const { id } = useParams();
     const router = useRouter();
+    const { dispatch } = useCart();
 
     const [order, setOrder] = useState(null);
     const [orderStatus, setOrderStatus] = useState(null);
@@ -149,6 +151,40 @@ function OrderDetail() {
         "Tôi tìm thấy chỗ khác giá rẻ hơn",
         "Tôi không còn nhu cầu mua nữa",
     ];
+
+    const handleReorder = () => {
+        try {
+            if (!order || !order.items) {
+                toast.error("Dữ liệu đơn hàng không hợp lệ");
+                return;
+            }
+
+            order.items.forEach(item => {
+                const p = item.product || item;
+
+                dispatch({
+                    type: "ADD_ITEM",
+                    payload: {
+                        product: {
+                            ...p,
+                            id: p.id || p._id,
+                            price: p.price,
+                            salePrice: p.salePrice || p.price
+                        },
+                        selectedSize: item.selectedSize || item.size || "M",
+                        selectedColor: item.selectedColor || item.color || "Tiêu chuẩn",
+                        quantity: item.quantity || 1
+                    }
+                });
+            });
+
+            toast.success("Đã thêm sản phẩm vào giỏ hàng!");
+            router.push('/cart');
+        } catch (error) {
+            console.error("Lỗi mua lại:", error);
+            toast.error("Không thể thực hiện mua lại");
+        }
+    };
 
     const handleRequestReturn = async () => {
         if (!returnReason) {
@@ -459,7 +495,7 @@ function OrderDetail() {
 
                             {isTerminal && (
                                 <button
-                                    onClick={() => router.push('/')}
+                                    onClick={handleReorder}
                                     className="px-6 py-2.5 bg-black text-white text-[11px] font-bold uppercase hover:bg-gray-800 transition-all rounded-sm shadow-md"
                                 >
                                     Mua lại

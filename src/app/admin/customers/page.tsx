@@ -18,7 +18,6 @@ export default function AdminCustomers() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Lấy danh sách users và orders cùng lúc
         const [userRes, orderRes] = await Promise.all([
           fetch("http://localhost:5000/users"),
           fetch("http://localhost:5000/api/orders")
@@ -27,11 +26,9 @@ export default function AdminCustomers() {
         const users = await userRes.json();
         const orders = await orderRes.json();
 
-        // 2. Lọc khách hàng và đếm số đơn
         const clientList = users
           .filter((u: Customer) => u.role === "customer")
           .map((user: Customer) => {
-            // Đếm số đơn hàng có email hoặc phone khớp với user (tùy thuộc vào cấu trúc đơn hàng của Vy)
             const count = orders.filter((o: any) => 
               o.shippingInfo?.email === user.email || o.userId === user.id
             ).length;

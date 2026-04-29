@@ -6,7 +6,7 @@ import RegisterForm from "./RegisterForm";
 import ForgotForm from "./ForgotForm";
 
 export default function LoginPage() {
-  const [activeTab, setActiveTab] = useState("login"); // login, register, forgot
+  const [activeTab, setActiveTab] = useState("login"); 
 
   useEffect(() => {
     document.title = "Tài khoản";

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useCart } from "../../components/Cart/CartContext";
 import { loadAoThunMeta } from "../../lib/aoThunMeta";
-import OrderDetail from "@/app/account/orders/[id]/page";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const fmt = (n) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -63,18 +63,20 @@ export default function OrderTracker() {
     fetchOrders();
   }, []);
 
-  const statusFilters = [
-    { key: "ALL", label: "Tất cả" },
-    { key: "Processing", label: "Chờ xác nhận" },
-    { key: "Shipping", label: "Đang giao" },
-    { key: "Delivered", label: "Đã giao" },
-    { key: "Cancelled", label: "Đã hủy" },
-    { key: "Returned", label: "Hoàn hàng" },
+  const orderStatuses = [
+    { id: "all", label: "Tất cả" },
+    { id: "PROCESSING", label: "Chờ xác nhận" },
+    { id: "CONFIRMED", label: "Chờ lấy hàng" },
+    { id: "SHIPPING", label: "Đang giao" },
+    { id: "DELIVERED", label: "Đã giao" },
+    { id: "CANCELLED", label: "Đã hủy" },
+    { id: "RETURNED", label: "Trả lại" },
   ];
 
-  const filtered = orders.filter(
-    (o) => filterStatus === "ALL" || o.status === filterStatus
-  );
+  const filteredOrders = orders.filter((order) => {
+    if (filterStatus === "ALL") return true;
+    return order.status?.toUpperCase() === filterStatus;
+  });
 
   const handleCancel = async (orderId) => {
     if (window.confirm("Bạn có chắc muốn hủy đơn hàng này?")) {
@@ -125,44 +127,39 @@ export default function OrderTracker() {
       <h2 className="section-heading">Đơn hàng của tôi</h2>
 
       <div className="status-filter-tabs">
-        {statusFilters.map((f) => {
+        {orderStatuses.map((f) => {
           // 1. Tính toán số lượng dựa trên danh sách orders đã fetch từ API
-          const count = orders.filter((o) => {
-            if (f.key === "ALL") return true;
-            // Đảm bảo so sánh chính xác Key (Ví dụ: "Processing" hoặc "PENDING")
-            return o.status === f.key;
-          }).length;
+          const count = orders.filter((o) =>
+            f.id === "ALL" ? true : o.status?.toUpperCase() === f.id
+          ).length;
 
           // 2. Trả về giao diện nút bấm
           return (
             <button
-              key={f.key}
-              className={`filter-tab ${filterStatus === f.key ? "active" : ""}`}
-              onClick={() => setFilterStatus(f.key)}
+              key={f.id}
+              className={`filter-tab ${filterStatus === f.id ? "active" : ""}`}
+              onClick={() => setFilterStatus(f.id)}
             >
               {f.label}
-              <span className="filter-count">
-                {count > 0 ? `(${count})` : "(0)"}
-              </span>
+              {count > 0 && <span className="text-[10px]">({count})</span>}
             </button>
           );
         })}
       </div>
 
-      {filtered.length === 0 ? (
+      {filteredOrders.length === 0 ? (
         <div className="empty-orders">
           <p>📦</p>
           <p>Không có đơn hàng nào</p>
         </div>
       ) : (
         <div className="orders-list space-y-6">
-          {filtered.map((order) => (
+          {filteredOrders.map((order) => (
             <div
               key={order._id || order.id}
               className="bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              {/* 1. Header Đơn hàng */}
-              <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50" style={{margin:"20px"}}>
+              <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50" style={{ margin: "20px" }}>
                 <div>
                   <h3 className="text-[14px] font-bold uppercase tracking-tight text-gray-900">
                     Mã đơn hàng: <span className="text-blue-700 ml-1">#{order.id}</span>
@@ -175,9 +172,9 @@ export default function OrderTracker() {
               </div>
 
               {/* 2. Danh sách sản phẩm chi tiết */}
-              <div className="px-6 py-4 divide-y divide-gray-50" style={{margin:"20px"}}>
+              <div className="px-6 py-4 divide-y divide-gray-50" style={{ margin: "20px" }}>
                 {order.items.map((item, idx) => (
-                  <div key={idx} className="py-4 flex gap-6 items-center first:pt-0 last:pb-0" style={{margin:"10px"}}>
+                  <div key={idx} className="py-4 flex gap-6 items-center first:pt-0 last:pb-0" style={{ margin: "10px" }}>
                     {/* Ảnh sản phẩm */}
                     <div className="w-[80px] h-[100px] flex-shrink-0 bg-gray-50">
                       <img
@@ -209,7 +206,7 @@ export default function OrderTracker() {
               </div>
 
               {/* 3. Footer: Tổng tiền và Nút xem chi tiết */}
-              <div className="px-6 py-5 border-t border-gray-100 flex justify-between items-end bg-white" style={{margin:"20px"}}>
+              <div className="px-6 py-5 border-t border-gray-100 flex justify-between items-end bg-white" style={{ margin: "20px" }}>
                 <div>
                   <p className="text-[11px] text-gray-500 uppercase font-bold tracking-[0.1em] mb-1">
                     Tổng tiền thanh toán:
@@ -224,7 +221,7 @@ export default function OrderTracker() {
                     const idToNav = order.id || order._id;
                     router.push(`/account/orders/${idToNav}`);
                   }}
-                  style={{padding:"5px"}}
+                  style={{ padding: "5px" }}
                   className="bg-black text-white px-6 py-2 text-[12px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors rounded-md"
                 >
                   Xem chi tiết

@@ -19,7 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const user = JSON.parse(userStr);
     
     if (user.role === "admin") {
-      setIsAdmin(true); // Chỉ khi đúng role mới cho qua
+      setIsAdmin(true); 
     } else {
       router.push("/login");
     }

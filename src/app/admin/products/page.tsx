@@ -24,8 +24,8 @@ interface Product {
   description: string;
   promotions: string[];
   variants: Variant[];
-  colors?: string[]; // Phục vụ hiển thị bảng
-  sizes?: string[];  // Phục vụ hiển thị bảng
+  colors?: string[]; 
+  sizes?: string[];  
 }
 
 export default function AdminProducts() {
@@ -34,7 +34,6 @@ export default function AdminProducts() {
   const [activeTab, setActiveTab] = useState("ALL");
   const [loading, setLoading] = useState(true);
   
-  // States cho Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [hasPromotion, setHasPromotion] = useState(false);
@@ -73,7 +72,6 @@ export default function AdminProducts() {
 
   const [newProduct, setNewProduct] = useState<Product>(initialProductState);
 
-  // 1. Tải dữ liệu
   const fetchAllData = async () => {
     try {
       setLoading(true);
@@ -95,7 +93,6 @@ export default function AdminProducts() {
 
   useEffect(() => { fetchAllData(); }, []);
 
-  // 2. Logic tạo ID & Mở Modal thêm mới
   const openAddModal = () => {
     setIsEditing(false);
     setHasPromotion(false);
@@ -104,7 +101,6 @@ export default function AdminProducts() {
     setIsAddModalOpen(true);
   };
 
-  // 3. Logic Mở Modal Chỉnh sửa
   const openEditModal = (product: Product) => {
     setIsEditing(true);
     setNewProduct({ ...product });
@@ -112,18 +108,17 @@ export default function AdminProducts() {
     setIsAddModalOpen(true);
   };
 
-  // 4. Lưu sản phẩm (Thêm/Sửa)
   const handleSaveProduct = async () => {
     if (!newProduct.category || !newProduct.name || !newProduct.image) {
       return toast.error("Vui lòng điền đủ thông tin bắt buộc!");
     }
 
     const productData = {
-      ...newProduct,
-      colors: newProduct.variants.map(v => v.color).filter(c => c !== ""),
-      sizes: Array.from(new Set(newProduct.variants.flatMap(v => v.sizes))),
-      updatedAt: new Date().toISOString()
-    };
+  ...newProduct,
+  colors: (newProduct.variants || []).map(v => v.color).filter(c => c !== ""),
+  sizes: Array.from(new Set((newProduct.variants || []).flatMap(v => v.sizes || []))),
+  updatedAt: new Date().toISOString()
+};
 
     const endpoint = isEditing ? 'update' : 'add-to-collection';
 
@@ -279,7 +274,7 @@ export default function AdminProducts() {
                     </div>
                   </div>
                   {hasPromotion && (
-                    <input type="text" value={newProduct.promotions[0] || ""} placeholder="Nhập quà tặng..." className="w-full p-3 bg-white border border-orange-200 rounded-xl font-bold text-sm text-orange-700" 
+                    <input type="text" value={newProduct.promotions && newProduct.promotions[0] || ""} placeholder="Nhập quà tặng..." className="w-full p-3 bg-white border border-orange-200 rounded-xl font-bold text-sm text-orange-700" 
                       onChange={(e) => setNewProduct({...newProduct, promotions: [e.target.value]})} />
                   )}
                 </div>

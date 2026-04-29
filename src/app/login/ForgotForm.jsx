@@ -28,7 +28,6 @@ export default function ForgotPassword({ onSwitchTab }) {
     }
 
     try {
-      // 1. Kiểm tra xem email có tồn tại trong hệ thống không
       const resUsers = await fetch(USERS_API_URL);
       const allUsers = await resUsers.json();
       const validUser = allUsers.find(u => u.email?.toLowerCase() === email.toLowerCase());
@@ -37,14 +36,10 @@ export default function ForgotPassword({ onSwitchTab }) {
         setError("Email này chưa được đăng ký trong hệ thống.");
         return;
       }
-
-      // 2. Tạo mã OTP ngẫu nhiên 6 số
       const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Lưu OTP vào localStorage tạm thời để kiểm tra (giống logic đăng ký của Vy)
       localStorage.setItem("otp_reset", generatedOtp);
 
-      // 3. Gọi API gửi mail của Vy
       const resMail = await fetch("http://localhost:5000/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,7 +66,7 @@ export default function ForgotPassword({ onSwitchTab }) {
     const savedOtp = localStorage.getItem("otp_reset");
     if (otp === savedOtp) {
       setSuccess("Xác thực thành công. Hãy đặt mật khẩu mới.");
-      localStorage.removeItem("otp_reset"); // Xóa sau khi dùng xong
+      localStorage.removeItem("otp_reset"); 
       setStep(3);
     } else {
       setError("Mã OTP không chính xác.");
@@ -93,7 +88,6 @@ export default function ForgotPassword({ onSwitchTab }) {
     }
 
     try {
-      // 1. Tìm lại user để lấy đúng ID
       const resUsers = await fetch(USERS_API_URL);
       const allUsers = await resUsers.json();
       const validUser = allUsers.find(u => u.email?.toLowerCase() === email.toLowerCase());
@@ -103,11 +97,9 @@ export default function ForgotPassword({ onSwitchTab }) {
         return;
       }
 
-      // 2. Hash mật khẩu mới
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-      // 3. Cập nhật vào DB (PATCH)
       const patchRes = await fetch(`${USERS_API_URL}/${validUser.id || validUser._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

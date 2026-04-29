@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { FiCreditCard, FiBox, FiTruck, FiStar } from "react-icons/fi";
 import { FaCrown } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { useCart } from "../../components/Cart/CartContext";
 
 export default function AccountPage() {
   const router = useRouter();
+  const { addToCart } = useCart();
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
   const [addresses, setAddresses] = useState([]);
@@ -53,9 +55,7 @@ export default function AccountPage() {
     { id: "Processing", label: "Chờ xử lý" },
     { id: "Confirmed", label: "Chờ lấy hàng" },
     { id: "Shipping", label: "Đang giao" },
-    { id: "Delivered", label: "Đã giao" },
-    { id: "NotRated", label: "Chưa đánh giá" },
-    { id: "Rated", label: "Đã đánh giá" },
+    { id: "Delivered", label: "Đã giao hàng" },
     { id: "Cancelled", label: "Đã hủy" },
     { id: "Returned", label: "Trả lại" },
   ];
@@ -119,17 +119,22 @@ export default function AccountPage() {
 
     try {
       const res = await fetch(url, {
-        method: isEdit ? "PATCH" : "POST", // Dùng PATCH cho cập nhật
+        method: isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(addrData)
       });
 
       if (res.ok) {
-        let updatedList;
+        let updatedList = addresses;
+
+        if (addrData.isDefault) {
+          updatedList = addresses.map(a => ({ ...a, isDefault: false }));
+        }
+
         if (isEdit) {
-          updatedList = addresses.map(a => a.id === editingAddress.id ? { ...addrData, id: a.id } : a);
+          updatedList = updatedList.map(a => a.id === editingAddress.id ? { ...addrData, id: a.id } : a);
         } else {
-          updatedList = [...addresses, { ...addrData, id: "addr_" + Date.now() }];
+          updatedList = [...updatedList, { ...addrData, id: "addr_" + Date.now() }];
         }
 
         setAddresses(updatedList);
@@ -152,12 +157,10 @@ export default function AccountPage() {
         return;
       }
 
-      // 1. Lấy dữ liệu từ localStorage để hiển thị ngay lập tức
       const parsedUser = JSON.parse(loggedInUser);
       setUser(parsedUser);
       setAddresses(parsedUser.addresses || []);
 
-      // 2. Gọi API để cập nhật dữ liệu mới nhất từ Server (nếu cần)
       try {
         const res = await fetch(`http://localhost:5000/users`);
         if (res.ok) {
@@ -179,12 +182,12 @@ export default function AccountPage() {
 
   const handleAddAddress = async () => {
     const newAddr = {
-      id: "addr_" + Date.now(), // Tạo ID tạm thời
+      id: "addr_" + Date.now(), 
       receiverName: user.fullName,
       phone: user.phone || "0xxxxxxxxx",
       address: "Số nhà, tên đường...",
       city: "Hồ Chí Minh",
-      isDefault: addresses.length === 0 // Nếu là địa chỉ đầu tiên thì mặc định
+      isDefault: addresses.length === 0 
     };
 
     try {
@@ -197,7 +200,7 @@ export default function AccountPage() {
       if (res.ok) {
         const updatedList = [...addresses, newAddr];
         setAddresses(updatedList);
-        // Đồng bộ LocalStorage
+      
         const updatedUser = { ...user, addresses: updatedList };
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setUser(updatedUser);
@@ -386,19 +389,6 @@ export default function AccountPage() {
               >
                 Đơn hàng đã giao
               </li>
-              <li
-                onClick={() => { setActiveTab("orders"); setOrderFilter("NotRated"); }}
-                className={`cursor-pointer transition-all ${orderFilter === "NotRated" ? "text-black font-bold" : "hover:text-black"}`}
-              >
-                Chưa đánh giá
-              </li>
-
-              <li
-                onClick={() => { setActiveTab("orders"); setOrderFilter("Rated"); }}
-                className={`cursor-pointer transition-all ${orderFilter === "Rated" ? "text-black font-bold" : "hover:text-black"}`}
-              >
-                Đã đánh giá
-              </li>
 
               <li
                 onClick={() => { setActiveTab("orders"); setOrderFilter("Cancelled"); }}
@@ -469,7 +459,7 @@ export default function AccountPage() {
 
               <div className="flex justify-center mb-10">
                 <button
-                  onClick={() => setIsModalOpen(true)} // Mở Modal
+                  onClick={handleOpenAddModal}
                   className="border-2 border-black px-10 py-3 font-bold text-sm hover:bg-black hover:text-white transition-all uppercase tracking-widest"
                 >
                   + Thêm địa chỉ mới
@@ -616,8 +606,8 @@ export default function AccountPage() {
               <div className="space-y-4">
                 {orders
                   .filter(order => {
-                    const status = order.status?.toUpperCase(); // Chuyển status đơn hàng về IN HOA
-                    const filter = orderFilter?.toUpperCase();   // Chuyển filter đang chọn về IN HOA
+                    const status = order.status?.toUpperCase();
+                    const filter = orderFilter?.toUpperCase();
 
                     if (filter === "ALL") return true;
 
@@ -650,41 +640,64 @@ export default function AccountPage() {
                             </p>
                           </div>
 
-                          <span className={`px-3 py-1 text-[11px] font-bold uppercase border rounded-md ${order.status?.toUpperCase() === "Processing" ? "text-orange-500 border-orange-500 bg-orange-50" :
-                            order.status?.toUpperCase() === "Confirmed" ? "text-blue-500 border-blue-500 bg-blue-50" :
-                              order.status?.toUpperCase() === "Shipping" ? "text-purple-500 border-purple-500 bg-purple-50" :
-                                order.status?.toUpperCase() === "Delivered" ? "text-green-500 border-green-500 bg-green-50" :
-                                  order.status?.toUpperCase() === "Cancelled" ? "text-red-500 border-red-500 bg-red-50" :
-                                    "text-gray-500 border-gray-300 bg-gray-50"
+                          <span className={`px-3 py-1 text-[11px] font-bold uppercase border rounded-md ${order.status?.toUpperCase() === "PROCESSING" || order.status?.toUpperCase() === "PENDING" ? "text-orange-500 border-orange-500 bg-orange-50" :
+                            order.status?.toUpperCase() === "CONFIRMED" ? "text-blue-500 border-blue-500 bg-blue-50" :
+                              order.status?.toUpperCase() === "SHIPPING" ? "text-purple-500 border-purple-500 bg-purple-50" :
+                                order.status?.toUpperCase() === "DELIVERED" ? "text-green-500 border-green-500 bg-green-50" :
+                                  order.status?.toUpperCase() === "CANCELLED" ? "text-red-500 border-red-500 bg-red-100" :
+                                    order.status?.toUpperCase() === "RETURNED" ? "text-gray-600 border-gray-600 bg-gray-200" :
+                                      "text-gray-500 border-gray-300 bg-gray-50"
                             }`}>
                             {
-                              order.status?.toUpperCase() === "Processing" ? "Chờ xử lý" :
-                                order.status?.toUpperCase() === "Confirmed" ? "Đã xác nhận" :
-                                  order.status?.toUpperCase() === "Shipping" ? "Đang giao hàng" :
-                                    order.status?.toUpperCase() === "Delivered" ? "Đã giao hàng" :
-                                      order.status?.toUpperCase() === "Cancelled" ? "Đã hủy" :
-                                        order.status?.toUpperCase() === "Returned" ? "Trả hàng" :
+                              order.status?.toUpperCase() === "PROCESSING" || order.status?.toUpperCase() === "PENDING" ? "Chờ xử lý" :
+                                order.status?.toUpperCase() === "CONFIRMED" ? "Đã xác nhận" :
+                                  order.status?.toUpperCase() === "SHIPPING" ? "Đang giao hàng" :
+                                    order.status?.toUpperCase() === "DELIVERED" ? "Đã giao hàng" :
+                                      order.status?.toUpperCase() === "CANCELLED" ? "Đã hủy" :
+                                        order.status?.toUpperCase() === "RETURNED" ? "Trả hàng" :
                                           order.status
                             }
                           </span>
                         </div>
 
                         <div className="space-y-4 mb-6">
-                          {order.items && order.items.map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-4">
-                              <div className="w-16 h-20 bg-gray-100 flex-shrink-0">
-                                <img src={item.product.image} alt={item.product.name} className="od-item-img" />
+                          {order.items && order.items.map((item, idx) => {
+                            const p = item.product || item;
+                            const isDelivered = order.status?.toUpperCase() === "DELIVERED";
+                            return (
+                              <div key={idx} className="flex items-center gap-4">
+                                <div className="w-16 h-20 bg-gray-100 flex-shrink-0">
+                                  <img src={item.product.image} alt={item.product.name} className="od-item-img" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-bold text-gray-800 uppercase leading-tight">{item.name || p.name}</p>
+                                  <p className="text-xs text-gray-500 mt-1">Phân loại: {item.selectedSize} · {item.selectedColor}</p>
+                                  <p className="text-sm font-bold mt-1 text-black">
+                                    {((p.salePrice ?? p.price) * item.quantity).toLocaleString()}₫
+                                  </p>
+                                </div>
+
+                                {isDelivered && (
+                                  <div className="text-right">
+                                    <button
+                                      onClick={() => {
+                                        addToCart(
+                                          p,
+                                          item.selectedSize || item.size,
+                                          item.selectedColor || item.color,
+                                          item.quantity || 1
+                                        );
+                                        router.push('/cart');
+                                      }}
+                                      className="text-[10px] font-bold uppercase border border-black px-3 py-1.5 hover:bg-black hover:text-white transition-all rounded-sm"
+                                    >
+                                      Mua lại món này
+                                    </button>
+                                  </div>
+                                )}
                               </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-bold text-gray-800 uppercase leading-tight">{item.name}</p>
-                                <p className="text-xs text-gray-500 mt-1">Số lượng: <span className="text-black font-bold">{item.quantity}</span></p>
-                                <p className="text-xs text-gray-500 italic">Phân loại: {item.selectedSize} · {item.selectedColor} · ×{item.quantity}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-sm font-bold">{((item.product.salePrice ?? item.product.price) * item.quantity).toLocaleString()}₫</p>
-                              </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
 
                         <div className="flex justify-between items-end border-t pt-4">
@@ -717,7 +730,6 @@ export default function AccountPage() {
   );
 }
 
-// Component con: Khung nhập địa chỉ
 function AddressModal({ isOpen, onClose, onSave, user, initialData }) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);

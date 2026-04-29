@@ -18,7 +18,6 @@ export default function AdminDashboard() {
       });
   }, []);
 
-  // 1. Logic xử lý biểu đồ doanh thu 7 ngày gần nhất
   const processChartData = (allOrders: any[]) => {
     const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const last7Days = [...Array(7)].map((_, i) => {
@@ -41,7 +40,6 @@ export default function AdminDashboard() {
     setChartData(last7Days);
   };
 
-  // 2. Logic tìm sản phẩm bán chạy nhất (Best Sellers)
   const processBestSellers = (allOrders: any[]) => {
     const productMap: any = {};
     allOrders.forEach(order => {
@@ -54,7 +52,7 @@ export default function AdminDashboard() {
     const sorted = Object.entries(productMap)
       .map(([name, sales]) => ({ name, sales: sales as number }))
       .sort((a, b) => b.sales - a.sales)
-      .slice(0, 5); // Lấy top 5
+      .slice(0, 5); 
 
     setBestSellers(sorted);
   };

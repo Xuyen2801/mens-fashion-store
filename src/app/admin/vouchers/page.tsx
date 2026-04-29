@@ -1,4 +1,4 @@
-// src/app/admin/vouchers/page.tsx
+
 "use client";
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
@@ -7,11 +7,11 @@ interface Voucher {
   _id?: string;
   id?: string;
   code: string;
-  category: "product" | "shipping" | "holiday"; // Dùng category thay vì type
-  type: string; // "fixed"
+  category: "product" | "shipping" | "holiday";  
+  type: string; 
   discountType?: "fixed" | "percent";
-  value: number; // Số tiền giảm
-  minSubtotal: number; // Giá trị đơn hàng tối thiểu (Trong DB bạn là minSubtotal)
+  value: number; 
+  minSubtotal: number;
   expiryDate: string;
   status: string;
 }
@@ -22,8 +22,6 @@ export default function AdminVoucherSettings() {
   const [filterType, setFilterType] = useState("ALL");
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-
-  // Load dữ liệu từ API
   useEffect(() => {
     fetch("http://localhost:5000/api/vouchers")
       .then(res => res.json())
@@ -50,24 +48,22 @@ export default function AdminVoucherSettings() {
   expiryDate: "",
 });
 
-// Hàm xử lý gửi dữ liệu
 const handleCreateVoucher = async () => {
   if (!newVoucher.code || !newVoucher.value || !newVoucher.title) {
     return toast.error("Vui lòng nhập đủ Tiêu đề, Mã và Giá trị giảm!");
   }
 
-  // Tự động tạo description nếu admin không nhập
   const autoDescription = newVoucher.discountType === "percent"
     ? `Giảm ${newVoucher.value}% cho hóa đơn từ ${new Intl.NumberFormat("vi-VN").format(newVoucher.minSubtotal)}đ`
     : `Giảm ${new Intl.NumberFormat("vi-VN").format(newVoucher.value)}đ cho hóa đơn từ ${new Intl.NumberFormat("vi-VN").format(newVoucher.minSubtotal)}đ`;
 
   const payload = {
     ...newVoucher,
-    voucherId: "V" + Math.floor(100 + Math.random() * 900), // Sinh ID dạng V123
+    voucherId: "V" + Math.floor(100 + Math.random() * 900), 
     description: newVoucher.description || autoDescription,
-    type: newVoucher.discountType, // Lưu fixed hoặc percent vào trường type
+    type: newVoucher.discountType, 
     status: "active",
-    image: `/images/vouchers/${newVoucher.category}.png` // Tự động gán link ảnh theo category
+    image: `/images/vouchers/${newVoucher.category}.png` 
   };
 
   try {
@@ -82,7 +78,6 @@ const handleCreateVoucher = async () => {
       setVouchers(prev => [...prev, result.data]);
       setIsModalOpen(false);
       toast.success("Kích hoạt Voucher thành công!");
-      // Reset với mã mới
       setNewVoucher({ code: generateRandomCode(), title: "", description: "", category: "product", discountType: "fixed", value: 0, minSubtotal: 0, expiryDate: "" });
     }
   } catch (error) {
@@ -90,9 +85,7 @@ const handleCreateVoucher = async () => {
   }
 };
 
-  // Logic xóa Voucher
 const deleteVoucher = async (id: string) => {
-  // Sử dụng Custom Toast để hỏi xác nhận như Vy mong muốn
   toast((t) => (
     <div className="flex flex-col gap-3 p-1">
       <span className="text-sm font-bold text-slate-800">
@@ -116,7 +109,6 @@ const deleteVoucher = async (id: string) => {
               });
 
               if (res.ok) {
-                // Xóa khỏi State để UI biến mất ngay
                 setVouchers(prev => prev.filter(v => v._id !== id && v.id !== id));
                 toast.success("Đã xóa voucher thành công!", { id: loadingToast });
               } else {
@@ -146,8 +138,13 @@ const deleteVoucher = async (id: string) => {
               <p className="text-[10px] font-bold text-slate-400 uppercase">Phí giao hàng hiện tại</p>
               <input 
                 type="number" 
+                min="0"
                 value={shippingFee} 
-                onChange={(e) => setShippingFee(Number(e.target.value))}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }} // Chặn gõ dấu âm
+  onChange={(e) => {
+    const val = Number(e.target.value);
+    setShippingFee(val < 0 ? 0 : val); 
+  }}
                 className="text-xl font-black outline-none w-32"
               />
             </div>
@@ -183,11 +180,9 @@ const deleteVoucher = async (id: string) => {
     .filter(v => {
   if (filterType === "ALL") return true;
   
-  // Lấy category từ DB (product, shipping, holiday)
   const vCategory = v.category?.toLowerCase().trim();
   
   if (filterType === "PRODUCT") {
-    // Voucher sản phẩm bao gồm cả hàng ngày (product) và sự kiện (holiday)
     return vCategory === "product" || vCategory === "holiday";
   }
   
@@ -200,9 +195,11 @@ const deleteVoucher = async (id: string) => {
     .map((v) => (
       <div key={v._id} className="bg-white border border-slate-200 rounded-xl p-4 relative overflow-hidden group hover:border-black transition-all shadow-sm">
         {/* Badge loại voucher nhỏ gọn hơn */}
-        <div className={`absolute top-0 right-0 px-2 py-0.5 text-[8px] font-black text-white uppercase ${v.type?.toUpperCase() === 'PRODUCT' ? 'bg-orange-500' : 'bg-blue-500'}`}>
-          {v.type?.toUpperCase() === 'PRODUCT' ? 'Sản phẩm' : 'Phí ship'}
-        </div>
+        <div className={`absolute top-0 right-0 px-2 py-0.5 text-[8px] font-black text-white uppercase ${
+  v.category === 'shipping' ? 'bg-blue-500' : 'bg-orange-500'
+}`}>
+  {v.category === 'shipping' ? 'Phí ship' : 'Sản phẩm'}
+</div>
 
         {/* Mã Code */}
         <h3 className="text-lg font-black tracking-tighter text-slate-900 truncate pr-8">{v.code}</h3>
@@ -321,7 +318,11 @@ const deleteVoucher = async (id: string) => {
                 type="number" 
                 placeholder="Nhập số tiền giảm (VD: 50000)"
                 value={newVoucher.value || ""}
-                onChange={(e) => setNewVoucher({...newVoucher, value: Number(e.target.value)})}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+  onChange={(e) => {
+    const val = Number(e.target.value);
+    setNewVoucher({...newVoucher, value: val < 0 ? 0 : val});
+  }}
                 className="w-full p-3 border border-slate-200 rounded-xl font-black text-blue-600"
               />
             )}
@@ -335,7 +336,11 @@ const deleteVoucher = async (id: string) => {
             <input 
               type="number" 
               value={newVoucher.minSubtotal || ""}
-              onChange={(e) => setNewVoucher({...newVoucher, minSubtotal: Number(e.target.value)})}
+             onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+  onChange={(e) => {
+    const val = Number(e.target.value);
+    setNewVoucher({...newVoucher, minSubtotal: val < 0 ? 0 : val});
+  }}
               className="w-full mt-1 p-3 border border-slate-200 rounded-xl font-bold"
               placeholder="0 = Mọi đơn hàng"
             />

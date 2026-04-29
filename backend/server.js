@@ -110,7 +110,6 @@ app.patch("/api/orders/:id/cancel", async (req, res) => {
   try {
     const ordersCol = mongoose.connection.db.collection("orders");
 
-    // 1. Cập nhật trạng thái trong MongoDB
     const filter = {
       $or: [
         { id: id },
@@ -130,7 +129,7 @@ app.patch("/api/orders/:id/cancel", async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng để hủy" });
     }
 
-    // 2. Gửi Email thông báo cho khách hàng
+
     const mailOptions = {
       from: '"ICON DENIM Support" <khavy05092005@gmail.com>',
       to: customerEmail,
@@ -157,13 +156,11 @@ app.patch("/api/orders/:id/cancel", async (req, res) => {
   }
 });
 
-// ROUTE: TẠO VOUCHER MỚI VÀ LƯU VÀO MONGODB
 app.post("/api/vouchers", async (req, res) => {
   try {
     const db = mongoose.connection.db;
     const vouchersCol = db.collection("vouchers");
 
-    // Lấy dữ liệu từ Frontend gửi lên
     const data = req.body;
 
     const newVoucher = {
@@ -172,13 +169,11 @@ app.post("/api/vouchers", async (req, res) => {
       status: "active"
     };
 
-    // Lưu vào database
     const result = await vouchersCol.insertOne(newVoucher);
-    
-    // Trả về dữ liệu đã lưu kèm theo ID mới tạo
-    res.status(201).json({ 
-      success: true, 
-      data: { ...newVoucher, _id: result.insertedId } 
+
+    res.status(201).json({
+      success: true,
+      data: { ...newVoucher, _id: result.insertedId }
     });
   } catch (err) {
     console.error("Lỗi tạo voucher:", err);
@@ -186,18 +181,16 @@ app.post("/api/vouchers", async (req, res) => {
   }
 });
 
-// ROUTE: XÓA VOUCHER THEO ID
+
 app.delete("/api/vouchers/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const db = mongoose.connection.db;
     const vouchersCol = db.collection("vouchers");
-
-    // Xây dựng bộ lọc để tìm voucher bằng ID thô hoặc ObjectId
     const filter = {
       $or: [
         { _id: id.length === 24 ? new mongoose.Types.ObjectId(id) : null },
-        { id: id } // Trường hợp Vy dùng ID tự tạo dạng chuỗi
+        { id: id }
       ].filter(Boolean)
     };
 
@@ -221,7 +214,7 @@ app.post("/api/orders", async (req, res) => {
     const newOrder = {
       ...req.body,
       orderDate: new Date().toISOString(),
-      status: "Processing" // Mặc định đơn mới là đang xử lý
+      status: "Processing"
     };
     const result = await orderCol.insertOne(newOrder);
     res.status(201).json({ success: true, orderId: result.insertedId });
@@ -247,6 +240,38 @@ app.post("/api/users/:userId/addresses", async (req, res) => {
   }
 });
 
+// Cập nhật địa chỉ
+app.patch("/api/users/:userId/addresses/:addressId", async (req, res) => {
+  const { userId, addressId } = req.params;
+  const updatedData = req.body;
+
+  try {
+    const usersCol = mongoose.connection.db.collection("users");
+
+    if (updatedData.isDefault) {
+      await usersCol.updateOne(
+        { userId: userId },
+        { $set: { "addresses.$[].isDefault": false } }
+      );
+    }
+
+    const result = await usersCol.updateOne(
+      { userId: userId, "addresses.id": addressId },
+      { $set: { "addresses.$": { ...updatedData, id: addressId } } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Không tìm thấy user hoặc địa chỉ" });
+    }
+
+    res.json({ success: true, message: "Cập nhật địa chỉ thành công!" });
+  } catch (err) {
+    console.error("Lỗi cập nhật địa chỉ:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // Xóa địa chỉ
 app.delete("/api/users/:userId/addresses/:addressId", async (req, res) => {
   const { userId, addressId } = req.params;
@@ -270,7 +295,6 @@ app.get("/api/vouchers", async (req, res) => {
   }
 });
 
-// TRONG FILE server.js
 app.get("/api/mixmatch/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
@@ -279,14 +303,12 @@ app.get("/api/mixmatch/:slug", async (req, res) => {
     const mixMatch = await db.collection("mixmatch").findOne({ slug: slug });
     if (!mixMatch) return res.status(404).json({ message: "Không tìm thấy bộ phối" });
 
-    // ✨ CẬP NHẬT DANH SÁCH BẢNG: Thêm "kaki" vào mảng này
     const productCollections = ["ao-thun", "kaki", "tay", "ao-khoac", "jean", "short", "jogger", "hoodie", "ao-polo"];
 
     const detailedProducts = await Promise.all(
       mixMatch.items.map(async (item) => {
-        // Tìm đúng collection dựa trên category lưu trong mixmatch
-        const colName = item.category; 
-        
+        const colName = item.category;
+
         const parentDoc = await db.collection(colName).findOne({
           "products.id": item.product_id
         });
@@ -458,7 +480,6 @@ app.post("/users", async (req, res) => {
     await usersCollection.insertOne(newUser);
     return res.status(201).json(newUser);
   } catch (err) {
-    console.error("❌ API error for POST /users:", err.message);
     return res.status(500).json({ message: "Không thể tạo user." });
   }
 });
@@ -532,7 +553,6 @@ app.patch("/users/:id", async (req, res) => {
 
     return res.json({ success: true });
   } catch (err) {
-    console.error("❌ API error for PATCH /users/:id:", err.message);
     return res.status(500).json({ message: "Không thể cập nhật user." });
   }
 });
@@ -692,22 +712,22 @@ app.get("/api/:collection", async (req, res) => {
 app.post("/api/products/add-to-collection", async (req, res) => {
   try {
     const productData = req.body;
-    const { category } = productData; 
-    
+    const { category } = productData;
+
     if (!category) {
       return res.status(400).json({ message: "Thiếu thông tin Category (Collection)" });
     }
 
     const db = mongoose.connection.db;
     const result = await db.collection(category).updateOne(
-      {}, 
-      { 
-        $push: { 
+      {},
+      {
+        $push: {
           products: {
             ...productData,
             createdAt: new Date().toISOString()
-          } 
-        } 
+          }
+        }
       }
     );
 
@@ -729,7 +749,7 @@ app.post("/api/products/add-to-collection", async (req, res) => {
 app.post("/api/products/update", async (req, res) => {
   try {
     const productData = req.body;
-    const { category, id } = productData; 
+    const { category, id } = productData;
 
     if (!category || !id) {
       return res.status(400).json({ message: "Thiếu Category hoặc ID sản phẩm" });
@@ -739,13 +759,13 @@ app.post("/api/products/update", async (req, res) => {
 
     const result = await db.collection(category).updateOne(
       { "products.id": id },
-      { 
-        $set: { 
-          "products.$": { 
-            ...productData, 
-            updatedAt: new Date().toISOString() 
-          } 
-        } 
+      {
+        $set: {
+          "products.$": {
+            ...productData,
+            updatedAt: new Date().toISOString()
+          }
+        }
       }
     );
 

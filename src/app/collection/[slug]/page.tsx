@@ -26,7 +26,6 @@ export default async function Page({
   const hasRichCollectionSchema = (value: any) => {
     if (!value || typeof value !== "object") return false;
 
-    // ✅ Có content nếu có products hoặc looks hoặc gallery
     const hasProducts = Array.isArray(value.products) && value.products.length > 0;
     const hasLooks = Array.isArray(value.looks) && value.looks.length > 0;
     const hasGallery = Array.isArray(value.gallery) && value.gallery.length > 0;
@@ -34,20 +33,14 @@ export default async function Page({
     return hasProducts || hasLooks || hasGallery;
   };
 
-  // 🗺️ aliasMap: Map slug cũ -> new collection slug
-  // Use case: URL cũ (procool) cần redirect đến collection mới (procool-new-gen)
-  // Nên dùng object map thay vì redirect: performance tớt hơn + preserve URL
-  // VD: ?????????????://domain.com/collection/procool
-  //     -> fetch data từ collection "procool-new-gen" thay vì "procool"
   const aliasMap: Record<string, string> = {
     procool: "procool-new-gen",
     stitch: "stitch-better-together",
     icon105: "icon105-lightweight-collection",
     "smart-jeans": "smart-jeans-collection",
-    smartjeans: "smart-jeans-collection", // Alias không có dash cũng map được
+    smartjeans: "smart-jeans-collection", 
   };
 
-  // Tím slug thực tế: Check alias trước, không có thì dùng slug gốc
   const targetSlug = aliasMap[slug.toLowerCase()] || slug;
   const normalizedTargetSlug = targetSlug.toLowerCase();
   const isProCoolCollection = normalizedTargetSlug === "procool" || normalizedTargetSlug === "procool-new-gen";
@@ -62,8 +55,6 @@ export default async function Page({
     : undefined;
 
   if (detailCollection && !isSpecialCollection) {
-    // 🔧 Fix merge order: detailCollection (collection data) > specializedDoc (rich schema)
-    // This ensures each collection shows its own data, not another collection's defaults
     const mergedDetail = {
       ...detailCollection,
       ...(specializedDoc && specializedDoc.looks ? { looks: specializedDoc.looks } : {}),
