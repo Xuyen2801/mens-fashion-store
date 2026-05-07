@@ -55,11 +55,9 @@ export default function Page({ params }) {
         const bundles = results.map((items) => {
           const first = Array.isArray(items) ? items[0] : null;
 
-          const products = first && Array.isArray(first.products)
-            ? first.products
-            : Array.isArray(items)
-              ? items
-              : [];
+          const products = (first && Array.isArray(first.products)) 
+          ? first.products 
+          : (Array.isArray(items) ? items : []);
 
           const faqs = first && Array.isArray(first.faqs) ? first.faqs : [];
 

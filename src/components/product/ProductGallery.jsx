@@ -65,37 +65,75 @@ export default function ProductGallery({ images = [], product, selectedColor, ho
   const [displayImages, setDisplayImages] = useState(initialImageList);
 
   useEffect(() => {
+  
     const activeColor = hoverColor || selectedColor;
-    if (!product || !activeColor) return;
+    
+    if (product && activeColor) {
+      const foundVariant = product.variants?.find(v => v.color === activeColor);
+      const foundColor = product.colors?.find(c => c.name === activeColor);
 
-    const foundVariant = product.variants?.find(v => v.color === activeColor);
-    const foundColor = product.colors?.find(c => c.name === activeColor);
-
-    if (foundVariant && foundVariant.image) {
-      const nextList = buildImageList(
-        [foundVariant.image, ...images.filter(img => img !== foundVariant.image)],
-        `${productSeed}-${activeColor}`
-      );
-      setDisplayImages(nextList);
-      setActive(0);
+      if (foundVariant && foundVariant.image) {
+        const nextList = buildImageList(
+          [foundVariant.image, ...images.filter(img => img !== foundVariant.image)],
+          `${productSeed}-${activeColor}`
+        );
+        setDisplayImages(nextList);
+        setActive(0); 
+        return; 
+      } 
+ 
+      if (foundColor && foundColor.images) {
+        const nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
+        setDisplayImages(nextList);
+        setActive(0);
+        return;
+      }
     }
-    else if (foundColor && foundColor.images) {
-      const nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
-      setDisplayImages(nextList);
-      setActive(0);
-    }
-  }, [product, selectedColor, hoverColor, images, productSeed]);
 
-  useEffect(() => {
-    // Thay vì gọi hàm bên ngoài, ta lấy trực tiếp danh sách ảnh
-    const nextList = images || product?.images || [];
 
-    // Chỉ cập nhật nếu danh sách ảnh thực sự thay đổi nội dung
-    // Dùng JSON.stringify để so sánh giá trị mảng thay vì tham chiếu địa chỉ
-    if (JSON.stringify(nextList) !== JSON.stringify(displayImages)) {
-      setDisplayImages(nextList);
+    const defaultList = buildImageList(
+      images.length > 0 ? images : product?.image ? [product.image] : [],
+      productSeed
+    );
+    if (JSON.stringify(defaultList) !== JSON.stringify(displayImages)) {
+      setDisplayImages(defaultList);
     }
-  }, [images, product?.images, displayImages]);
+    
+  }, [product, selectedColor, hoverColor, images, productSeed]); 
+
+
+  // useEffect(() => {
+  //   const activeColor = hoverColor || selectedColor;
+  //   if (!product || !activeColor) return;
+
+  //   const foundVariant = product.variants?.find(v => v.color === activeColor);
+  //   const foundColor = product.colors?.find(c => c.name === activeColor);
+
+  //   if (foundVariant && foundVariant.image) {
+  //     const nextList = buildImageList(
+  //       [foundVariant.image, ...images.filter(img => img !== foundVariant.image)],
+  //       `${productSeed}-${activeColor}`
+  //     );
+  //     setDisplayImages(nextList);
+  //     setActive(0);
+  //   }
+  //   else if (foundColor && foundColor.images) {
+  //     const nextList = buildImageList(foundColor.images, `${productSeed}-${activeColor}`);
+  //     setDisplayImages(nextList);
+  //     setActive(0);
+  //   }
+  // }, [product, selectedColor, hoverColor, images, productSeed]);
+
+  // useEffect(() => {
+  //   // Thay vì gọi hàm bên ngoài, ta lấy trực tiếp danh sách ảnh
+  //   const nextList = images || product?.images || [];
+
+  //   // Chỉ cập nhật nếu danh sách ảnh thực sự thay đổi nội dung
+  //   // Dùng JSON.stringify để so sánh giá trị mảng thay vì tham chiếu địa chỉ
+  //   if (JSON.stringify(nextList) !== JSON.stringify(displayImages)) {
+  //     setDisplayImages(nextList);
+  //   }
+  // }, [images, product?.images, displayImages]);
 
   if (!displayImages || displayImages.length === 0) {
     return <div className="w-full aspect-[3/4] bg-gray-100 animate-pulse rounded-xl"></div>;

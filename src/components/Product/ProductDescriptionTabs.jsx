@@ -10,6 +10,8 @@ export default function ProductDescriptionTabs({ product }) {
       ? [product.image]
       : [];
 
+  console.log("IMAGE DEBUG:", displayImages);
+
   const detailRows = [
     { label: 'Mã sản phẩm', value: product.id },
     { label: 'Danh mục', value: product.category },
